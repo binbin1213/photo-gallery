@@ -8,13 +8,11 @@ interface PhotoCardProps {
   photo: Photo
   isAdmin?: boolean
   onReplace?: (photo: Photo) => void
-  onDelete?: (photo: Photo) => void
 }
 
-export default function PhotoCard({ photo, isAdmin = false, onReplace, onDelete }: PhotoCardProps) {
+export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCardProps) {
   const [showPreview, setShowPreview] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
-  const [isReplacing, setIsReplacing] = useState(false)
 
   // 处理图片替换
   const handleReplace = (e: React.MouseEvent) => {
