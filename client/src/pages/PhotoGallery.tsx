@@ -75,7 +75,7 @@ export default function PhotoGallery() {
       const formData = new FormData()
       formData.append('photo', file)
 
-      const response = await fetch(`/api/photos/${replacingPhoto.filename}/replace`, {
+      const response = await fetch(`http://192.168.1.98:5551/api/photos/${replacingPhoto.filename}/replace`, {
         method: 'POST',
         body: formData
       })

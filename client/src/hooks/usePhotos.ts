@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Photo } from '../types/photo'
 
 const api = axios.create({
-  baseURL: '/api'
+  baseURL: 'http://192.168.1.98:5551/api'
 })
 
 export function usePhotos(search?: string) {

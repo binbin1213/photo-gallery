@@ -13,7 +13,7 @@ export default function AdminPanel() {
   // 导出数据功能
   const handleExportData = async () => {
     try {
-      const response = await fetch('/api/photos')
+      const response = await fetch('http://192.168.1.98:5551/api/photos')
       const data = await response.json()
       
       const exportData = data.photos.map((photo: any) => ({
@@ -70,7 +70,7 @@ export default function AdminPanel() {
             formData.append('photos', file)
           })
           
-          const response = await fetch('/api/upload-multiple', {
+          const response = await fetch('http://192.168.1.98:5551/api/upload-multiple', {
             method: 'POST',
             body: formData
           })
@@ -127,7 +127,7 @@ export default function AdminPanel() {
         formData.append('photos', file)
       })
       
-      const response = await fetch('/api/upload-multiple', {
+      const response = await fetch('http://192.168.1.98:5551/api/upload-multiple', {
         method: 'POST',
         body: formData
       })
