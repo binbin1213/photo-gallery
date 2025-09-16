@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs').promises;
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -9,6 +12,106 @@ console.log('🚀 启动照片展示墙API服务...');
 // 基本中间件
 app.use(cors());
 app.use(express.json());
+
+// 配置multer用于文件上传
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, '/app/uploads/photos');
+    },
+    filename: (req, file, cb) => {
+        // 保持原始文件名，或者生成新的文件名
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        // 只允许图片文件
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('只允许上传图片文件'), false);
+        }
+    },
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB限制
+    }
+});
+
+// 文件上传接口
+app.post('/api/upload', upload.single('photo'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: '没有上传文件' });
+        }
+
+        console.log('文件上传成功:', req.file.filename);
+        
+        res.json({
+            success: true,
+            filename: req.file.filename,
+            originalName: req.file.originalname,
+            size: req.file.size,
+            message: '文件上传成功'
+        });
+    } catch (error) {
+        console.error('文件上传失败:', error);
+        res.status(500).json({ error: '文件上传失败: ' + error.message });
+    }
+});
+
+// 多文件上传接口
+app.post('/api/upload-multiple', upload.array('photos', 10), async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: '没有上传文件' });
+        }
+
+        console.log(`批量上传成功: ${req.files.length} 个文件`);
+        
+        const uploadedFiles = req.files.map(file => ({
+            filename: file.filename,
+            originalName: file.originalname,
+            size: file.size
+        }));
+        
+        res.json({
+            success: true,
+            files: uploadedFiles,
+            count: req.files.length,
+            message: `成功上传 ${req.files.length} 个文件`
+        });
+    } catch (error) {
+        console.error('批量上传失败:', error);
+        res.status(500).json({ error: '批量上传失败: ' + error.message });
+    }
+});
+
+// 删除文件接口
+app.delete('/api/photos/:filename', async (req, res) => {
+    try {
+        const { filename } = req.params;
+        const filePath = path.join('/app/uploads/photos', filename);
+        
+        // 检查文件是否存在
+        try {
+            await fs.access(filePath);
+        } catch (error) {
+            return res.status(404).json({ error: '文件不存在' });
+        }
+        
+        // 删除文件
+        await fs.unlink(filePath);
+        
+        console.log('文件删除成功:', filename);
+        res.json({ success: true, message: '文件删除成功' });
+    } catch (error) {
+        console.error('文件删除失败:', error);
+        res.status(500).json({ error: '文件删除失败: ' + error.message });
+    }
+});
 
 // 批量更新照片信息
 app.post('/api/photos/batch', async (req, res) => {

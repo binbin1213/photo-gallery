@@ -6,6 +6,7 @@ import BatchEditModal from '../components/BatchEditModal'
 export default function AdminPanel() {
   const [isUploading, setIsUploading] = useState(false)
   const [showBatchEdit, setShowBatchEdit] = useState(false)
+  const [isDragOver, setIsDragOver] = useState(false)
 
   // 导出数据功能
   const handleExportData = async () => {
@@ -69,23 +70,98 @@ export default function AdminPanel() {
   }
 
   // 文件上传功能
-  const handleFileUpload = () => {
+  const handleFileUpload = async () => {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
     input.multiple = true
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const files = (e.target as HTMLInputElement).files
       if (files && files.length > 0) {
         setIsUploading(true)
-        // 模拟上传过程
-        setTimeout(() => {
+        
+        try {
+          const formData = new FormData()
+          Array.from(files).forEach(file => {
+            formData.append('photos', file)
+          })
+          
+          const response = await fetch('/api/upload-multiple', {
+            method: 'POST',
+            body: formData
+          })
+          
+          const result = await response.json()
+          
+          if (result.success) {
+            alert(`成功上传 ${result.count} 个文件！`)
+            // 刷新页面以显示新上传的图片
+            window.location.reload()
+          } else {
+            alert('上传失败：' + result.error)
+          }
+        } catch (error) {
+          console.error('上传错误:', error)
+          alert('上传失败：' + error)
+        } finally {
           setIsUploading(false)
-          alert(`成功选择了 ${files.length} 个文件！（注：这是演示功能）`)
-        }, 2000)
+        }
       }
     }
     input.click()
+  }
+
+  // 拖拽上传处理
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+  }
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    
+    const files = Array.from(e.dataTransfer.files).filter(file => 
+      file.type.startsWith('image/')
+    )
+    
+    if (files.length === 0) {
+      alert('请拖拽图片文件')
+      return
+    }
+    
+    setIsUploading(true)
+    
+    try {
+      const formData = new FormData()
+      files.forEach(file => {
+        formData.append('photos', file)
+      })
+      
+      const response = await fetch('/api/upload-multiple', {
+        method: 'POST',
+        body: formData
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        alert(`成功上传 ${result.count} 个文件！`)
+        window.location.reload()
+      } else {
+        alert('上传失败：' + result.error)
+      }
+    } catch (error) {
+      console.error('上传错误:', error)
+      alert('上传失败：' + error)
+    } finally {
+      setIsUploading(false)
+    }
   }
 
   return (
@@ -118,15 +194,29 @@ export default function AdminPanel() {
               <Upload className="w-5 h-5" />
               上传照片
             </h2>
-            <div className="border-2 border-dashed border-white/30 rounded-lg p-8 text-center">
-              <p className="text-white/70 mb-4">拖拽照片到这里或点击选择</p>
+            <div 
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                isDragOver 
+                  ? 'border-blue-400 bg-blue-500/20' 
+                  : 'border-white/30 hover:border-white/50'
+              }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <p className="text-white/70 mb-4">
+                {isDragOver ? '松开鼠标上传文件' : '拖拽照片到这里或点击选择'}
+              </p>
               <button 
                 onClick={handleFileUpload}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
                 disabled={isUploading}
               >
                 {isUploading ? '上传中...' : '选择文件'}
               </button>
+              <p className="text-white/50 text-sm mt-2">
+                支持 JPG、PNG、GIF 格式，单个文件最大 10MB
+              </p>
             </div>
           </div>
 
