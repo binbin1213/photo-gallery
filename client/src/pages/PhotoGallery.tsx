@@ -42,8 +42,8 @@ export default function PhotoGallery() {
     checkAdminStatus()
 
     // 监听 localStorage 变化
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'isAdmin' || e.key === 'adminLoginTime') {
+    const handleStorageChange = (e: StorageEvent | Event) => {
+      if (e instanceof StorageEvent && (e.key === 'isAdmin' || e.key === 'adminLoginTime')) {
         checkAdminStatus()
       }
     }
