@@ -42,29 +42,6 @@ export default function AdminPanel() {
     }
   }
 
-  // 导入数据功能
-  const handleImportData = () => {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.json'
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (file) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-          try {
-            const data = JSON.parse(e.target?.result as string)
-            console.log('导入的数据:', data)
-            alert('数据导入成功！（注：这是演示功能）')
-          } catch (error) {
-            alert('文件格式错误！')
-          }
-        }
-        reader.readAsText(file)
-      }
-    }
-    input.click()
-  }
 
   // 批量编辑功能
   const handleBatchEdit = () => {
