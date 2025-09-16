@@ -193,27 +193,44 @@ export default function PhotoGallery() {
                       </button>
                       
                       <div className="border-t border-gray-200/50 mt-1 pt-1">
-                        <button
-                          onClick={() => {
-                            const isAdmin = localStorage.getItem('isAdmin')
-                            const loginTime = localStorage.getItem('adminLoginTime')
-                            const now = Date.now()
-                            
-                            if (isAdmin === 'true' && loginTime && now - parseInt(loginTime) < 24 * 60 * 60 * 1000) {
-                              // 已登录且未过期
-                              setIsAdmin(true) // 确保当前页面状态正确
-                              window.open('/admin', '_blank')
-                            } else {
-                              // 未登录或已过期
-                              setShowAdminLogin(true)
-                            }
-                            setShowSettings(false)
-                          }}
-                          className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white/50 flex items-center gap-2"
-                        >
-                          <User className="w-4 h-4" />
-                          管理面板
-                        </button>
+                        {isAdmin ? (
+                          <button
+                            onClick={() => {
+                              // 退出管理员模式
+                              localStorage.removeItem('isAdmin')
+                              localStorage.removeItem('adminLoginTime')
+                              setIsAdmin(false)
+                              setShowSettings(false)
+                              alert('已退出管理员模式')
+                            }}
+                            className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          >
+                            <User className="w-4 h-4" />
+                            退出管理员
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              const isAdmin = localStorage.getItem('isAdmin')
+                              const loginTime = localStorage.getItem('adminLoginTime')
+                              const now = Date.now()
+                              
+                              if (isAdmin === 'true' && loginTime && now - parseInt(loginTime) < 24 * 60 * 60 * 1000) {
+                                // 已登录且未过期
+                                setIsAdmin(true) // 确保当前页面状态正确
+                                window.open('/admin', '_blank')
+                              } else {
+                                // 未登录或已过期
+                                setShowAdminLogin(true)
+                              }
+                              setShowSettings(false)
+                            }}
+                            className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white/50 flex items-center gap-2"
+                          >
+                            <User className="w-4 h-4" />
+                            管理面板
+                          </button>
+                        )}
                         
                         <button
                           onClick={() => {
