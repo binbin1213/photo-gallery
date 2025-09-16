@@ -13,20 +13,27 @@ export default function PhotoGallery() {
   const [shuffledPhotos, setShuffledPhotos] = useState<Photo[]>([])
   const [isShuffled, setIsShuffled] = useState(false)
   const [showAdminLogin, setShowAdminLogin] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [replacingPhoto, setReplacingPhoto] = useState<Photo | null>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
   const { data: photos, isLoading, error } = usePhotos(searchQuery)
 
   useEffect(() => {
     // 检查管理员登录状态是否过期（24小时）
     const loginTime = localStorage.getItem('adminLoginTime')
-    const isAdmin = localStorage.getItem('isAdmin')
-    if (loginTime && isAdmin === 'true') {
+    const adminStatus = localStorage.getItem('isAdmin')
+    if (loginTime && adminStatus === 'true') {
       const now = Date.now()
       if (now - parseInt(loginTime) > 24 * 60 * 60 * 1000) {
         // 登录已过期
         localStorage.removeItem('isAdmin')
         localStorage.removeItem('adminLoginTime')
+        setIsAdmin(false)
+      } else {
+        setIsAdmin(true)
       }
+    } else {
+      setIsAdmin(false)
     }
   }, [])
 
@@ -51,6 +58,41 @@ export default function PhotoGallery() {
         setShuffledPhotos(shuffled)
         setIsShuffled(true)
       }
+    }
+  }
+
+  // 处理图片替换
+  const handleReplacePhoto = (photo: Photo) => {
+    setReplacingPhoto(photo)
+  }
+
+  // 处理替换文件上传
+  const handleReplaceUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !replacingPhoto) return
+
+    try {
+      const formData = new FormData()
+      formData.append('photo', file)
+
+      const response = await fetch(`/api/photos/${replacingPhoto.filename}/replace`, {
+        method: 'POST',
+        body: formData
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert('照片替换成功！')
+        window.location.reload()
+      } else {
+        alert('替换失败：' + result.error)
+      }
+    } catch (error) {
+      console.error('替换错误:', error)
+      alert('替换失败：' + error)
+    } finally {
+      setReplacingPhoto(null)
     }
   }
 
@@ -206,7 +248,11 @@ export default function PhotoGallery() {
         )}
 
         {displayPhotos && (
-          <PhotoGrid photos={displayPhotos} />
+          <PhotoGrid 
+            photos={displayPhotos} 
+            isAdmin={isAdmin}
+            onReplace={handleReplacePhoto}
+          />
         )}
       </main>
 
@@ -218,6 +264,15 @@ export default function PhotoGallery() {
           window.open('/admin', '_blank')
           setShowAdminLogin(false)
         }}
+      />
+
+      {/* 隐藏的文件输入框用于替换 */}
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleReplaceUpload}
+        style={{ display: 'none' }}
+        id="replace-photo-input"
       />
     </div>
   )

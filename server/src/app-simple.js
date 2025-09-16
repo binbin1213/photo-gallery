@@ -113,6 +113,54 @@ app.delete('/api/photos/:filename', async (req, res) => {
     }
 });
 
+// 替换文件接口
+app.post('/api/photos/:filename/replace', upload.single('photo'), async (req, res) => {
+    try {
+        const { filename } = req.params;
+        
+        if (!req.file) {
+            return res.status(400).json({ error: '没有上传文件' });
+        }
+        
+        const oldFilePath = path.join('/app/uploads/photos', filename);
+        const newFilePath = path.join('/app/uploads/photos', req.file.filename);
+        
+        // 检查原文件是否存在
+        try {
+            await fs.access(oldFilePath);
+        } catch (error) {
+            // 如果原文件不存在，直接使用新文件
+            console.log('原文件不存在，直接使用新文件:', filename);
+            res.json({
+                success: true,
+                filename: req.file.filename,
+                originalName: req.file.originalname,
+                size: req.file.size,
+                message: '文件替换成功'
+            });
+            return;
+        }
+        
+        // 删除原文件
+        await fs.unlink(oldFilePath);
+        
+        // 将新文件重命名为原文件名
+        await fs.rename(newFilePath, oldFilePath);
+        
+        console.log('文件替换成功:', filename, '->', req.file.filename);
+        res.json({
+            success: true,
+            filename: filename, // 保持原文件名
+            originalName: req.file.originalname,
+            size: req.file.size,
+            message: '文件替换成功'
+        });
+    } catch (error) {
+        console.error('文件替换失败:', error);
+        res.status(500).json({ error: '文件替换失败: ' + error.message });
+    }
+});
+
 // 批量更新照片信息
 app.post('/api/photos/batch', async (req, res) => {
     console.log('收到批量更新请求：', {
