@@ -20,38 +20,20 @@ export default function PhotoGallery() {
 
   useEffect(() => {
     // 检查管理员登录状态是否过期（24小时）
-    const checkAdminStatus = () => {
-      const loginTime = localStorage.getItem('adminLoginTime')
-      const adminStatus = localStorage.getItem('isAdmin')
-      if (loginTime && adminStatus === 'true') {
-        const now = Date.now()
-        if (now - parseInt(loginTime) > 24 * 60 * 60 * 1000) {
-          // 登录已过期
-          localStorage.removeItem('isAdmin')
-          localStorage.removeItem('adminLoginTime')
-          setIsAdmin(false)
-        } else {
-          setIsAdmin(true)
-        }
-      } else {
+    const loginTime = localStorage.getItem('adminLoginTime')
+    const adminStatus = localStorage.getItem('isAdmin')
+    if (loginTime && adminStatus === 'true') {
+      const now = Date.now()
+      if (now - parseInt(loginTime) > 24 * 60 * 60 * 1000) {
+        // 登录已过期
+        localStorage.removeItem('isAdmin')
+        localStorage.removeItem('adminLoginTime')
         setIsAdmin(false)
+      } else {
+        setIsAdmin(true)
       }
-    }
-
-    // 初始检查
-    checkAdminStatus()
-
-    // 监听 localStorage 变化
-    const handleStorageChange = (e: StorageEvent | Event) => {
-      if (e instanceof StorageEvent && (e.key === 'isAdmin' || e.key === 'adminLoginTime')) {
-        checkAdminStatus()
-      }
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
+    } else {
+      setIsAdmin(false)
     }
   }, [])
 
