@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { RefreshCw, X } from 'lucide-react'
 
 import { Photo } from '../types/photo'
-import PhotoPreview from './PhotoPreview'
+import StarProfile from './StarProfile'
 
 interface PhotoCardProps {
   photo: Photo
@@ -11,8 +11,10 @@ interface PhotoCardProps {
 }
 
 export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCardProps) {
-  const [showPreview, setShowPreview] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [starInfo, setStarInfo] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   // 处理图片替换
   const handleReplace = (e: React.MouseEvent) => {
@@ -50,11 +52,32 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
     }
   }
 
+  // 处理照片点击，获取明星信息
+  const handlePhotoClick = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/stars/by-photo/${photo.filename}`)
+      const data = await response.json()
+      
+      if (data.star) {
+        setStarInfo(data.star)
+        setShowProfile(true)
+      } else {
+        alert('未找到该明星的详细信息')
+      }
+    } catch (error) {
+      console.error('获取明星信息失败:', error)
+      alert('获取明星信息失败')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <>
       <div
         className="bg-white rounded-xl overflow-hidden shadow-lg cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-200 photo-card-fixed-height"
-        onClick={() => setShowPreview(true)}
+        onClick={handlePhotoClick}
         data-photo-id={photo.id}
       >
         <div className="relative w-full h-full">
@@ -83,6 +106,13 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
             </div>
           </div>
 
+          {/* Loading Overlay */}
+          {loading && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+          )}
+
           {/* Admin Controls */}
           {isAdmin && (
             <div className="absolute top-2 right-2 flex gap-1">
@@ -105,10 +135,13 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
         </div>
       </div>
 
-      {showPreview && (
-        <PhotoPreview
-          photo={photo}
-          onClose={() => setShowPreview(false)}
+      {showProfile && starInfo && (
+        <StarProfile
+          star={starInfo}
+          onClose={() => {
+            setShowProfile(false)
+            setStarInfo(null)
+          }}
         />
       )}
     </>

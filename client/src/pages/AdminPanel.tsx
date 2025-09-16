@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { ArrowLeft, Upload, Download } from 'lucide-react'
+import { ArrowLeft, Upload, Download, Database } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BatchEditModal from '../components/BatchEditModal'
+import DataImportModal from '../components/DataImportModal'
 
 export default function AdminPanel() {
   const [isUploading, setIsUploading] = useState(false)
   const [showBatchEdit, setShowBatchEdit] = useState(false)
+  const [showDataImport, setShowDataImport] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
 
   // 导出数据功能
@@ -67,6 +69,11 @@ export default function AdminPanel() {
   // 批量编辑功能
   const handleBatchEdit = () => {
     setShowBatchEdit(true)
+  }
+
+  // 数据导入功能
+  const handleDataImport = () => {
+    setShowDataImport(true)
   }
 
   // 文件上传功能
@@ -220,40 +227,47 @@ export default function AdminPanel() {
             </div>
           </div>
 
-          {/* Export Section */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <Download className="w-5 h-5" />
-              数据管理
-            </h2>
-            <div className="space-y-3">
-              <button 
-                onClick={handleExportData}
-                className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                导出所有数据
-              </button>
-              <button 
-                onClick={handleImportData}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                导入数据
-              </button>
-              <button 
-                onClick={handleBatchEdit}
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                批量编辑姓名
-              </button>
-            </div>
-          </div>
+                 {/* Export Section */}
+                 <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                   <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                     <Download className="w-5 h-5" />
+                     数据管理
+                   </h2>
+                   <div className="space-y-3">
+                     <button
+                       onClick={handleExportData}
+                       className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+                     >
+                       导出所有数据
+                     </button>
+                     <button
+                       onClick={handleDataImport}
+                       className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                     >
+                       <Database className="w-4 h-4" />
+                       导入明星数据
+                     </button>
+                     <button
+                       onClick={handleBatchEdit}
+                       className="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors"
+                     >
+                       批量编辑姓名
+                     </button>
+                   </div>
+                 </div>
         </div>
       </main>
 
       {/* Batch Edit Modal */}
-      <BatchEditModal 
+      <BatchEditModal
         isOpen={showBatchEdit}
         onClose={() => setShowBatchEdit(false)}
+      />
+
+      {/* Data Import Modal */}
+      <DataImportModal
+        isOpen={showDataImport}
+        onClose={() => setShowDataImport(false)}
       />
     </div>
   )

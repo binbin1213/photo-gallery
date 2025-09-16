@@ -2,10 +2,10 @@
   "name": "photo-gallery-server",
   "version": "2.0.0",
   "description": "照片展示墙后端API",
-  "main": "src/app-simple.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node src/app-simple.js",
-    "dev": "nodemon src/app-simple.js",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
     "build": "echo 'No build step required for Node.js'"
   },
   "dependencies": {
@@ -17,7 +17,8 @@
     "sharp": "^0.33.1",
     "express-rate-limit": "^7.1.5",
     "compression": "^1.7.4",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "mongoose": "^8.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
