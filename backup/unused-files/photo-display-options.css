@@ -1,0 +1,48 @@
+/* 照片显示方案选择 - 复制你喜欢的到 styles.css 中替换 .photo-item img 部分 */
+
+/* 方案1：完整显示照片，不裁剪（当前使用） */
+.photo-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+}
+
+/* 方案2：智能裁剪，保持重要部分 */
+.photo-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center top; /* 优先显示上半部分，适合人像 */
+}
+
+/* 方案3：动态高度，保持原始比例 */
+.photo-item img {
+    width: 100%;
+    height: auto;
+    min-height: 150px;
+    max-height: 250px;
+    object-fit: contain;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+}
+
+/* 方案4：圆角裁剪，更柔和 */
+.photo-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+
+/* 方案5：悬停时显示完整照片 */
+.photo-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.photo-item:hover img {
+    object-fit: contain;
+    background: rgba(0, 0, 0, 0.9);
+}

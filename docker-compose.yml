@@ -1,0 +1,41 @@
+services:
+  # 后端 API 服务
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: photo-gallery-api
+    restart: unless-stopped
+    ports:
+      - "5551:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      UPLOAD_PATH: /app/uploads
+    volumes:
+      - ./photos:/app/uploads/photos:ro
+      - ./data:/app/data
+      - api_uploads:/app/uploads
+    networks:
+      - photo-network
+
+  # 前端 Web 服务
+  web:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: photo-gallery-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - photo-network
+
+volumes:
+  api_uploads:
+
+networks:
+  photo-network:
+    driver: bridge

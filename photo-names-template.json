@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "description": "照片展示墙姓名数据模板",
+  "exportDate": "2024-01-01T00:00:00.000Z",
+  "totalPhotos": 10,
+  "names": {
+    "1": {
+      "chinese": "张三",
+      "english": "Zhang San"
+    },
+    "2": {
+      "chinese": "李四",
+      "english": "Li Si"
+    },
+    "3": {
+      "chinese": "王五",
+      "english": "Wang Wu"
+    },
+    "4": {
+      "chinese": "赵六",
+      "english": "Zhao Liu"
+    },
+    "5": {
+      "chinese": "钱七",
+      "english": "Qian Qi"
+    },
+    "6": {
+      "chinese": "孙八",
+      "english": "Sun Ba"
+    },
+    "7": {
+      "chinese": "周九",
+      "english": "Zhou Jiu"
+    },
+    "8": {
+      "chinese": "吴十",
+      "english": "Wu Shi"
+    },
+    "9": {
+      "chinese": "郑十一",
+      "english": "Zheng Shiyi"
+    },
+    "10": {
+      "chinese": "王十二",
+      "english": "Wang Shier"
+    }
+  },
+  "metadata": {
+    "description": "照片展示墙姓名数据",
+    "photoCount": 10
+  }
+}
