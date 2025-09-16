@@ -261,6 +261,7 @@ export default function PhotoGallery() {
         isOpen={showAdminLogin} 
         onClose={() => setShowAdminLogin(false)}
         onSuccess={() => {
+          setIsAdmin(true) // 立即更新当前页面的管理员状态
           window.open('/admin', '_blank')
           setShowAdminLogin(false)
         }}
