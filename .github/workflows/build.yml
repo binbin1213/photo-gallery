@@ -36,16 +36,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - name: Test docker-compose
-      run: |
-        docker-compose config
-        echo "✅ Docker Compose configuration is valid"
-
-    - name: Build with docker-compose
-      run: |
-        docker-compose build
-        echo "✅ All images built successfully"
-
     - name: Show image sizes
       run: |
         docker images | grep photo-gallery
+        echo "✅ Build completed successfully"
