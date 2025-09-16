@@ -20,7 +20,7 @@ services:
       - photo-network
 
   photo-gallery-frontend:
-    image: ghcr.io/binbin1213/photo-gallery-frontend:latest
+    image: photo-gallery-frontend:latest
     container_name: photo-gallery-frontend
     restart: unless-stopped
     ports:
