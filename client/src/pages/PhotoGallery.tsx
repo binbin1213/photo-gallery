@@ -102,13 +102,13 @@ export default function PhotoGallery() {
   return (
     <div className="text-gray-900">
       {/* Header */}
-      <header className="bg-gray-700/90 backdrop-blur-sm border-b border-gray-500/30 shadow-lg fixed top-0 left-0 right-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+      <header className="bg-gray-800/95 backdrop-blur-md border-b border-gray-600/50 shadow-xl fixed top-0 left-0 right-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-white tracking-wide">
               泰海男星图鉴
             </h1>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <SearchBar 
                 value={searchQuery}
                 onChange={setSearchQuery}
@@ -117,14 +117,14 @@ export default function PhotoGallery() {
               <div className="relative" ref={settingsRef}>
                 <button 
                   onClick={() => setShowSettings(!showSettings)}
-                  className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-300 hover:scale-105"
+                  className="p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm"
                 >
-                  <Settings className="w-5 h-5 text-gray-700" />
+                  <Settings className="w-5 h-5 text-white" />
                 </button>
                 
                 {showSettings && (
-                  <div className="absolute right-0 top-12 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 animate-in slide-in-from-top-2 duration-200">
-                      <div className="px-3 py-2 text-sm font-medium text-gray-700 border-b border-gray-200/50">
+                  <div className="absolute right-0 top-14 w-52 bg-gray-800/95 backdrop-blur-md rounded-lg shadow-xl border border-gray-600/50 py-3 animate-in slide-in-from-top-2 duration-200">
+                      <div className="px-4 py-2 text-sm font-medium text-white/80 border-b border-gray-600/50">
                         显示选项
                       </div>
                       
@@ -133,7 +133,7 @@ export default function PhotoGallery() {
                           setViewMode(viewMode === 'grid' ? 'list' : 'grid')
                           setShowSettings(false)
                         }}
-                        className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white/50 flex items-center gap-2"
+                        className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
                       >
                         {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
                         {viewMode === 'grid' ? '列表视图' : '网格视图'}
@@ -150,7 +150,7 @@ export default function PhotoGallery() {
                                 window.open('/admin', '_blank')
                                 setShowSettings(false)
                               }}
-                              className="w-full px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 flex items-center gap-2"
+                              className="w-full px-3 py-2 text-left text-sm text-blue-400 hover:bg-blue-500/20 flex items-center gap-2"
                             >
                               <User className="w-4 h-4" />
                               进入管理面板
@@ -164,7 +164,7 @@ export default function PhotoGallery() {
                                 setShowSettings(false)
                                 alert('已退出管理员模式')
                               }}
-                              className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                              className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-red-500/20 flex items-center gap-2"
                             >
                               <User className="w-4 h-4" />
                               退出管理员
@@ -187,7 +187,7 @@ export default function PhotoGallery() {
                               }
                               setShowSettings(false)
                             }}
-                            className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white/50 flex items-center gap-2"
+                            className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
                           >
                             <User className="w-4 h-4" />
                             管理员登录
@@ -199,7 +199,7 @@ export default function PhotoGallery() {
                             handleExport()
                             setShowSettings(false)
                           }}
-                          className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white/50 flex items-center gap-2"
+                          className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
                         >
                           <Download className="w-4 h-4" />
                           导出数据
@@ -214,8 +214,8 @@ export default function PhotoGallery() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8 pt-24">
-        <div className="bg-white/10 rounded-lg p-6">
+      <main className="max-w-7xl mx-auto px-6 py-8 pt-20">
+        <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm border border-white/10">
           <InfinitePhotoGrid 
             isAdmin={isAdmin}
             onReplace={handleReplacePhoto}
