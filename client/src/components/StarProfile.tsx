@@ -51,7 +51,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in-0 duration-300"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
-      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-lg w-full h-[90vh] max-h-[95vh] flex flex-col animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         {/* 关闭按钮 */}
         <button
           onClick={onClose}
@@ -61,7 +61,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
         </button>
 
         {/* 照片区域 */}
-        <div className="relative h-96 bg-gray-100">
+        <div className="relative h-[50vh] bg-gray-100">
           <img
             src={`/uploads/photos/${star.photoFilename}`}
             alt={star.chineseName}
@@ -99,7 +99,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
         </div>
 
         {/* 信息区域 */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-8 flex-1 overflow-y-auto">
 
           {/* 基本信息 */}
           <div className="space-y-4">
