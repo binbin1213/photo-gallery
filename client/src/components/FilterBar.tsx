@@ -3,7 +3,7 @@ import { Filter, SortAsc, SortDesc } from 'lucide-react'
 
 interface FilterBarProps {
   onSortChange: (sort: string, order: 'asc' | 'desc') => void
-  onFilterChange: (filters: any) => void
+  onFilterChange?: (filters: any) => void
 }
 
 export default function FilterBar({ onSortChange, onFilterChange }: FilterBarProps) {
@@ -66,7 +66,10 @@ export default function FilterBar({ onSortChange, onFilterChange }: FilterBarPro
           <div className="space-y-3">
             <div>
               <label className="block text-sm text-white/80 mb-2">按学校筛选</label>
-              <select className="w-full px-3 py-2 rounded bg-white/10 text-white border border-white/20">
+              <select 
+                className="w-full px-3 py-2 rounded bg-white/10 text-white border border-white/20"
+                onChange={(e) => onFilterChange?.({ university: e.target.value })}
+              >
                 <option value="">全部学校</option>
                 <option value="朱拉隆功大学">朱拉隆功大学</option>
                 <option value="玛希隆大学">玛希隆大学</option>
@@ -81,11 +84,13 @@ export default function FilterBar({ onSortChange, onFilterChange }: FilterBarPro
                   type="number" 
                   placeholder="最小年龄" 
                   className="flex-1 px-3 py-2 rounded bg-white/10 text-white border border-white/20"
+                  onChange={(e) => onFilterChange?.({ minAge: e.target.value })}
                 />
                 <input 
                   type="number" 
                   placeholder="最大年龄" 
                   className="flex-1 px-3 py-2 rounded bg-white/10 text-white border border-white/20"
+                  onChange={(e) => onFilterChange?.({ maxAge: e.target.value })}
                 />
               </div>
             </div>
