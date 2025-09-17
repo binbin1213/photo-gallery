@@ -160,7 +160,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="text"
                 value={formData.englishName || ''}
                 onChange={(e) => handleInputChange('englishName', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="English Name"
               />
             </div>
@@ -172,7 +172,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="text"
                 value={formData.chineseName || ''}
                 onChange={(e) => handleInputChange('chineseName', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="中文名"
               />
             </div>
@@ -187,7 +187,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="text"
                 value={formData.thaiName || ''}
                 onChange={(e) => handleInputChange('thaiName', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="Thai Name"
               />
             </div>
@@ -199,7 +199,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="text"
                 value={formData.nickname || ''}
                 onChange={(e) => handleInputChange('nickname', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="Nickname"
               />
             </div>
@@ -215,7 +215,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="date"
                 value={formData.birthDate || ''}
                 onChange={(e) => handleInputChange('birthDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               />
             </div>
             <div>
@@ -226,7 +226,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="number"
                 value={formData.height || ''}
                 onChange={(e) => handleInputChange('height', parseInt(e.target.value) || 175)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="175"
               />
             </div>
@@ -238,7 +238,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="number"
                 value={formData.weight || ''}
                 onChange={(e) => handleInputChange('weight', parseInt(e.target.value) || undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="70"
               />
             </div>
@@ -254,7 +254,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="text"
                 value={formData.university || ''}
                 onChange={(e) => handleInputChange('university', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="University"
               />
             </div>
@@ -266,7 +266,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
                 type="text"
                 value={formData.major || ''}
                 onChange={(e) => handleInputChange('major', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="Major"
               />
             </div>
@@ -280,7 +280,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
               type="text"
               value={formData.degree || ''}
               onChange={(e) => handleInputChange('degree', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Degree (e.g., 本科, 硕士)"
             />
           </div>
@@ -294,7 +294,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
               type="text"
               value={formData.representativeWorks?.join('、') || ''}
               onChange={(e) => handleWorksChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="用顿号分隔多个作品，如：2gether、F4 Thailand"
             />
             <p className="text-xs text-gray-500 mt-1">用顿号（、）或逗号（，）分隔多个作品</p>
@@ -309,7 +309,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
               type="text"
               value={formData.tags?.join('、') || ''}
               onChange={(e) => handleTagsChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="用顿号分隔多个标签，如：演员、歌手、模特"
             />
             <p className="text-xs text-gray-500 mt-1">用顿号（、）或逗号（，）分隔多个标签</p>
@@ -324,7 +324,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
               value={formData.description || ''}
               onChange={(e) => handleInputChange('description', e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="个人简介..."
             />
           </div>

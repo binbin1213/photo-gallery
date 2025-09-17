@@ -208,7 +208,7 @@ export default function DataImportModal({ isOpen, onClose }: DataImportModalProp
               value={importData}
               onChange={(e) => setImportData(e.target.value)}
               placeholder="请粘贴或输入 JSON 格式的明星数据..."
-              className="w-full h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+              className="w-full h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm text-gray-900"
             />
           </div>
 
