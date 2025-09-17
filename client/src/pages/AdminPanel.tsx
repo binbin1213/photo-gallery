@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom'
 import BatchEditModal from '../components/BatchEditModal'
 import DataImportModal from '../components/DataImportModal'
 import EnhancedDataImportModal from '../components/EnhancedDataImportModal'
+import TableImportModal from '../components/TableImportModal'
 
 export default function AdminPanel() {
   const [isUploading, setIsUploading] = useState(false)
   const [showBatchEdit, setShowBatchEdit] = useState(false)
   const [showDataImport, setShowDataImport] = useState(false)
   const [showEnhancedDataImport, setShowEnhancedDataImport] = useState(false)
+  const [showTableImport, setShowTableImport] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
 
   // 导出数据功能
@@ -58,6 +60,11 @@ export default function AdminPanel() {
   // 增强版数据导入功能
   const handleEnhancedDataImport = () => {
     setShowEnhancedDataImport(true)
+  }
+
+  // 表格数据导入功能
+  const handleTableImport = () => {
+    setShowTableImport(true)
   }
 
   // 批量生成明星记录功能
@@ -258,18 +265,25 @@ export default function AdminPanel() {
                        导出所有数据
                      </button>
                      <button
-                       onClick={handleEnhancedDataImport}
+                       onClick={handleTableImport}
                        className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
                      >
                        <Database className="w-4 h-4" />
-                       智能导入明星数据
+                       表格文件导入
                      </button>
                      <button
-                       onClick={handleDataImport}
+                       onClick={handleEnhancedDataImport}
                        className="w-full bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
                      >
                        <Database className="w-4 h-4" />
-                       简单导入数据
+                       智能JSON导入
+                     </button>
+                     <button
+                       onClick={handleDataImport}
+                       className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                     >
+                       <Database className="w-4 h-4" />
+                       简单JSON导入
                      </button>
                      <button
                        onClick={handleBatchEdit}
@@ -298,6 +312,12 @@ export default function AdminPanel() {
       <EnhancedDataImportModal
         isOpen={showEnhancedDataImport}
         onClose={() => setShowEnhancedDataImport(false)}
+      />
+
+      {/* Table Import Modal */}
+      <TableImportModal
+        isOpen={showTableImport}
+        onClose={() => setShowTableImport(false)}
       />
     </div>
   )

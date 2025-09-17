@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs').promises;
 const Star = require('./models/Star');
+const XLSX = require('xlsx'); // 用于解析Excel文件
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -344,6 +345,111 @@ app.post('/api/photos/:filename/replace', upload.single('photo'), async (req, re
   } catch (error) {
     console.error('文件替换失败:', error);
     res.status(500).json({ error: '文件替换失败: ' + error.message });
+  }
+});
+
+// 表格文件导入解析
+app.post('/api/import/table', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: '没有上传文件' });
+    }
+
+    const filePath = req.file.path;
+    const fileExtension = path.extname(req.file.originalname).toLowerCase();
+    
+    let data = [];
+    
+    if (fileExtension === '.csv') {
+      // 解析CSV文件
+      const csvContent = await fs.readFile(filePath, 'utf-8');
+      const lines = csvContent.split('\n').filter(line => line.trim());
+      const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+      
+      data = lines.slice(1).map(line => {
+        const values = line.split(',').map(v => v.replace(/"/g, '').trim());
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] || '';
+        });
+        return row;
+      });
+    } else if (['.xlsx', '.xls'].includes(fileExtension)) {
+      // 解析Excel文件
+      const workbook = XLSX.readFile(filePath);
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      data = XLSX.utils.sheet_to_json(worksheet);
+    } else {
+      return res.status(400).json({ error: '不支持的文件格式' });
+    }
+
+    // 清理临时文件
+    await fs.unlink(filePath);
+
+    // 数据映射和验证
+    const mappedData = data.map((row, index) => {
+      // 字段映射
+      const englishName = row['姓名(英)'] || row['English Name'] || row['englishName'] || '';
+      const chineseName = row['姓名(中)'] || row['Chinese Name'] || row['chineseName'] || '';
+      const nickname = row['昵称'] || row['Nickname'] || row['nickname'] || '';
+      const birthDate = row['生日'] || row['Birth Date'] || row['birthDate'] || '';
+      const height = parseInt(row['身高(cm)'] || row['Height'] || row['height'] || '175');
+      const university = row['毕业(就读)院校'] || row['University'] || row['university'] || '';
+      const major = row['所学专业'] || row['Major'] || row['major'] || '';
+      const representativeWorks = row['代表作'] || row['Representative Works'] || row['representativeWorks'] || '';
+      const photoFilename = row['照片文件名'] || row['Photo Filename'] || row['photoFilename'] || '';
+
+      // 处理代表作（可能是用顿号或逗号分隔的字符串）
+      let works = [];
+      if (representativeWorks) {
+        works = representativeWorks.split(/[、，,]/).map(work => 
+          work.trim().replace(/《|》/g, '')
+        ).filter(work => work);
+      }
+
+      // 处理生日格式
+      let processedBirthDate = birthDate;
+      if (birthDate && birthDate.includes('.')) {
+        // 处理 1995.1.4 格式
+        const parts = birthDate.split('.');
+        if (parts.length === 3) {
+          const year = parts[0];
+          const month = parts[1].padStart(2, '0');
+          const day = parts[2].padStart(2, '0');
+          processedBirthDate = `${year}-${month}-${day}`;
+        }
+      }
+
+      return {
+        englishName: englishName.trim(),
+        chineseName: chineseName.trim(),
+        thaiName: '',
+        nickname: nickname.trim(),
+        birthDate: processedBirthDate,
+        birthMonth: processedBirthDate ? new Date(processedBirthDate).getMonth() + 1 : 1,
+        height: height || 175,
+        weight: null,
+        university: university.trim(),
+        major: major.trim(),
+        degree: '',
+        representativeWorks: works,
+        photoFilename: photoFilename.trim(),
+        description: '',
+        tags: ['待完善'],
+        isActive: true
+      };
+    }).filter(item => item.englishName && item.chineseName); // 过滤掉空行
+
+    res.json({
+      success: true,
+      data: mappedData,
+      message: `成功解析 ${mappedData.length} 条记录`
+    });
+
+  } catch (error) {
+    console.error('表格文件解析失败:', error);
+    res.status(500).json({ error: '表格文件解析失败: ' + error.message });
   }
 });
 
