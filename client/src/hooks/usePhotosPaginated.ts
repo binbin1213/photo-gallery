@@ -15,12 +15,14 @@ interface PaginatedPhotosResult {
 }
 
 export function usePhotosPaginated(page: number = 1, limit: number = 20, search?: string) {
+  // 统一规范搜索参数，空字符串当作未搜索
+  const normalizedSearch = search && search.trim() !== '' ? search.trim() : undefined
   return useQuery<PaginatedPhotosResult>({
-    queryKey: ['photos-paginated', page, limit, search],
+    queryKey: ['photos-paginated', page, limit, normalizedSearch],
     queryFn: async (): Promise<PaginatedPhotosResult> => {
       const { data } = await api.get('/stars', {
         params: { 
-          search, 
+          ...(normalizedSearch ? { search: normalizedSearch } : {}), 
           page, 
           limit,
           sort: 'createdAt',

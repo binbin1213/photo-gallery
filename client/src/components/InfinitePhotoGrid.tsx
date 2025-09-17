@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { usePhotosPaginated } from '../hooks/usePhotosPaginated'
 import PhotoCard from './PhotoCard'
 import { Photo } from '../types/photo'
@@ -13,6 +14,7 @@ export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }
   const [allPhotos, setAllPhotos] = useState<Photo[]>([])
   const [page, setPage] = useState(1)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const queryClient = useQueryClient()
   
   const { data, isLoading, error } = usePhotosPaginated(page, 20, search)
   
@@ -36,6 +38,8 @@ export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }
     setAllPhotos([])
     // 清空搜索或切换搜索时，回到顶部，触发首屏加载
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    // 失效相关缓存，确保立即重新拉取
+    queryClient.invalidateQueries({ queryKey: ['photos-paginated'] })
   }, [search])
   
   // 加载更多
