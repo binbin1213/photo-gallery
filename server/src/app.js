@@ -347,6 +347,75 @@ app.post('/api/photos/:filename/replace', upload.single('photo'), async (req, re
   }
 });
 
+// 批量生成明星记录（为所有照片创建基本记录）
+app.post('/api/stars/generate-records', async (req, res) => {
+  try {
+    const fs = require('fs').promises;
+    const path = require('path');
+    
+    // 读取 photos 目录
+    const photosDir = '/app/uploads/photos';
+    const files = await fs.readdir(photosDir);
+    const imageFiles = files.filter(file => 
+      /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
+    );
+
+    console.log(`📸 找到 ${imageFiles.length} 张图片`);
+
+    // 为每张图片创建明星记录
+    const results = [];
+    for (let i = 0; i < imageFiles.length; i++) {
+      const filename = imageFiles[i];
+      
+      // 检查是否已存在
+      const existingStar = await Star.findOne({ photoFilename: filename });
+      if (existingStar) {
+        console.log(`⏭️  跳过已存在的记录: ${filename}`);
+        results.push({ status: 'skipped', filename, starId: existingStar._id });
+        continue;
+      }
+
+      // 从文件名生成基本信息
+      const nameWithoutExt = path.parse(filename).name;
+      const englishName = `Star_${String(i + 1).padStart(3, '0')}`;
+      const chineseName = `明星_${String(i + 1).padStart(3, '0')}`;
+
+      const starData = {
+        englishName,
+        chineseName,
+        photoFilename: filename,
+        description: `这是第 ${i + 1} 张照片，请完善相关信息`,
+        tags: ['待完善'],
+        isActive: true
+      };
+
+      try {
+        const newStar = new Star(starData);
+        await newStar.save();
+        results.push({ status: 'created', filename, starId: newStar._id });
+        console.log(`✅ 创建记录: ${filename} -> ${englishName}`);
+      } catch (error) {
+        console.error(`❌ 创建失败: ${filename}`, error.message);
+        results.push({ status: 'failed', filename, error: error.message });
+      }
+    }
+
+    const created = results.filter(r => r.status === 'created').length;
+    const failed = results.filter(r => r.status === 'failed').length;
+    const skipped = results.filter(r => r.status === 'skipped').length;
+
+    res.json({
+      success: true,
+      message: `批量生成完成！成功创建 ${created} 条记录，跳过 ${skipped} 条，失败 ${failed} 条`,
+      stats: { created, skipped, failed, total: imageFiles.length },
+      results
+    });
+  } catch (error) {
+    console.error('批量生成明星记录失败:', error);
+    res.status(500).json({ error: '批量生成失败: ' + error.message });
+  }
+});
+
 // 提供静态文件服务
 app.use('/uploads', express.static('/app/uploads'));
 

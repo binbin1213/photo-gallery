@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, Upload, Download, Database } from 'lucide-react'
+import { ArrowLeft, Upload, Download, Database, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BatchEditModal from '../components/BatchEditModal'
 import DataImportModal from '../components/DataImportModal'
@@ -51,6 +51,32 @@ export default function AdminPanel() {
   // 数据导入功能
   const handleDataImport = () => {
     setShowDataImport(true)
+  }
+
+  // 批量生成明星记录功能
+  const handleGenerateRecords = async () => {
+    if (confirm('确定要为所有照片生成明星记录吗？这将为每张照片创建基本的明星信息，您可以稍后完善详细信息。')) {
+      try {
+        const response = await fetch('http://192.168.1.98:5551/api/stars/generate-records', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+
+        const result = await response.json()
+
+        if (result.success) {
+          alert(`批量生成完成！\n成功创建: ${result.stats.created} 条记录\n跳过已存在: ${result.stats.skipped} 条记录\n失败: ${result.stats.failed} 条记录\n总计: ${result.stats.total} 张照片`)
+          window.location.reload() // 刷新页面以显示新数据
+        } else {
+          alert('批量生成失败：' + result.error)
+        }
+      } catch (error) {
+        console.error('批量生成错误:', error)
+        alert('批量生成失败：' + error)
+      }
+    }
   }
 
   // 文件上传功能
@@ -211,6 +237,13 @@ export default function AdminPanel() {
                      数据管理
                    </h2>
                    <div className="space-y-3">
+                     <button
+                       onClick={handleGenerateRecords}
+                       className="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                     >
+                       <Users className="w-4 h-4" />
+                       批量生成明星记录
+                     </button>
                      <button
                        onClick={handleExportData}
                        className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
