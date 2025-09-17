@@ -42,9 +42,15 @@ export function usePhotosPaginated(page: number = 1, limit: number = 20, search?
         photos,
         total: data.total || photos.length,
         page,
-        hasMore: photos.length === limit
+        // 优先使用后端 hasMore，避免前端判断导致边界问题
+        hasMore: typeof data.hasMore === 'boolean' ? data.hasMore : (photos.length === limit)
       }
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    // 清空搜索时，需要强制重新获取第一页，避免命中旧缓存导致空白
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: 'always',
+    keepPreviousData: false,
   })
 }
