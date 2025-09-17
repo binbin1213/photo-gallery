@@ -51,7 +51,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in-0 duration-300"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
-      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         {/* 关闭按钮 */}
         <button
           onClick={onClose}
@@ -61,46 +61,45 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
         </button>
 
         {/* 照片区域 */}
-        <div className="relative h-80 bg-gray-100">
+        <div className="relative h-96 bg-gray-100">
           <img
             src={`/uploads/photos/${star.photoFilename}`}
             alt={star.chineseName}
             className="w-full h-full object-cover"
           />
           
-          {/* 渐变遮罩 */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        </div>
-
-        {/* 信息区域 */}
-        <div className="p-6 space-y-6">
-          {/* 姓名区域 */}
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          {/* 渐变遮罩和姓名覆盖层 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h1 className="text-3xl font-bold text-white mb-2">
               {star.englishName}
             </h1>
             <div className="flex items-center justify-center gap-3 text-lg">
-              <span className="text-gray-800 font-semibold">
+              <span className="text-white font-semibold">
                 {star.chineseName}
               </span>
               {star.thaiName && (
                 <>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-gray-600 font-medium">
+                  <span className="text-white/60">•</span>
+                  <span className="text-white/90 font-medium">
                     {star.thaiName}
                   </span>
                 </>
               )}
               {star.nickname && (
                 <>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-gray-500 italic">
+                  <span className="text-white/60">•</span>
+                  <span className="text-white/80 italic">
                     "{star.nickname}"
                   </span>
                 </>
               )}
             </div>
           </div>
+        </div>
+
+        {/* 信息区域 */}
+        <div className="p-6 space-y-6">
 
           {/* 基本信息 */}
           <div className="space-y-4">
