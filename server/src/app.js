@@ -58,7 +58,7 @@ const upload = multer({
 // 获取所有明星信息
 app.get('/api/stars', async (req, res) => {
   try {
-    const { search, month, university } = req.query;
+    const { search, month, university, page = 1, limit = 20, sort = 'createdAt', order = 'desc' } = req.query;
     let query = { isActive: true };
 
     // 搜索功能
@@ -81,8 +81,31 @@ app.get('/api/stars', async (req, res) => {
       query.university = { $regex: university, $options: 'i' };
     }
 
-    const stars = await Star.find(query).sort({ birthMonth: 1, englishName: 1 });
-    res.json({ stars });
+    // 计算分页
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    // 排序
+    const sortObj = {};
+    sortObj[sort] = order === 'desc' ? -1 : 1;
+    
+    // 获取总数
+    const total = await Star.countDocuments(query);
+    
+    // 获取分页数据
+    const stars = await Star.find(query)
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limitNum);
+    
+    res.json({ 
+      stars, 
+      total,
+      page: pageNum,
+      limit: limitNum,
+      hasMore: skip + stars.length < total
+    });
   } catch (error) {
     console.error('获取明星列表失败:', error);
     res.status(500).json({ error: '获取明星列表失败' });

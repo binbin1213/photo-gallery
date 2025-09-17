@@ -1,22 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
-import { Settings, Grid, List, Download, Shuffle, User } from 'lucide-react'
-import PhotoGrid from '../components/PhotoGrid'
+import { Settings, Grid, List, Download, User } from 'lucide-react'
+import InfinitePhotoGrid from '../components/InfinitePhotoGrid'
 import SearchBar from '../components/SearchBar'
 import AdminLoginModal from '../components/AdminLoginModal'
-import { usePhotos } from '../hooks/usePhotos'
+// 移除usePhotos，改用InfinitePhotoGrid
 import { Photo } from '../types/photo'
 
 export default function PhotoGallery() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showSettings, setShowSettings] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [shuffledPhotos, setShuffledPhotos] = useState<Photo[]>([])
-  const [isShuffled, setIsShuffled] = useState(false)
+  // 移除随机排序相关状态，改用InfinitePhotoGrid
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [replacingPhoto, setReplacingPhoto] = useState<Photo | null>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
-  const { data: photos, isLoading, error } = usePhotos(searchQuery)
+  // 移除旧的usePhotos，改用InfinitePhotoGrid内部管理
 
   useEffect(() => {
     // 检查管理员登录状态是否过期（24小时）
@@ -37,29 +36,9 @@ export default function PhotoGallery() {
     }
   }, [])
 
-  // 随机排序函数
-  const shuffleArray = (array: Photo[]) => {
-    const newArray = [...array]
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]]
-    }
-    return newArray
-  }
+  // 移除随机排序函数，改用InfinitePhotoGrid
 
-  // 处理随机排序
-  const handleShuffle = () => {
-    if (photos) {
-      if (isShuffled) {
-        setIsShuffled(false)
-        setShuffledPhotos([])
-      } else {
-        const shuffled = shuffleArray(photos)
-        setShuffledPhotos(shuffled)
-        setIsShuffled(true)
-      }
-    }
-  }
+  // 移除随机排序功能
 
   // 处理图片替换
   const handleReplacePhoto = (photo: Photo) => {
@@ -96,32 +75,11 @@ export default function PhotoGallery() {
     }
   }
 
-  // 获取要显示的照片
-  const displayPhotos = isShuffled ? shuffledPhotos : photos
+  // 移除displayPhotos，改用InfinitePhotoGrid
 
-  // 导出数据功能
+  // 导出数据功能 - 简化版本
   const handleExport = () => {
-    if (photos) {
-      const exportData = photos.map((photo: Photo) => ({
-        id: photo.id,
-        filename: photo.filename,
-        chineseName: photo.chineseName,
-        englishName: photo.englishName,
-        tags: photo.tags
-      }))
-      
-      const dataStr = JSON.stringify(exportData, null, 2)
-      const dataBlob = new Blob([dataStr], { type: 'application/json' })
-      const url = URL.createObjectURL(dataBlob)
-      
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `photo-data-${new Date().toISOString().split('T')[0]}.json`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-    }
+    alert('导出功能已移至管理面板')
   }
 
   // 点击外部关闭设置菜单
@@ -181,16 +139,7 @@ export default function PhotoGallery() {
                         {viewMode === 'grid' ? '列表视图' : '网格视图'}
                       </button>
                       
-                      <button
-                        onClick={() => {
-                          handleShuffle()
-                          setShowSettings(false)
-                        }}
-                        className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white/50 flex items-center gap-2"
-                      >
-                        <Shuffle className="w-4 h-4" />
-                        {isShuffled ? '恢复排序' : '随机排序'}
-                      </button>
+                        {/* 移除随机排序按钮 */}
                       
                       <div className="border-t border-gray-200/50 mt-1 pt-1">
                         {isAdmin ? (
@@ -253,25 +202,11 @@ export default function PhotoGallery() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {isLoading && (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/50"></div>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-500/20 border border-red-400/50 rounded-lg p-4 text-white backdrop-blur-sm">
-            加载照片时出错: {error.message}
-          </div>
-        )}
-
-        {displayPhotos && (
-          <PhotoGrid 
-            photos={displayPhotos} 
-            isAdmin={isAdmin}
-            onReplace={handleReplacePhoto}
-          />
-        )}
+        <InfinitePhotoGrid 
+          isAdmin={isAdmin}
+          onReplace={handleReplacePhoto}
+          search={searchQuery}
+        />
       </main>
 
       {/* 管理员登录弹窗 */}
