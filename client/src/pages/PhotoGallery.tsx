@@ -143,20 +143,33 @@ export default function PhotoGallery() {
                       
                       <div className="border-t border-gray-200/50 mt-1 pt-1">
                         {isAdmin ? (
-                          <button
-                            onClick={() => {
-                              // 退出管理员模式
-                              localStorage.removeItem('isAdmin')
-                              localStorage.removeItem('adminLoginTime')
-                              setIsAdmin(false)
-                              setShowSettings(false)
-                              alert('已退出管理员模式')
-                            }}
-                            className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                          >
-                            <User className="w-4 h-4" />
-                            退出管理员
-                          </button>
+                          <>
+                            <button
+                              onClick={() => {
+                                // 进入管理面板
+                                window.open('/admin', '_blank')
+                                setShowSettings(false)
+                              }}
+                              className="w-full px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 flex items-center gap-2"
+                            >
+                              <User className="w-4 h-4" />
+                              进入管理面板
+                            </button>
+                            <button
+                              onClick={() => {
+                                // 退出管理员模式
+                                localStorage.removeItem('isAdmin')
+                                localStorage.removeItem('adminLoginTime')
+                                setIsAdmin(false)
+                                setShowSettings(false)
+                                alert('已退出管理员模式')
+                              }}
+                              className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                            >
+                              <User className="w-4 h-4" />
+                              退出管理员
+                            </button>
+                          </>
                         ) : (
                           <button
                             onClick={() => {
@@ -177,7 +190,7 @@ export default function PhotoGallery() {
                             className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-white/50 flex items-center gap-2"
                           >
                             <User className="w-4 h-4" />
-                            管理面板
+                            管理员登录
                           </button>
                         )}
                         
