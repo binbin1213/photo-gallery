@@ -45,6 +45,17 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
   const [previewData, setPreviewData] = useState<StarData[]>([])
   const [showPreview, setShowPreview] = useState(false)
 
+  // 格式化生日为中文格式
+  const formatBirthDate = (dateString: string) => {
+    if (!dateString) return '-'
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return dateString
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    return `${year}年${month}月${day}日`
+  }
+
   // 加载可用照片列表
   const loadAvailablePhotos = async () => {
     setIsLoadingPhotos(true)
@@ -366,7 +377,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
                         <td className="px-3 py-2">{star.englishName}</td>
                         <td className="px-3 py-2">{star.chineseName}</td>
                         <td className="px-3 py-2">{star.nickname || '-'}</td>
-                        <td className="px-3 py-2">{star.birthDate || '-'}</td>
+                        <td className="px-3 py-2">{formatBirthDate(star.birthDate)}</td>
                         <td className="px-3 py-2">{star.height || '-'}cm</td>
                         <td className="px-3 py-2">{star.university || '-'}</td>
                         <td className="px-3 py-2">{star.major || '-'}</td>

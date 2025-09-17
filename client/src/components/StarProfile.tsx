@@ -28,14 +28,10 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit }: 
   // 格式化生日
   const formatBirthDate = (dateString: string) => {
     const date = new Date(dateString)
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ]
-    const month = months[date.getMonth()]
-    const day = date.getDate()
     const year = date.getFullYear()
-    return `${day} ${month} ${year}`
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    return `${year}年${month}月${day}日`
   }
 
   // 格式化身高
