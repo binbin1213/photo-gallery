@@ -40,7 +40,7 @@ export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }
     window.scrollTo({ top: 0, behavior: 'smooth' })
     // 失效相关缓存，确保立即重新拉取
     queryClient.invalidateQueries({ queryKey: ['photos-paginated'] })
-  }, [search])
+  }, [search, queryClient])
   
   // 加载更多
   const loadMore = useCallback(() => {

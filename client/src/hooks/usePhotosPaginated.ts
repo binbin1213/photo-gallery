@@ -17,8 +17,11 @@ interface PaginatedPhotosResult {
 export function usePhotosPaginated(page: number = 1, limit: number = 20, search?: string) {
   // 统一规范搜索参数，空字符串当作未搜索
   const normalizedSearch = search && search.trim() !== '' ? search.trim() : undefined
+  // 将未搜索态稳定为常量键，避免 undefined 导致的缓存匹配不稳定
+  const searchKey = normalizedSearch ?? '__ALL__'
+  
   return useQuery<PaginatedPhotosResult>({
-    queryKey: ['photos-paginated', page, limit, normalizedSearch],
+    queryKey: ['photos-paginated', page, limit, searchKey],
     queryFn: async (): Promise<PaginatedPhotosResult> => {
       const { data } = await api.get('/stars', {
         params: { 
@@ -48,10 +51,10 @@ export function usePhotosPaginated(page: number = 1, limit: number = 20, search?
         hasMore: typeof data.hasMore === 'boolean' ? data.hasMore : (photos.length === limit)
       }
     },
-    // 清空搜索时，需要强制重新获取第一页，避免命中旧缓存导致空白
-    staleTime: 0,
-    refetchOnMount: 'always',
+    // 当搜索条件改变时，确保数据能正确刷新
+    staleTime: normalizedSearch ? 0 : 5 * 60 * 1000, // 搜索结果立即过期，普通浏览缓存5分钟
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: 'always',
+    refetchOnReconnect: true,
   })
 }
