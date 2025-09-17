@@ -16,6 +16,7 @@ interface StarData {
   thaiName?: string
   nickname?: string
   birthDate: string
+  birthMonth?: number
   height: number
   weight?: number
   university?: string
@@ -188,7 +189,7 @@ export default function EnhancedDataImportModal({ isOpen, onClose }: EnhancedDat
       const data = JSON.parse(jsonInput)
       if (!Array.isArray(data)) return
 
-      const preview = data.map((starData: StarData, index: number) => {
+      const preview = data.map((starData: StarData) => {
         const matchedPhoto = findMatchingPhoto(starData)
         return {
           name: `${starData.englishName} / ${starData.chineseName}`,

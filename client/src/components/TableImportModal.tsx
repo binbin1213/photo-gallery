@@ -16,6 +16,7 @@ interface StarData {
   thaiName?: string
   nickname?: string
   birthDate: string
+  birthMonth?: number
   height: number
   weight?: number
   university?: string
