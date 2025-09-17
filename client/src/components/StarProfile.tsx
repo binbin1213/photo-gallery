@@ -159,7 +159,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
                 <div className="flex-1">
                   <p className="text-sm text-gray-500 mb-2">代表作</p>
                   <p className="text-sm text-gray-700">
-                    {star.representativeWorks.map(work => work.replace(/《《|》》/g, '《')).join('》、《')}
+                    《{star.representativeWorks.map(work => work.replace(/《《|》》/g, '')).join('》、《')}》
                   </p>
                 </div>
               </div>
