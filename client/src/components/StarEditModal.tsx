@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api"
 import { useState, useEffect } from 'react'
 import { X, Save, AlertCircle } from 'lucide-react'
 
@@ -99,7 +100,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
       }
 
       // 发送更新请求
-      const response = await fetch(`http://192.168.1.98:5551/api/stars/${star._id}`, {
+      const response = await fetch(`${API_BASE_URL}/stars/${star._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

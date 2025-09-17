@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api"
 import { useState } from 'react'
 import { Upload, FileText, AlertCircle, CheckCircle } from 'lucide-react'
 
@@ -67,7 +68,7 @@ export default function DataImportModal({ isOpen, onClose }: DataImportModalProp
       })
 
       // 发送到后端
-      const response = await fetch('http://192.168.1.98:5551/api/stars/batch-import', {
+      const response = await fetch('${API_BASE_URL}/stars/batch-import', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

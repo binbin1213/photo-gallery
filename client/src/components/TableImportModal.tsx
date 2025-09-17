@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../config/api"
 import { useState, useEffect } from 'react'
 import { UploadCloud, X, FileSpreadsheet, Check, AlertCircle, Download } from 'lucide-react'
 
@@ -60,7 +61,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
   const loadAvailablePhotos = async () => {
     setIsLoadingPhotos(true)
     try {
-      const response = await fetch('http://192.168.1.98:5551/api/photos/files')
+      const response = await fetch('${API_BASE_URL}/photos/files')
       const data = await response.json()
       
       if (data.success) {
@@ -98,7 +99,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
       const formData = new FormData()
       formData.append('file', file)
 
-      const response = await fetch('http://192.168.1.98:5551/api/import/table', {
+      const response = await fetch('${API_BASE_URL}/import/table', {
         method: 'POST',
         body: formData
       })
@@ -169,7 +170,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
       })
 
       // 发送到后端
-      const response = await fetch('http://192.168.1.98:5551/api/stars/batch-import', {
+      const response = await fetch('${API_BASE_URL}/stars/batch-import', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

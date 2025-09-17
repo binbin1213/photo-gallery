@@ -5,6 +5,7 @@ import SearchBar from '../components/SearchBar'
 import AdminLoginModal from '../components/AdminLoginModal'
 // 移除usePhotos，改用InfinitePhotoGrid
 import { Photo } from '../types/photo'
+import { API_BASE_URL } from '../config/api'
 
 export default function PhotoGallery() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -54,7 +55,7 @@ export default function PhotoGallery() {
       const formData = new FormData()
       formData.append('photo', file)
 
-      const response = await fetch(`http://192.168.1.98:5551/api/photos/${replacingPhoto.filename}/replace`, {
+      const response = await fetch(`${API_BASE_URL}/photos/${replacingPhoto.filename}/replace`, {
         method: 'POST',
         body: formData
       })

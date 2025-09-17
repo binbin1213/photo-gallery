@@ -5,7 +5,7 @@ const getApiBaseUrl = () => {
     return '/api'
   }
   // 如果是HTTP环境（内网访问），使用完整地址
-  return 'http://192.168.1.98:5551/api'
+  return '${API_BASE_URL}'
 }
 
 export const API_BASE_URL = getApiBaseUrl()
