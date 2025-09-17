@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { RefreshCw, X } from 'lucide-react'
 
 import { Photo } from '../types/photo'
@@ -135,14 +136,15 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
         </div>
       </div>
 
-      {showProfile && starInfo && (
+      {showProfile && starInfo && createPortal(
         <StarProfile
           star={starInfo}
           onClose={() => {
             setShowProfile(false)
             setStarInfo(null)
           }}
-        />
+        />,
+        document.body
       )}
     </>
   )
