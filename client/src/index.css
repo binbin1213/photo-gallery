@@ -4,7 +4,7 @@
 
 /* 简化的静态背景 - 提升性能 */
 .bg-elegant-pattern {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f9fafb; /* 浅灰色，与 bg-gray-50 一致 */
   position: relative;
 }
 
