@@ -135,17 +135,12 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
                 <GraduationCap className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-500">教育背景</p>
-                  {star.university && (
-                    <p className="font-medium text-gray-900">
-                      {star.university}
-                    </p>
-                  )}
-                  {star.major && (
-                    <p className="text-sm text-gray-600">
-                      {star.major}
-                      {star.degree && ` (${star.degree})`}
-                    </p>
-                  )}
+                  <p className="font-medium text-gray-900">
+                    {star.university && star.major 
+                      ? `${star.university} ${star.major}${star.degree ? ` (${star.degree})` : ''}`
+                      : star.university || star.major
+                    }
+                  </p>
                 </div>
               </div>
             )}
@@ -156,13 +151,9 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
                 <Film className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-500 mb-2">代表作</p>
-                  <div className="space-y-1">
-                    {star.representativeWorks.map((work, index) => (
-                      <p key={index} className="text-sm text-gray-700">
-                        《{work}》
-                      </p>
-                    ))}
-                  </div>
+                  <p className="text-sm text-gray-700">
+                    《{star.representativeWorks.join('》 《')}》
+                  </p>
                 </div>
               </div>
             )}
