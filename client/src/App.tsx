@@ -10,7 +10,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router basename="/">
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen" style={{backgroundColor: '#f9fafb'}}>
           <Routes>
             <Route path="/" element={<PhotoGallery />} />
             <Route path="/admin" element={<AdminPanel />} />
