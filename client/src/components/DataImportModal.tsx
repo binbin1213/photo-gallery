@@ -68,7 +68,7 @@ export default function DataImportModal({ isOpen, onClose }: DataImportModalProp
       })
 
       // 发送到后端
-      const response = await fetch('${API_BASE_URL}/stars/batch-import', {
+      const response = await fetch(`${API_BASE_URL}/stars/batch-import`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

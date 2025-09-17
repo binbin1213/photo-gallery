@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "../config/api"
 import { useState } from 'react'
 import { ArrowLeft, Upload, Download, Database, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -18,7 +17,7 @@ export default function AdminPanel() {
   // 导出数据功能
   const handleExportData = async () => {
     try {
-      const response = await fetch('${API_BASE_URL}/photos')
+      const response = await fetch('/photos')
       const data = await response.json()
       
       const exportData = data.photos.map((photo: any) => ({
@@ -72,7 +71,7 @@ export default function AdminPanel() {
   const handleGenerateRecords = async () => {
     if (confirm('确定要为所有照片生成明星记录吗？这将为每张照片创建基本的明星信息，您可以稍后完善详细信息。')) {
       try {
-        const response = await fetch('${API_BASE_URL}/stars/generate-records', {
+        const response = await fetch('/stars/generate-records', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -111,7 +110,7 @@ export default function AdminPanel() {
             formData.append('photos', file)
           })
           
-          const response = await fetch('${API_BASE_URL}/upload-multiple', {
+          const response = await fetch('/upload-multiple', {
             method: 'POST',
             body: formData
           })
@@ -168,7 +167,7 @@ export default function AdminPanel() {
         formData.append('photos', file)
       })
       
-      const response = await fetch('${API_BASE_URL}/upload-multiple', {
+      const response = await fetch('/upload-multiple', {
         method: 'POST',
         body: formData
       })

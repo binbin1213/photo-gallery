@@ -28,7 +28,7 @@ export default function BatchEditModal({ isOpen, onClose, onSave }: BatchEditMod
 
   const fetchPhotos = async () => {
     try {
-      const response = await fetch('${API_BASE_URL}/photos')
+      const response = await fetch(`${API_BASE_URL}/photos`)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
@@ -75,7 +75,7 @@ export default function BatchEditModal({ isOpen, onClose, onSave }: BatchEditMod
 
       console.log('准备发送的数据：', { photos });
 
-      const response = await fetch('${API_BASE_URL}/photos/batch', {
+      const response = await fetch(`${API_BASE_URL}/photos/batch`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

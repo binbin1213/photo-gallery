@@ -1,4 +1,3 @@
-import { API_BASE_URL } from "../config/api"
 import { useState, useEffect } from 'react'
 import { UploadCloud, X, Image, Check, AlertCircle } from 'lucide-react'
 
@@ -49,7 +48,7 @@ export default function EnhancedDataImportModal({ isOpen, onClose }: EnhancedDat
   const loadAvailablePhotos = async () => {
     setIsLoadingPhotos(true)
     try {
-      const response = await fetch('${API_BASE_URL}/photos/files')
+      const response = await fetch('/photos/files')
       const data = await response.json()
       
       if (data.success) {
@@ -149,7 +148,7 @@ export default function EnhancedDataImportModal({ isOpen, onClose }: EnhancedDat
       })
 
       // 发送到后端
-      const response = await fetch('${API_BASE_URL}/stars/batch-import', {
+      const response = await fetch('/stars/batch-import', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
