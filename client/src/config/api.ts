@@ -2,6 +2,7 @@
 const getApiBaseUrl = () => {
   // 如果是HTTPS环境（外网访问），使用相对路径
   if (window.location.protocol === 'https:') {
+    console.log('🌐 外网HTTPS环境，使用相对路径 /api')
     return '/api'
   }
   
@@ -23,7 +24,9 @@ const getApiBaseUrl = () => {
     apiPort = '5000'
   }
   
-  return `http://${hostname}:${apiPort}/api`
+  const apiUrl = `http://${hostname}:${apiPort}/api`
+  console.log(`🏠 内网HTTP环境，API地址: ${apiUrl}`)
+  return apiUrl
 }
 
 export const API_BASE_URL = getApiBaseUrl()
