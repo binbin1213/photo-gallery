@@ -214,8 +214,8 @@ export default function PhotoGallery() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-4 pt-16 sm:px-6 sm:py-8 sm:pt-20">
-        <div className="bg-white/5 rounded-2xl p-4 sm:p-8 backdrop-blur-sm border border-white/10">
+      <main className="max-w-7xl mx-auto px-2 py-2 pt-14 sm:px-6 sm:py-8 sm:pt-20">
+        <div className="bg-white/5 rounded-xl p-2 sm:p-8 backdrop-blur-sm border border-white/10">
           <InfinitePhotoGrid 
             isAdmin={isAdmin}
             onReplace={handleReplacePhoto}

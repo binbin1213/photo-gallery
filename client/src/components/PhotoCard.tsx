@@ -112,13 +112,13 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
           />
           
           {/* Name Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent backdrop-blur-sm p-2 transition-all duration-300 group-hover:bg-gradient-to-t group-hover:from-black/90 group-hover:via-black/70 group-hover:to-transparent">
-            <div className="flex items-center justify-center gap-2 text-center" style={{color: 'white'}}>
-              <span className="font-bold text-sm transition-all duration-300 group-hover:scale-105" style={{color: 'white'}}>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent backdrop-blur-sm p-1.5 sm:p-2 transition-all duration-300 group-hover:bg-gradient-to-t group-hover:from-black/95 group-hover:via-black/80 group-hover:to-transparent">
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center" style={{color: 'white'}}>
+              <span className="font-bold text-xs sm:text-sm transition-all duration-300 group-hover:scale-105 truncate" style={{color: 'white'}}>
                 {photo.chineseName}
               </span>
               <span className="text-xs flex-shrink-0" style={{color: 'rgba(255,255,255,0.6)'}}>•</span>
-              <span className="font-medium text-sm italic transition-all duration-300 group-hover:scale-105" style={{color: 'rgba(255,255,255,0.9)'}}>
+              <span className="font-medium text-xs sm:text-sm italic transition-all duration-300 group-hover:scale-105 truncate" style={{color: 'rgba(255,255,255,0.9)'}}>
                 {photo.englishName}
               </span>
             </div>
