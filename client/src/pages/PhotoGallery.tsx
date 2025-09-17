@@ -103,12 +103,12 @@ export default function PhotoGallery() {
     <div className="text-gray-900">
       {/* Header */}
       <header className="bg-gray-800/95 backdrop-blur-md border-b border-gray-600/50 shadow-xl fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-white tracking-wide">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-wide">
               泰海男星图鉴
             </h1>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-6">
               <SearchBar 
                 value={searchQuery}
                 onChange={setSearchQuery}
@@ -214,8 +214,8 @@ export default function PhotoGallery() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8 pt-20">
-        <div className="bg-white/5 rounded-2xl p-8 backdrop-blur-sm border border-white/10">
+      <main className="max-w-7xl mx-auto px-4 py-4 pt-16 sm:px-6 sm:py-8 sm:pt-20">
+        <div className="bg-white/5 rounded-2xl p-4 sm:p-8 backdrop-blur-sm border border-white/10">
           <InfinitePhotoGrid 
             isAdmin={isAdmin}
             onReplace={handleReplacePhoto}
