@@ -75,23 +75,31 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
         {/* 信息区域 */}
         <div className="p-6 space-y-6">
           {/* 姓名区域 */}
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
               {star.englishName}
             </h1>
-            {star.thaiName && (
-              <p className="text-lg text-gray-600 font-medium">
-                {star.thaiName}
-              </p>
-            )}
-            <p className="text-xl text-gray-800 font-semibold">
-              {star.chineseName}
-            </p>
-            {star.nickname && (
-              <p className="text-sm text-gray-500 italic">
-                "{star.nickname}"
-              </p>
-            )}
+            <div className="flex items-center justify-center gap-3 text-lg">
+              <span className="text-gray-800 font-semibold">
+                {star.chineseName}
+              </span>
+              {star.thaiName && (
+                <>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-600 font-medium">
+                    {star.thaiName}
+                  </span>
+                </>
+              )}
+              {star.nickname && (
+                <>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-500 italic">
+                    "{star.nickname}"
+                  </span>
+                </>
+              )}
+            </div>
           </div>
 
           {/* 基本信息 */}
