@@ -8,36 +8,45 @@ interface InfinitePhotoGridProps {
   isAdmin?: boolean
   onReplace?: (photo: Photo) => void
   search?: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+  filters?: any
+  onTotalChange?: (total: number) => void
 }
 
-export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }: InfinitePhotoGridProps) {
+export default function InfinitePhotoGrid({ 
+  isAdmin = false, 
+  onReplace, 
+  search, 
+  sortBy = 'createdAt', 
+  sortOrder = 'desc', 
+  filters = {}, 
+  onTotalChange 
+}: InfinitePhotoGridProps) {
   const [allPhotos, setAllPhotos] = useState<Photo[]>([])
   const [page, setPage] = useState(1)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const queryClient = useQueryClient()
   
-  console.log('InfinitePhotoGrid 渲染参数:', { search, page })
-  
-  const { data, isLoading, error } = usePhotosPaginated(page, 20, search)
-  
-  console.log('usePhotosPaginated 返回结果:', { data, isLoading, error })
+  const { data, isLoading, error } = usePhotosPaginated(page, 20, search, sortBy, sortOrder)
   
   // 当数据加载完成时，添加到总列表中
   useEffect(() => {
-    console.log('数据更新效果触发:', { data, page, search })
     if (data?.photos) {
       if (page === 1) {
         // 第一页，替换所有数据
-        console.log('设置第一页数据:', data.photos.length, '张照片')
         setAllPhotos(data.photos)
+        // 回调总数给父组件
+        if (onTotalChange) {
+          onTotalChange(data.total)
+        }
       } else {
         // 后续页面，追加数据
-        console.log('追加数据:', data.photos.length, '张照片')
         setAllPhotos(prev => [...prev, ...data.photos])
       }
       setIsLoadingMore(false)
     }
-  }, [data, page, search])
+  }, [data, page, search, onTotalChange])
   
   // 搜索时重置
   useEffect(() => {
@@ -70,10 +79,17 @@ export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }
     return () => window.removeEventListener('scroll', handleScroll)
   }, [loadMore])
   
+  // 骨架屏加载组件
+  const SkeletonCard = () => (
+    <div className="skeleton-card h-60 rounded-xl"></div>
+  )
+
   if (isLoading && page === 1) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="photo-grid-container">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <SkeletonCard key={index} />
+        ))}
       </div>
     )
   }

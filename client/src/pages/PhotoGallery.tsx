@@ -3,6 +3,8 @@ import { Settings, Grid, List, Download, User } from 'lucide-react'
 import InfinitePhotoGrid from '../components/InfinitePhotoGrid'
 import SearchBar from '../components/SearchBar'
 import AdminLoginModal from '../components/AdminLoginModal'
+import StatsPanel from '../components/StatsPanel'
+import FilterBar from '../components/FilterBar'
 // 移除usePhotos，改用InfinitePhotoGrid
 import { Photo } from '../types/photo'
 import { API_BASE_URL } from '../config/api'
@@ -15,6 +17,10 @@ export default function PhotoGallery() {
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [replacingPhoto, setReplacingPhoto] = useState<Photo | null>(null)
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [filters, setFilters] = useState({})
+  const [totalPhotos, setTotalPhotos] = useState(0)
   const settingsRef = useRef<HTMLDivElement>(null)
   // 移除旧的usePhotos，改用InfinitePhotoGrid内部管理
 
@@ -217,11 +223,30 @@ export default function PhotoGallery() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-2 py-2 pt-14 sm:px-6 sm:py-8 sm:pt-20">
         <div className="bg-white/5 rounded-xl p-2 sm:p-8 backdrop-blur-sm border border-white/10">
+          {/* 统计面板 */}
+          <StatsPanel totalPhotos={totalPhotos} />
+          
+          {/* 筛选和排序栏 */}
+          <div className="relative">
+            <FilterBar 
+              onSortChange={(sort, order) => {
+                setSortBy(sort)
+                setSortOrder(order)
+              }}
+              onFilterChange={setFilters}
+            />
+          </div>
+          
+          {/* 照片网格 */}
           <InfinitePhotoGrid 
-            key={searchQuery || 'all'}
+            key={`${searchQuery || 'all'}-${sortBy}-${sortOrder}`}
             isAdmin={isAdmin}
             onReplace={handleReplacePhoto}
             search={searchQuery}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            filters={filters}
+            onTotalChange={setTotalPhotos}
           />
         </div>
       </main>

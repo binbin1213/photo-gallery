@@ -5,6 +5,7 @@ import { RefreshCw, X } from 'lucide-react'
 import { Photo } from '../types/photo'
 import StarProfile from './StarProfile'
 import StarEditModal from './StarEditModal'
+import FavoriteButton from './FavoriteButton'
 import { API_BASE_URL } from '../config/api'
 
 interface PhotoCardProps {
@@ -131,6 +132,11 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
             </div>
           )}
+
+          {/* 收藏按钮 */}
+          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+            <FavoriteButton photoId={photo.id.toString()} />
+          </div>
 
           {/* Admin Controls */}
           {isAdmin && (

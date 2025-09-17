@@ -24,7 +24,7 @@ services:
     container_name: photo-gallery-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8881:80"
     depends_on:
       - api
     networks:
