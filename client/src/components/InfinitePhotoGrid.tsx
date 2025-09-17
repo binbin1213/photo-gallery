@@ -16,7 +16,11 @@ export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const queryClient = useQueryClient()
   
+  console.log('InfinitePhotoGrid 渲染参数:', { search, page })
+  
   const { data, isLoading, error } = usePhotosPaginated(page, 20, search)
+  
+  console.log('usePhotosPaginated 返回结果:', { data, isLoading, error })
   
   // 当数据加载完成时，添加到总列表中
   useEffect(() => {
