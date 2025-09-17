@@ -70,7 +70,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
           
           {/* 渐变遮罩和姓名覆盖层 */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-4">
+          <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
             <h1 className="text-3xl font-bold text-white mb-2">
               {star.englishName}
             </h1>
@@ -159,7 +159,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
                 <div className="flex-1">
                   <p className="text-sm text-gray-500 mb-2">代表作</p>
                   <p className="text-sm text-gray-700">
-                    《{star.representativeWorks.join('》 《')}》
+                    《{star.representativeWorks.join('》、《')}》
                   </p>
                 </div>
               </div>
