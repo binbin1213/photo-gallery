@@ -102,7 +102,7 @@ export default function PhotoGallery() {
   return (
     <div className="text-gray-900">
       {/* Header */}
-      <header className="bg-gray-800/90 backdrop-blur-sm border-b border-gray-600/30 shadow-lg fixed top-0 left-0 right-0 z-40">
+      <header className="bg-gray-700/90 backdrop-blur-sm border-b border-gray-500/30 shadow-lg fixed top-0 left-0 right-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-white">
