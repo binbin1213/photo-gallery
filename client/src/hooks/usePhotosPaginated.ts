@@ -21,7 +21,7 @@ export function usePhotosPaginated(page: number = 1, limit: number = 20, search?
   console.log('usePhotosPaginated 调用参数:', { page, limit, search, normalizedSearch })
   
   return useQuery<PaginatedPhotosResult>({
-    queryKey: ['photos-paginated', page, limit, normalizedSearch || null],
+    queryKey: ['photos-paginated', page, limit, normalizedSearch || 'ALL_PHOTOS'],
     queryFn: async (): Promise<PaginatedPhotosResult> => {
       console.log('API 请求参数:', { 
         search: normalizedSearch, 
@@ -64,8 +64,10 @@ export function usePhotosPaginated(page: number = 1, limit: number = 20, search?
       return result
     },
     staleTime: 0, // 暂时设为0，确保每次都重新获取
+    gcTime: 0, // 立即清理缓存
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
+    enabled: true, // 确保查询启用
   })
 }

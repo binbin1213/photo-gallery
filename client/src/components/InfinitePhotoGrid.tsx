@@ -24,17 +24,20 @@ export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }
   
   // 当数据加载完成时，添加到总列表中
   useEffect(() => {
+    console.log('数据更新效果触发:', { data, page, search })
     if (data?.photos) {
       if (page === 1) {
         // 第一页，替换所有数据
+        console.log('设置第一页数据:', data.photos.length, '张照片')
         setAllPhotos(data.photos)
       } else {
         // 后续页面，追加数据
+        console.log('追加数据:', data.photos.length, '张照片')
         setAllPhotos(prev => [...prev, ...data.photos])
       }
       setIsLoadingMore(false)
     }
-  }, [data, page])
+  }, [data, page, search])
   
   // 搜索时重置
   useEffect(() => {
