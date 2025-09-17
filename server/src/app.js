@@ -257,7 +257,7 @@ app.post('/api/upload-multiple', upload.array('photos', 10), async (req, res) =>
       size: file.size
     }));
 
-    res.json({
+  res.json({ 
       success: true,
       files: uploadedFiles,
       count: req.files.length,
@@ -380,10 +380,18 @@ app.post('/api/stars/generate-records', async (req, res) => {
       const englishName = `Star_${String(i + 1).padStart(3, '0')}`;
       const chineseName = `明星_${String(i + 1).padStart(3, '0')}`;
 
+      // 生成默认的必填字段
+      const defaultBirthDate = new Date('1990-01-01'); // 默认生日
+      const defaultBirthMonth = 1; // 默认1月
+      const defaultHeight = 175; // 默认身高175cm
+
       const starData = {
         englishName,
         chineseName,
         photoFilename: filename,
+        birthDate: defaultBirthDate,
+        birthMonth: defaultBirthMonth,
+        height: defaultHeight,
         description: `这是第 ${i + 1} 张照片，请完善相关信息`,
         tags: ['待完善'],
         isActive: true
