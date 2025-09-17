@@ -5,6 +5,7 @@ import { RefreshCw, X } from 'lucide-react'
 import { Photo } from '../types/photo'
 import StarProfile from './StarProfile'
 import StarEditModal from './StarEditModal'
+import { API_BASE_URL } from '../config/api'
 
 interface PhotoCardProps {
   photo: Photo
@@ -37,7 +38,7 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
     e.stopPropagation() // 阻止触发预览
     if (confirm('确定要删除这张照片吗？')) {
       try {
-        const response = await fetch(`http://192.168.1.98:5551/api/photos/${photo.filename}`, {
+        const response = await fetch(`${API_BASE_URL}/photos/${photo.filename}`, {
           method: 'DELETE'
         })
         const result = await response.json()
@@ -59,7 +60,7 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
   const handlePhotoClick = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`http://192.168.1.98:5551/api/stars/by-photo/${photo.filename}`)
+      const response = await fetch(`${API_BASE_URL}/stars/by-photo/${photo.filename}`)
       const data = await response.json()
       
       if (data.star) {

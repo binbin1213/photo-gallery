@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { Photo } from '../types/photo'
+import { API_BASE_URL } from '../config/api'
 
 const api = axios.create({
-  baseURL: 'http://192.168.1.98:5551/api'
+  baseURL: API_BASE_URL
 })
 
 interface PaginatedPhotosResult {
