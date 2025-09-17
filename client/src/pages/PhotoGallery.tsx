@@ -100,7 +100,7 @@ export default function PhotoGallery() {
   }, [showSettings])
 
   return (
-    <div className="bg-white text-gray-900 pt-24" style={{minHeight: 'calc(100vh - 96px)'}}>
+    <div className="text-gray-900 pt-24" style={{minHeight: 'calc(100vh - 96px)'}}>
       {/* Header */}
       <header className="bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-6">
@@ -215,11 +215,13 @@ export default function PhotoGallery() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <InfinitePhotoGrid 
-          isAdmin={isAdmin}
-          onReplace={handleReplacePhoto}
-          search={searchQuery}
-        />
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <InfinitePhotoGrid 
+            isAdmin={isAdmin}
+            onReplace={handleReplacePhoto}
+            search={searchQuery}
+          />
+        </div>
       </main>
 
       {/* 管理员登录弹窗 */}
