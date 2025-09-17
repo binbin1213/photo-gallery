@@ -10,7 +10,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router basename="/">
-        <div className="min-h-screen" style={{backgroundColor: '#f9fafb'}}>
+        <div className="min-h-screen" style={{
+          background: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)'
+        }}>
           <Routes>
             <Route path="/" element={<PhotoGallery />} />
             <Route path="/admin" element={<AdminPanel />} />
