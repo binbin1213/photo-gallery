@@ -1,4 +1,4 @@
-import { X, Calendar, Ruler, Weight, GraduationCap, Film } from 'lucide-react'
+import { X, Calendar, Ruler, Weight, GraduationCap, Film, Edit } from 'lucide-react'
 
 interface Star {
   _id: string
@@ -20,9 +20,11 @@ interface Star {
 interface StarProfileProps {
   star: Star
   onClose: () => void
+  isAdmin?: boolean
+  onEdit?: (star: Star) => void
 }
 
-export default function StarProfile({ star, onClose }: StarProfileProps) {
+export default function StarProfile({ star, onClose, isAdmin = false, onEdit }: StarProfileProps) {
   // 格式化生日
   const formatBirthDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -52,13 +54,24 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
       <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-lg w-full h-[94vh] max-h-[97vh] flex flex-col animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
-        {/* 关闭按钮 */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-90"
-        >
-          <X className="w-5 h-5 text-gray-600" />
-        </button>
+               {/* 关闭按钮和编辑按钮 */}
+               <div className="absolute top-4 right-4 z-10 flex gap-2">
+                 {isAdmin && onEdit && (
+                   <button
+                     onClick={() => onEdit(star)}
+                     className="w-8 h-8 bg-blue-500/90 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                     title="编辑信息"
+                   >
+                     <Edit className="w-4 h-4 text-white" />
+                   </button>
+                 )}
+                 <button
+                   onClick={onClose}
+                   className="w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-90"
+                 >
+                   <X className="w-5 h-5 text-gray-600" />
+                 </button>
+               </div>
 
         {/* 照片区域 */}
         <div className="relative h-[60vh] bg-gray-100">

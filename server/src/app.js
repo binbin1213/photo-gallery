@@ -127,6 +127,45 @@ app.get('/api/stars/:id', async (req, res) => {
   }
 });
 
+// 更新明星信息
+app.put('/api/stars/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // 验证必填字段
+    if (!updateData.englishName || !updateData.chineseName) {
+      return res.status(400).json({ error: '英文名和中文名不能为空' });
+    }
+
+    // 处理生日和出生月份
+    if (updateData.birthDate) {
+      const birthDate = new Date(updateData.birthDate);
+      updateData.birthMonth = birthDate.getMonth() + 1;
+    }
+
+    // 更新明星信息
+    const star = await Star.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!star) {
+      return res.status(404).json({ error: '明星信息不存在' });
+    }
+
+    res.json({ 
+      success: true, 
+      star,
+      message: '明星信息更新成功' 
+    });
+  } catch (error) {
+    console.error('更新明星信息失败:', error);
+    res.status(500).json({ error: '更新明星信息失败: ' + error.message });
+  }
+});
+
 // 根据照片文件名获取明星信息
 app.get('/api/stars/by-photo/:filename', async (req, res) => {
   try {

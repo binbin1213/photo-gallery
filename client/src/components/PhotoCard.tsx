@@ -4,6 +4,7 @@ import { RefreshCw, X } from 'lucide-react'
 
 import { Photo } from '../types/photo'
 import StarProfile from './StarProfile'
+import StarEditModal from './StarEditModal'
 
 interface PhotoCardProps {
   photo: Photo
@@ -13,6 +14,7 @@ interface PhotoCardProps {
 
 export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCardProps) {
   const [showProfile, setShowProfile] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [starInfo, setStarInfo] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -72,6 +74,20 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
     } finally {
       setLoading(false)
     }
+  }
+
+  // 处理编辑明星信息
+  const handleEditStar = (star: any) => {
+    setStarInfo(star)
+    setShowEditModal(true)
+  }
+
+  // 处理保存编辑
+  const handleSaveEdit = (updatedStar: any) => {
+    setStarInfo(updatedStar)
+    setShowEditModal(false)
+    // 可以在这里添加成功提示
+    alert('明星信息更新成功！')
   }
 
   return (
@@ -137,16 +153,28 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
         </div>
       </div>
 
-      {showProfile && starInfo && createPortal(
-        <StarProfile
-          star={starInfo}
-          onClose={() => {
-            setShowProfile(false)
-            setStarInfo(null)
-          }}
-        />,
-        document.body
-      )}
+             {showProfile && starInfo && createPortal(
+               <StarProfile
+                 star={starInfo}
+                 isAdmin={isAdmin}
+                 onEdit={handleEditStar}
+                 onClose={() => {
+                   setShowProfile(false)
+                   setStarInfo(null)
+                 }}
+               />,
+               document.body
+             )}
+
+             {showEditModal && starInfo && createPortal(
+               <StarEditModal
+                 isOpen={showEditModal}
+                 onClose={() => setShowEditModal(false)}
+                 star={starInfo}
+                 onSave={handleSaveEdit}
+               />,
+               document.body
+             )}
     </>
   )
 }
