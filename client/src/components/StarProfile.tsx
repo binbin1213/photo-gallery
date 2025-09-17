@@ -51,7 +51,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in-0 duration-300"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
-      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-lg w-full h-[90vh] max-h-[95vh] flex flex-col animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-lg w-full h-[92vh] max-h-[96vh] flex flex-col animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         {/* 关闭按钮 */}
         <button
           onClick={onClose}
@@ -74,22 +74,22 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
             <h1 className="text-3xl font-bold text-white mb-2">
               {star.englishName}
             </h1>
-            <div className="flex items-center justify-center gap-3 text-lg">
-              <span className="text-white font-semibold">
+            <div className="flex items-baseline justify-center gap-3 text-lg leading-tight">
+              <span className="text-white font-semibold text-base">
                 {star.chineseName}
               </span>
               {star.thaiName && (
                 <>
-                  <span className="text-white/60">•</span>
-                  <span className="text-white/90 font-medium">
+                  <span className="text-white/60 text-sm">•</span>
+                  <span className="text-white/90 font-medium text-base">
                     {star.thaiName}
                   </span>
                 </>
               )}
               {star.nickname && (
                 <>
-                  <span className="text-white/60">•</span>
-                  <span className="text-white/80 italic">
+                  <span className="text-white/60 text-sm">•</span>
+                  <span className="text-white/80 italic text-base">
                     "{star.nickname}"
                   </span>
                 </>
