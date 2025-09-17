@@ -11,7 +11,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router basename="/">
         <div className="min-h-screen" style={{
-          background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)'
+          background: 'linear-gradient(135deg, #000000 0%, #374151 50%, #9ca3af 100%)'
         }}>
           <Routes>
             <Route path="/" element={<PhotoGallery />} />
