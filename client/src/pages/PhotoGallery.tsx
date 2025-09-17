@@ -215,13 +215,11 @@ export default function PhotoGallery() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8 pt-24">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <InfinitePhotoGrid 
-            isAdmin={isAdmin}
-            onReplace={handleReplacePhoto}
-            search={searchQuery}
-          />
-        </div>
+        <InfinitePhotoGrid 
+          isAdmin={isAdmin}
+          onReplace={handleReplacePhoto}
+          search={searchQuery}
+        />
       </main>
 
       {/* 管理员登录弹窗 */}
