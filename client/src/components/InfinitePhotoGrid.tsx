@@ -34,6 +34,8 @@ export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }
   useEffect(() => {
     setPage(1)
     setAllPhotos([])
+    // 清空搜索或切换搜索时，回到顶部，触发首屏加载
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [search])
   
   // 加载更多

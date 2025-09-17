@@ -218,6 +218,7 @@ export default function PhotoGallery() {
       <main className="max-w-7xl mx-auto px-2 py-2 pt-14 sm:px-6 sm:py-8 sm:pt-20">
         <div className="bg-white/5 rounded-xl p-2 sm:p-8 backdrop-blur-sm border border-white/10">
           <InfinitePhotoGrid 
+            key={searchQuery || 'all'}
             isAdmin={isAdmin}
             onReplace={handleReplacePhoto}
             search={searchQuery}
