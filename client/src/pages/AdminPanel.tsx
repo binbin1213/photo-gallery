@@ -3,11 +3,13 @@ import { ArrowLeft, Upload, Download, Database, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BatchEditModal from '../components/BatchEditModal'
 import DataImportModal from '../components/DataImportModal'
+import EnhancedDataImportModal from '../components/EnhancedDataImportModal'
 
 export default function AdminPanel() {
   const [isUploading, setIsUploading] = useState(false)
   const [showBatchEdit, setShowBatchEdit] = useState(false)
   const [showDataImport, setShowDataImport] = useState(false)
+  const [showEnhancedDataImport, setShowEnhancedDataImport] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
 
   // 导出数据功能
@@ -51,6 +53,11 @@ export default function AdminPanel() {
   // 数据导入功能
   const handleDataImport = () => {
     setShowDataImport(true)
+  }
+
+  // 增强版数据导入功能
+  const handleEnhancedDataImport = () => {
+    setShowEnhancedDataImport(true)
   }
 
   // 批量生成明星记录功能
@@ -251,11 +258,18 @@ export default function AdminPanel() {
                        导出所有数据
                      </button>
                      <button
-                       onClick={handleDataImport}
+                       onClick={handleEnhancedDataImport}
                        className="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
                      >
                        <Database className="w-4 h-4" />
-                       导入明星数据
+                       智能导入明星数据
+                     </button>
+                     <button
+                       onClick={handleDataImport}
+                       className="w-full bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+                     >
+                       <Database className="w-4 h-4" />
+                       简单导入数据
                      </button>
                      <button
                        onClick={handleBatchEdit}
@@ -278,6 +292,12 @@ export default function AdminPanel() {
       <DataImportModal
         isOpen={showDataImport}
         onClose={() => setShowDataImport(false)}
+      />
+
+      {/* Enhanced Data Import Modal */}
+      <EnhancedDataImportModal
+        isOpen={showEnhancedDataImport}
+        onClose={() => setShowEnhancedDataImport(false)}
       />
     </div>
   )

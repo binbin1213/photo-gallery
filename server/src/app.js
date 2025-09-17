@@ -347,6 +347,46 @@ app.post('/api/photos/:filename/replace', upload.single('photo'), async (req, re
   }
 });
 
+// 获取所有可用照片文件列表
+app.get('/api/photos/files', async (req, res) => {
+  try {
+    const fs = require('fs').promises;
+    const path = require('path');
+    
+    // 读取 photos 目录
+    const photosDir = '/app/uploads/photos';
+    const files = await fs.readdir(photosDir);
+    const imageFiles = files.filter(file => 
+      /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
+    ).sort();
+
+    // 检查哪些照片已经被使用
+    const usedPhotos = await Star.find({ 
+      photoFilename: { $in: imageFiles },
+      isActive: true 
+    }).select('photoFilename englishName chineseName');
+
+    const usedFilenames = new Set(usedPhotos.map(star => star.photoFilename));
+    
+    const availablePhotos = imageFiles.map(filename => ({
+      filename,
+      isUsed: usedFilenames.has(filename),
+      starInfo: usedPhotos.find(star => star.photoFilename === filename) || null
+    }));
+
+    res.json({
+      success: true,
+      photos: availablePhotos,
+      total: imageFiles.length,
+      used: usedPhotos.length,
+      available: imageFiles.length - usedPhotos.length
+    });
+  } catch (error) {
+    console.error('获取照片文件列表失败:', error);
+    res.status(500).json({ error: '获取照片文件列表失败: ' + error.message });
+  }
+});
+
 // 批量生成明星记录（为所有照片创建基本记录）
 app.post('/api/stars/generate-records', async (req, res) => {
   try {
