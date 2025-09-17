@@ -21,9 +21,9 @@
   contain: layout style;
 }
 
-/* 照片卡片固定高度 */
+/* 照片卡片固定高度 - 增加高度以容纳更多图片空间 */
 .photo-card-fixed-height {
-  height: 280px;
+  height: 320px;
   /* GPU加速 */
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -37,6 +37,10 @@
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
     padding: 0 15px;
+  }
+  
+  .photo-card-fixed-height {
+    height: 280px;
   }
 }
 

@@ -96,12 +96,13 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
           />
           
           {/* Name Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent backdrop-blur-sm p-3 transition-all duration-300 group-hover:bg-gradient-to-t group-hover:from-black/90 group-hover:via-black/70 group-hover:to-transparent">
-            <div className="flex justify-between items-center text-white gap-2">
-              <span className="font-bold text-sm truncate flex-1 text-center transition-all duration-300 group-hover:text-white group-hover:scale-105">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent backdrop-blur-sm p-2 transition-all duration-300 group-hover:bg-gradient-to-t group-hover:from-black/90 group-hover:via-black/70 group-hover:to-transparent">
+            <div className="flex items-center justify-center text-white gap-3">
+              <span className="font-bold text-sm truncate transition-all duration-300 group-hover:text-white group-hover:scale-105">
                 {photo.chineseName}
               </span>
-              <span className="font-bold text-sm text-white/90 italic text-right flex-1 transition-all duration-300 group-hover:text-white group-hover:scale-105">
+              <span className="text-white/60 text-xs">•</span>
+              <span className="font-medium text-sm text-white/90 italic truncate transition-all duration-300 group-hover:text-white group-hover:scale-105">
                 {photo.englishName}
               </span>
             </div>
