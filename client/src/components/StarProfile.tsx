@@ -48,14 +48,14 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in-0 duration-300"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
-      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
         {/* 关闭按钮 */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-colors"
+          className="absolute top-4 right-4 z-10 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-90"
         >
           <X className="w-5 h-5 text-gray-600" />
         </button>

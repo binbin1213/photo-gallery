@@ -76,21 +76,28 @@ export default function InfinitePhotoGrid({ isAdmin = false, onReplace, search }
   return (
     <div>
       <div className="photo-grid-container">
-        {allPhotos.map((photo) => (
-          <PhotoCard
+        {allPhotos.map((photo, index) => (
+          <div
             key={photo.id}
-            photo={photo}
-            isAdmin={isAdmin}
-            onReplace={onReplace}
-          />
+            className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500"
+            style={{ animationDelay: `${index * 50}ms` }}
+          >
+            <PhotoCard
+              photo={photo}
+              isAdmin={isAdmin}
+              onReplace={onReplace}
+            />
+          </div>
         ))}
       </div>
       
       {/* 加载更多指示器 */}
       {isLoadingMore && (
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <span className="ml-2 text-gray-600">加载中...</span>
+        <div className="flex justify-center items-center py-8 animate-in fade-in-0 duration-300">
+          <div className="flex items-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
+            <span className="text-gray-600 text-sm">正在加载更多...</span>
+          </div>
         </div>
       )}
       

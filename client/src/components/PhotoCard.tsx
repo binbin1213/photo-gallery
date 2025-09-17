@@ -77,7 +77,7 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
   return (
     <>
       <div
-        className="bg-white rounded-xl overflow-hidden shadow-lg cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-200 photo-card-fixed-height"
+        className="bg-white rounded-xl overflow-hidden shadow-md cursor-pointer hover:shadow-2xl hover:-translate-y-2 hover:scale-105 transition-all duration-300 ease-out photo-card-fixed-height group"
         onClick={handlePhotoClick}
         data-photo-id={photo.id}
       >
@@ -89,19 +89,19 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
             src={`/uploads/photos/${photo.filename}`}
             alt={photo.chineseName}
             loading="lazy"
-            className={`w-full h-full object-cover transition-opacity duration-200 ${
+            className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-110 ${
               imageLoaded ? 'opacity-100' : 'opacity-0'
             }`}
             onLoad={() => setImageLoaded(true)}
           />
           
           {/* Name Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-3">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent backdrop-blur-sm p-3 transition-all duration-300 group-hover:bg-gradient-to-t group-hover:from-black/90 group-hover:via-black/70 group-hover:to-transparent">
             <div className="flex justify-between items-center text-white gap-2">
-              <span className="font-bold text-sm truncate flex-1 text-center">
+              <span className="font-bold text-sm truncate flex-1 text-center transition-all duration-300 group-hover:text-white group-hover:scale-105">
                 {photo.chineseName}
               </span>
-              <span className="font-bold text-sm text-white/90 italic text-right flex-1">
+              <span className="font-bold text-sm text-white/90 italic text-right flex-1 transition-all duration-300 group-hover:text-white group-hover:scale-105">
                 {photo.englishName}
               </span>
             </div>
@@ -116,17 +116,17 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
 
           {/* Admin Controls */}
           {isAdmin && (
-            <div className="absolute top-2 right-2 flex gap-1">
+            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
               <button
                 onClick={handleReplace}
-                className="p-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-colors"
+                className="p-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-180"
                 title="替换照片"
               >
                 <RefreshCw className="w-3 h-3" />
               </button>
               <button
                 onClick={handleDelete}
-                className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
+                className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-90"
                 title="删除照片"
               >
                 <X className="w-3 h-3" />

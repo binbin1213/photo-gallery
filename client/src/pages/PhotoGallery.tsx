@@ -100,12 +100,12 @@ export default function PhotoGallery() {
   }, [showSettings])
 
   return (
-    <div className="min-h-screen pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-900 pt-24">
       {/* Header */}
-      <header className="bg-white/10 backdrop-blur-lg border-b border-white/20 shadow-lg fixed top-0 left-0 right-0 z-[99999]">
+      <header className="bg-white/95 backdrop-blur-lg border-b border-gray-200/50 shadow-sm fixed top-0 left-0 right-0 z-[99999]">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+            <h1 className="text-3xl font-bold text-gray-800">
               泰海男星图鉴
             </h1>
             <div className="flex items-center gap-4">
@@ -117,13 +117,13 @@ export default function PhotoGallery() {
               <div className="relative" ref={settingsRef}>
                 <button 
                   onClick={() => setShowSettings(!showSettings)}
-                  className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all duration-300 backdrop-blur-sm"
+                  className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-all duration-300 hover:scale-105"
                 >
-                  <Settings className="w-5 h-5 text-white" />
+                  <Settings className="w-5 h-5 text-gray-700" />
                 </button>
                 
                 {showSettings && (
-                  <div className="absolute right-0 top-12 w-48 bg-white/90 backdrop-blur-lg rounded-lg shadow-xl border border-white/20 py-2">
+                  <div className="absolute right-0 top-12 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 animate-in slide-in-from-top-2 duration-200">
                       <div className="px-3 py-2 text-sm font-medium text-gray-700 border-b border-gray-200/50">
                         显示选项
                       </div>
