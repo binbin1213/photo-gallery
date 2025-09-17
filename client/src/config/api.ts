@@ -1,15 +1,8 @@
-// API配置 - 根据环境自动切换
+// API配置 - 统一使用相对路径，让Nginx处理代理
 const getApiBaseUrl = () => {
-  // 如果是HTTPS环境（外网访问），使用外网API域名
-  if (window.location.protocol === 'https:') {
-    // 外网访问时，使用ddnsto映射的API域名
-    const apiUrl = 'https://api-gmmlsls.gd.ddnsto.com/api'
-    console.log('🌐 外网HTTPS环境，使用外网API地址:', apiUrl)
-    return apiUrl
-  }
-  
-  // 如果是HTTP环境（内网访问），使用相对路径让Nginx代理
-  console.log('🏠 内网HTTP环境，使用相对路径 /api')
+  // 无论是内网还是外网访问，都使用相对路径
+  // Nginx会处理代理到后端API服务
+  console.log('🌐 使用相对路径 /api，由Nginx代理到后端')
   return '/api'
 }
 
