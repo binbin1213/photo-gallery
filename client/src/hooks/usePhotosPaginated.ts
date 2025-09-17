@@ -15,7 +15,7 @@ interface PaginatedPhotosResult {
 }
 
 export function usePhotosPaginated(page: number = 1, limit: number = 20, search?: string) {
-  return useQuery({
+  return useQuery<PaginatedPhotosResult>({
     queryKey: ['photos-paginated', page, limit, search],
     queryFn: async (): Promise<PaginatedPhotosResult> => {
       const { data } = await api.get('/stars', {
@@ -51,6 +51,5 @@ export function usePhotosPaginated(page: number = 1, limit: number = 20, search?
     refetchOnMount: 'always',
     refetchOnWindowFocus: false,
     refetchOnReconnect: 'always',
-    keepPreviousData: false,
   })
 }
