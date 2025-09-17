@@ -108,7 +108,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
               <Calendar className="w-5 h-5 text-blue-500 flex-shrink-0" />
               <div>
                 <p className="text-sm text-gray-500">出生日期</p>
-                <p className="font-medium text-gray-900">
+                <p className="text-sm text-gray-700">
                   {formatBirthDate(star.birthDate)}
                 </p>
               </div>
@@ -120,7 +120,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
                 <Ruler className="w-5 h-5 text-green-500 flex-shrink-0" />
                 <div>
                   <p className="text-sm text-gray-500">身高</p>
-                  <p className="font-medium text-gray-900">
+                  <p className="text-sm text-gray-700">
                     {formatHeight(star.height)}
                   </p>
                 </div>
@@ -129,7 +129,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
                 <Weight className="w-5 h-5 text-purple-500 flex-shrink-0" />
                 <div>
                   <p className="text-sm text-gray-500">体重</p>
-                  <p className="font-medium text-gray-900">
+                  <p className="text-sm text-gray-700">
                     {formatWeight(star.weight)}
                   </p>
                 </div>
@@ -142,7 +142,7 @@ export default function StarProfile({ star, onClose }: StarProfileProps) {
                 <GraduationCap className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-500">教育背景</p>
-                  <p className="font-medium text-gray-900">
+                  <p className="text-sm text-gray-700">
                     {star.university && star.major 
                       ? `${star.university} ${star.major}${star.degree ? ` (${star.degree})` : ''}`
                       : star.university || star.major
