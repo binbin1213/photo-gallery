@@ -67,8 +67,21 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
       
       if (response.ok) {
         const data = await response.json()
-        setStarInfo(data.star)
-        setShowProfile(true)
+        const star = data.star
+        
+        // 检查是否是默认生成的数据（需要重新关联）
+        const isDefaultData = star.englishName?.startsWith('Star_') || 
+                             star.chineseName?.startsWith('明星_') ||
+                             star.description?.includes('请完善相关信息')
+        
+        if (isDefaultData) {
+          // 默认数据，显示搜索模态框让用户关联真实艺人
+          setShowSearchModal(true)
+        } else {
+          // 真实数据，直接显示资料
+          setStarInfo(star)
+          setShowProfile(true)
+        }
       } else if (response.status === 404) {
         // 未找到关联的明星信息，显示搜索模态框
         setShowSearchModal(true)
@@ -103,6 +116,12 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
     setStarInfo(associatedStar)
     setShowSearchModal(false)
     setShowProfile(true)
+  }
+
+  // 处理重新关联
+  const handleReassociate = () => {
+    setShowProfile(false)
+    setShowSearchModal(true)
   }
 
   return (
@@ -178,6 +197,7 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
                  star={starInfo}
                  isAdmin={isAdmin}
                  onEdit={handleEditStar}
+                 onReassociate={handleReassociate}
                  onClose={() => {
                    setShowProfile(false)
                    setStarInfo(null)
