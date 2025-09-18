@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { useState } from 'react'
 import { Image, Zap, Activity, CheckCircle, AlertCircle } from 'lucide-react'
 import { useThumbnailGeneration } from '../hooks/useThumbnail'

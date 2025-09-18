@@ -20,7 +20,6 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
   const [showProfile, setShowProfile] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showSearchModal, setShowSearchModal] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
   const [starInfo, setStarInfo] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -149,7 +148,6 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
             filename={photo.filename}
             alt={photo.chineseName}
             className="transition-all duration-300 group-hover:scale-110"
-            onLoad={() => setImageLoaded(true)}
             onError={() => console.error('图片加载失败:', photo.filename)}
           />
           

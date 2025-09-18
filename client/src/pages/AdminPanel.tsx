@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, Upload, Download, Database, Users, Image } from 'lucide-react'
+import { ArrowLeft, Upload, Download, Database, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BatchEditModal from '../components/BatchEditModal'
 import DataImportModal from '../components/DataImportModal'

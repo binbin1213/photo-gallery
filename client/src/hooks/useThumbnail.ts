@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { useState, useEffect } from 'react'
 
 /**
@@ -268,6 +269,8 @@ export function useThumbnailGeneration() {
     totalPhotos: number
     thumbnailFiles: number
     coverage: string
+    photosDir?: string
+    thumbnailsDir?: string
   } | null>(null)
 
   const generateThumbnails = async () => {

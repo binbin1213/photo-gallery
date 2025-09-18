@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+/// <reference types="react" />
+import { useState, useRef, useEffect } from 'react'
 import { useThumbnail } from '../hooks/useThumbnail'
 
 interface SmartImageProps {
@@ -99,7 +100,7 @@ export default function SmartImage({
     }
   }
 
-  const placeholderSize = getPlaceholderSize()
+  // const placeholderSize = getPlaceholderSize() // 暂时不需要
 
   return (
     <div
@@ -175,7 +176,7 @@ export default function SmartImage({
       )}
 
       {/* 优化标识（开发模式下显示） */}
-      {process.env.NODE_ENV === 'development' && imageLoaded && (
+      {import.meta.env.DEV && imageLoaded && (
         <div className="absolute top-1 left-1 text-xs bg-black bg-opacity-60 text-white px-1 rounded">
           {format}
           {networkOptimized && '⚡'}
