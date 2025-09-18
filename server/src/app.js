@@ -467,13 +467,13 @@ app.post('/api/import/table', tableUpload.single('file'), async (req, res) => {
     const mappedData = data.map((row, index) => {
       console.log(`处理第 ${index + 1} 行数据:`, row);
       
-      // 字段映射 - 添加更多可能的列名变体
-      const englishName = row['姓名(英)'] || row['英文名'] || row['English Name'] || row['englishName'] || '';
-      const chineseName = row['姓名(中)'] || row['中文名'] || row['Chinese Name'] || row['chineseName'] || '';
+      // 字段映射 - 支持全角和半角括号
+      const englishName = row['姓名（英）'] || row['姓名(英)'] || row['英文名'] || row['English Name'] || row['englishName'] || '';
+      const chineseName = row['姓名（中）'] || row['姓名(中)'] || row['中文名'] || row['Chinese Name'] || row['chineseName'] || '';
       const nickname = row['昵称'] || row['Nickname'] || row['nickname'] || '';
       const birthDate = row['生日'] || row['Birth Date'] || row['birthDate'] || '';
-      const height = parseInt(row['身高(cm)'] || row['身高'] || row['Height'] || row['height'] || '0');
-      const university = row['毕业(就读)院校'] || row['毕业院校'] || row['大学'] || row['University'] || row['university'] || '';
+      const height = parseInt(row['身高（cm）'] || row['身高(cm)'] || row['身高'] || row['Height'] || row['height'] || '0');
+      const university = row['毕业（就读）院校'] || row['毕业(就读)院校'] || row['毕业院校'] || row['大学'] || row['University'] || row['university'] || '';
       const major = row['所学专业'] || row['专业'] || row['Major'] || row['major'] || '';
       const representativeWorks = row['代表作'] || row['Representative Works'] || row['representativeWorks'] || '';
       const photoFilename = row['照片文件名'] || row['Photo Filename'] || row['photoFilename'] || '';
