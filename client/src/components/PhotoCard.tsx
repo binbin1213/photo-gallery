@@ -144,15 +144,12 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
         data-photo-id={photo.id}
       >
         <div className="relative w-full h-full">
-          <img
-            src={`/uploads/photos/${photo.filename}`}
+          <SmartThumbnail
+            filename={photo.filename}
             alt={photo.chineseName}
-            loading="lazy"
-            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
-            onError={(e) => {
-              console.error('图片加载失败:', photo.filename)
-              e.currentTarget.style.display = 'none'
-            }}
+            className="transition-all duration-300 group-hover:scale-110"
+            fallbackToOriginal={true}
+            onError={() => console.error('图片加载失败:', photo.filename)}
           />
           
           {/* Name Overlay */}

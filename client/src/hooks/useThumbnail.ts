@@ -161,14 +161,29 @@ export function useThumbnail({
         }
         
         const handleFallback = () => {
+          console.log('缩略图加载失败，回退到原图:', filename)
           if (fallbackToOriginal) {
             // 回退到原图
             const originalUrl = `/uploads/photos/${filename}`
-            setSrc(originalUrl)
-            setFormat('original')
-            setActualSize('original')
-            setNetworkOptimized(false)
-            setLoading(false)
+            const fallbackImg = new Image()
+            fallbackImg.onload = () => {
+              if (mounted) {
+                setSrc(originalUrl)
+                setFormat('original')
+                setActualSize('original')
+                setNetworkOptimized(false)
+                setLoading(false)
+                console.log('✅ 原图加载成功:', filename)
+              }
+            }
+            fallbackImg.onerror = () => {
+              if (mounted) {
+                console.error('❌ 原图也加载失败:', filename)
+                setError(true)
+                setLoading(false)
+              }
+            }
+            fallbackImg.src = originalUrl
           } else {
             setError(true)
             setLoading(false)
