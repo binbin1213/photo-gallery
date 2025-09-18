@@ -11,7 +11,7 @@ interface Star {
   birthDate: string
   birthMonth?: number
   height: number
-  weight?: number
+  age?: number
   university?: string
   major?: string
   degree?: string
@@ -43,7 +43,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
         nickname: star.nickname || '',
         birthDate: star.birthDate ? new Date(star.birthDate).toISOString().split('T')[0] : '',
         height: star.height || 175,
-        weight: star.weight || undefined,
+        age: star.age || undefined,
         university: star.university || '',
         major: star.major || '',
         degree: star.degree || '',
@@ -95,8 +95,8 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
         ...formData,
         birthDate: formData.birthDate ? new Date(formData.birthDate).toISOString() : star.birthDate,
         birthMonth: formData.birthDate ? new Date(formData.birthDate).getMonth() + 1 : star.birthMonth || 1,
-        height: formData.height || 175,
-        weight: formData.weight || null
+        height: formData.height || 175
+        // age字段会自动计算，不需要手动设置
       }
 
       // 发送更新请求
@@ -233,15 +233,14 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                体重 (kg)
+                年龄 (岁)
               </label>
-              <input
-                type="number"
-                value={formData.weight || ''}
-                onChange={(e) => handleInputChange('weight', parseInt(e.target.value) || undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                placeholder="70"
-              />
+              <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600">
+                {star?.age ? `${star.age} 岁` : '根据出生日期自动计算'}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                年龄会根据出生日期自动计算
+              </p>
             </div>
           </div>
 

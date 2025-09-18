@@ -1,4 +1,4 @@
-import { X, Calendar, Ruler, Weight, GraduationCap, Film, Edit, Search } from 'lucide-react'
+import { X, Calendar, Ruler, User, GraduationCap, Film, Edit, Search } from 'lucide-react'
 
 interface Star {
   _id: string
@@ -8,7 +8,7 @@ interface Star {
   nickname?: string
   birthDate: string
   height: number
-  weight?: number
+  age?: number
   university?: string
   major?: string
   degree?: string
@@ -40,9 +40,9 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
     return `${height} cm`
   }
 
-  // 格式化体重
-  const formatWeight = (weight?: number) => {
-    return weight ? `${weight} kg` : 'N/A'
+  // 格式化年龄
+  const formatAge = (age?: number) => {
+    return age ? `${age} 岁` : 'N/A'
   }
 
   return (
@@ -133,7 +133,7 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
               </div>
             </div>
 
-            {/* 身高体重 */}
+            {/* 身高年龄 */}
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center space-x-3">
                 <Ruler className="w-5 h-5 text-green-500 flex-shrink-0" />
@@ -145,11 +145,11 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Weight className="w-5 h-5 text-purple-500 flex-shrink-0" />
+                <User className="w-5 h-5 text-purple-500 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-gray-500">体重</p>
+                  <p className="text-sm text-gray-500">年龄</p>
                   <p className="text-sm text-gray-700">
-                    {formatWeight(star.weight)}
+                    {formatAge(star.age)}
                   </p>
                 </div>
               </div>

@@ -18,7 +18,7 @@ interface StarData {
   birthDate: string
   birthMonth?: number
   height: number
-  weight?: number
+  age?: number
   university?: string
   major?: string
   degree?: string
