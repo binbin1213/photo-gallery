@@ -56,6 +56,37 @@ const upload = multer({
   }
 });
 
+// 专门用于表格文件的multer配置
+const tableUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, '/tmp'); // 使用临时目录
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, 'table-' + uniqueSuffix + path.extname(file.originalname));
+    }
+  }),
+  fileFilter: (req, file, cb) => {
+    // 允许Excel和CSV文件
+    const allowedMimes = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+      'application/vnd.ms-excel', // .xls
+      'text/csv', // .csv
+      'application/csv' // .csv 的另一种MIME类型
+    ];
+    
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('只允许上传Excel或CSV文件'), false);
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB限制，表格文件通常较小
+  }
+});
+
 // 获取所有明星信息
 app.get('/api/stars', async (req, res) => {
   try {
@@ -388,7 +419,7 @@ app.post('/api/photos/:filename/replace', upload.single('photo'), async (req, re
 });
 
 // 表格文件导入解析
-app.post('/api/import/table', upload.single('file'), async (req, res) => {
+app.post('/api/import/table', tableUpload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: '没有上传文件' });
