@@ -144,6 +144,71 @@ app.get('/api/stars', async (req, res) => {
   }
 });
 
+// 搜索艺人（支持模糊匹配）- 必须在 :id 路由之前
+app.get('/api/stars/search', async (req, res) => {
+  try {
+    const { q, limit = 10 } = req.query;
+    
+    if (!q || q.trim() === '') {
+      return res.json({ success: true, stars: [] });
+    }
+    
+    const searchTerm = q.trim();
+    
+    // 构建搜索条件 - 支持中英文名、昵称的模糊匹配
+    const searchConditions = [
+      { englishName: { $regex: searchTerm, $options: 'i' } },
+      { chineseName: { $regex: searchTerm, $options: 'i' } },
+      { nickname: { $regex: searchTerm, $options: 'i' } }
+    ];
+    
+    // 执行搜索，按相关性排序
+    const stars = await Star.find({
+      $or: searchConditions,
+      isActive: true
+    })
+    .select('_id englishName chineseName nickname birthDate height university major representativeWorks photoFilename')
+    .limit(parseInt(limit))
+    .sort({ 
+      // 优先显示有照片的记录
+      photoFilename: -1,
+      // 然后按创建时间排序
+      createdAt: -1 
+    });
+    
+    // 计算匹配度并排序
+    const rankedStars = stars.map(star => {
+      let score = 0;
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      
+      // 精确匹配得分更高
+      if (star.englishName && star.englishName.toLowerCase() === lowerSearchTerm) score += 10;
+      if (star.chineseName && star.chineseName === searchTerm) score += 10;
+      if (star.nickname && star.nickname.toLowerCase() === lowerSearchTerm) score += 10;
+      
+      // 包含匹配
+      if (star.englishName && star.englishName.toLowerCase().includes(lowerSearchTerm)) score += 5;
+      if (star.chineseName && star.chineseName.includes(searchTerm)) score += 5;
+      if (star.nickname && star.nickname.toLowerCase().includes(lowerSearchTerm)) score += 5;
+      
+      // 有照片的加分
+      if (star.photoFilename && !star.photoFilename.startsWith('placeholder_')) score += 3;
+      
+      return { ...star.toObject(), matchScore: score };
+    }).sort((a, b) => b.matchScore - a.matchScore);
+    
+    res.json({ 
+      success: true, 
+      stars: rankedStars,
+      total: rankedStars.length 
+    });
+    
+  } catch (error) {
+    console.error('搜索艺人失败:', error);
+    res.status(500).json({ error: '搜索失败: ' + error.message });
+  }
+});
+
 // 获取单个明星详细信息
 app.get('/api/stars/:id', async (req, res) => {
   try {
@@ -214,70 +279,6 @@ app.get('/api/stars/by-photo/:filename', async (req, res) => {
   }
 });
 
-// 搜索艺人（支持模糊匹配）
-app.get('/api/stars/search', async (req, res) => {
-  try {
-    const { q, limit = 10 } = req.query;
-    
-    if (!q || q.trim() === '') {
-      return res.json({ success: true, stars: [] });
-    }
-    
-    const searchTerm = q.trim();
-    
-    // 构建搜索条件 - 支持中英文名、昵称的模糊匹配
-    const searchConditions = [
-      { englishName: { $regex: searchTerm, $options: 'i' } },
-      { chineseName: { $regex: searchTerm, $options: 'i' } },
-      { nickname: { $regex: searchTerm, $options: 'i' } }
-    ];
-    
-    // 执行搜索，按相关性排序
-    const stars = await Star.find({
-      $or: searchConditions,
-      isActive: true
-    })
-    .select('_id englishName chineseName nickname birthDate height university major representativeWorks photoFilename')
-    .limit(parseInt(limit))
-    .sort({ 
-      // 优先显示有照片的记录
-      photoFilename: -1,
-      // 然后按创建时间排序
-      createdAt: -1 
-    });
-    
-    // 计算匹配度并排序
-    const rankedStars = stars.map(star => {
-      let score = 0;
-      const lowerSearchTerm = searchTerm.toLowerCase();
-      
-      // 精确匹配得分更高
-      if (star.englishName && star.englishName.toLowerCase() === lowerSearchTerm) score += 10;
-      if (star.chineseName && star.chineseName === searchTerm) score += 10;
-      if (star.nickname && star.nickname.toLowerCase() === lowerSearchTerm) score += 10;
-      
-      // 包含匹配
-      if (star.englishName && star.englishName.toLowerCase().includes(lowerSearchTerm)) score += 5;
-      if (star.chineseName && star.chineseName.includes(searchTerm)) score += 5;
-      if (star.nickname && star.nickname.toLowerCase().includes(lowerSearchTerm)) score += 5;
-      
-      // 有照片的加分
-      if (star.photoFilename && !star.photoFilename.startsWith('placeholder_')) score += 3;
-      
-      return { ...star.toObject(), matchScore: score };
-    }).sort((a, b) => b.matchScore - a.matchScore);
-    
-    res.json({ 
-      success: true, 
-      stars: rankedStars,
-      total: rankedStars.length 
-    });
-    
-  } catch (error) {
-    console.error('搜索艺人失败:', error);
-    res.status(500).json({ error: '搜索失败: ' + error.message });
-  }
-});
 
 // 关联照片和艺人
 app.post('/api/stars/associate-photo', async (req, res) => {
