@@ -24,7 +24,16 @@ docker-compose -f docker-compose.synology.yml down
 echo "📥 拉取最新镜像..."
 docker pull ghcr.io/binbin1213/photo-gallery-backend:latest
 docker pull ghcr.io/binbin1213/photo-gallery-frontend:latest
-docker pull mongo:7.0
+
+# 检查MongoDB镜像是否存在
+if docker images mongo:4.4 | grep -q "4.4"; then
+    echo "✅ MongoDB 4.4镜像已存在"
+else
+    echo "⚠️  MongoDB 4.4镜像不存在，请先导入："
+    echo "   docker load -i mongodb-4.4.tar"
+    echo "   然后重新运行此脚本"
+    exit 1
+fi
 
 # 重新启动
 echo "🚀 启动容器..."
