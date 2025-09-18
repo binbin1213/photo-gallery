@@ -123,31 +123,6 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
     }
   }
 
-  // 智能匹配照片
-  const findMatchingPhoto = (starData: StarData, index: number): string | null => {
-    if (starData.photoFilename) {
-      return starData.photoFilename
-    }
-
-    const availableUnusedPhotos = availablePhotos.filter(photo => !photo.isUsed)
-    
-    // 1. 精确匹配
-    const exactMatch = availableUnusedPhotos.find(photo => 
-      (starData.englishName && photo.filename.toLowerCase().includes(starData.englishName.toLowerCase())) ||
-      (starData.chineseName && photo.filename.toLowerCase().includes(starData.chineseName.toLowerCase()))
-    )
-    if (exactMatch) return exactMatch.filename
-
-    // 2. 部分匹配
-    const partialMatch = availableUnusedPhotos.find(photo => 
-      (starData.englishName && starData.englishName.toLowerCase().includes(photo.filename.split('.')[0].toLowerCase())) ||
-      (starData.chineseName && starData.chineseName.toLowerCase().includes(photo.filename.split('.')[0].toLowerCase()))
-    )
-    if (partialMatch) return partialMatch.filename
-
-    // 3. 按顺序分配
-    return availableUnusedPhotos[index]?.filename || null
-  }
 
   // 生成照片记录
   const handleGeneratePhotoRecords = async () => {
@@ -258,7 +233,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
 
     try {
       // 导入艺人数据，不自动关联照片（等待手动关联）
-      const enhancedData = previewData.map((starData, index) => {
+      const enhancedData = previewData.map((starData) => {
         return {
           ...starData,
           // 不设置photoFilename，让照片保持文件模式显示，等待手动关联
