@@ -339,28 +339,38 @@ app.post('/api/stars/cleanup-duplicates', async (req, res) => {
     console.log(`找到 ${allStars.length} 条记录`);
 
     // 按照片文件名分组，找出有照片的记录和没照片的记录
-    const withPhotos = allStars.filter(star => star.photoFilename && !star.photoFilename.startsWith('placeholder_'));
-    const withoutPhotos = allStars.filter(star => !star.photoFilename || star.photoFilename.startsWith('placeholder_'));
+    const withRealPhotos = allStars.filter(star => 
+      star.photoFilename && 
+      !star.photoFilename.startsWith('placeholder_') &&
+      !star.photoFilename.startsWith('unmatched_')
+    );
+    
+    const withPlaceholderPhotos = allStars.filter(star => 
+      !star.photoFilename || 
+      star.photoFilename.startsWith('placeholder_') ||
+      star.photoFilename.startsWith('unmatched_')
+    );
 
-    console.log(`有照片的记录: ${withPhotos.length} 条`);
-    console.log(`无照片的记录: ${withoutPhotos.length} 条`);
+    console.log(`有真实照片的记录: ${withRealPhotos.length} 条`);
+    console.log(`有placeholder照片的记录: ${withPlaceholderPhotos.length} 条`);
 
-    // 删除没有照片的重复记录（假设它们是新导入的）
+    // 删除placeholder记录
     const deleteResult = await Star.deleteMany({
       $or: [
         { photoFilename: { $exists: false } },
         { photoFilename: null },
-        { photoFilename: { $regex: '^placeholder_' } }
+        { photoFilename: { $regex: '^placeholder_' } },
+        { photoFilename: { $regex: '^unmatched_' } }
       ]
     });
 
-    console.log(`删除了 ${deleteResult.deletedCount} 条没有照片的记录`);
+    console.log(`删除了 ${deleteResult.deletedCount} 条placeholder记录`);
 
     res.json({
       success: true,
       deletedCount: deleteResult.deletedCount,
-      remainingCount: withPhotos.length,
-      message: `清理完成：删除 ${deleteResult.deletedCount} 条重复记录，保留 ${withPhotos.length} 条有照片的记录`
+      remainingCount: withRealPhotos.length,
+      message: `清理完成：删除 ${deleteResult.deletedCount} 条placeholder记录，保留 ${withRealPhotos.length} 条有真实照片的记录`
     });
 
   } catch (error) {
