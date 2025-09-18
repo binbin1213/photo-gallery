@@ -14,14 +14,40 @@ export default function StatsPanel({ totalPhotos }: StatsPanelProps) {
   })
 
   useEffect(() => {
-    // 这里可以调用API获取统计数据
-    // 暂时使用模拟数据
-    setStats({
-      totalStars: totalPhotos,
-      totalUniversities: 15,
-      averageAge: 23,
-      newestAdditions: 5
-    })
+    // 从API获取真实统计数据
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/stats')
+        if (response.ok) {
+          const data = await response.json()
+          setStats({
+            totalStars: data.totalStars || totalPhotos,
+            totalUniversities: data.totalUniversities || 0,
+            averageAge: data.averageAge || 0,
+            newestAdditions: data.newestAdditions || 0
+          })
+        } else {
+          // API失败时使用基本数据
+          setStats({
+            totalStars: totalPhotos,
+            totalUniversities: 0,
+            averageAge: 0,
+            newestAdditions: 0
+          })
+        }
+      } catch (error) {
+        console.error('获取统计数据失败:', error)
+        // 出错时使用基本数据
+        setStats({
+          totalStars: totalPhotos,
+          totalUniversities: 0,
+          averageAge: 0,
+          newestAdditions: 0
+        })
+      }
+    }
+
+    fetchStats()
   }, [totalPhotos])
 
   return (

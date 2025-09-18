@@ -88,6 +88,49 @@ const tableUpload = multer({
   }
 });
 
+// 获取统计数据
+app.get('/api/stats', async (req, res) => {
+  try {
+    // 总明星数
+    const totalStars = await Star.countDocuments({ isActive: true })
+    
+    // 学校数量（去重）
+    const universities = await Star.distinct('university', { 
+      isActive: true, 
+      university: { $exists: true, $ne: null, $ne: '' } 
+    })
+    const totalUniversities = universities.length
+    
+    // 平均年龄
+    const starsWithAge = await Star.find({ 
+      isActive: true, 
+      age: { $exists: true, $ne: null, $gt: 0 } 
+    }).select('age')
+    
+    const averageAge = starsWithAge.length > 0 
+      ? Math.round(starsWithAge.reduce((sum, star) => sum + star.age, 0) / starsWithAge.length)
+      : 0
+    
+    // 本月新增（当前月份创建的记录）
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const newestAdditions = await Star.countDocuments({
+      isActive: true,
+      createdAt: { $gte: startOfMonth }
+    })
+    
+    res.json({
+      totalStars,
+      totalUniversities,
+      averageAge,
+      newestAdditions
+    })
+  } catch (error) {
+    console.error('获取统计数据失败:', error)
+    res.status(500).json({ error: '获取统计数据失败' })
+  }
+})
+
 // 获取所有明星信息
 app.get('/api/stars', async (req, res) => {
   try {
