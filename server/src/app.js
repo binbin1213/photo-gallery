@@ -302,9 +302,12 @@ app.post('/api/stars/associate-photo', async (req, res) => {
     });
     
     if (existingAssociation) {
-      return res.status(400).json({ 
-        error: `该照片已经关联到 ${existingAssociation.chineseName || existingAssociation.englishName}` 
-      });
+      // 解除旧的关联 - 将旧记录的照片设为placeholder
+      await Star.findByIdAndUpdate(
+        existingAssociation._id,
+        { photoFilename: `placeholder_${existingAssociation._id}.jpg` }
+      );
+      console.log(`解除旧关联: ${existingAssociation.chineseName || existingAssociation.englishName} -> ${photoFilename}`);
     }
     
     // 更新明星的照片文件名
