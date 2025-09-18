@@ -86,21 +86,7 @@ export default function SmartImage({
     onError?.()
   }
 
-  // 获取占位符尺寸
-  const getPlaceholderSize = () => {
-    switch (size) {
-      case 'small':
-        return { width: 300, height: 300 }
-      case 'medium':
-        return { width: 800, height: 800 }
-      case 'large':
-        return { width: 1200, height: 1200 }
-      default:
-        return { width: 300, height: 300 }
-    }
-  }
-
-  // const placeholderSize = getPlaceholderSize() // 暂时不需要
+  // 占位符尺寸已内置在CSS中，不需要JavaScript计算
 
   return (
     <div
@@ -175,14 +161,7 @@ export default function SmartImage({
         </div>
       )}
 
-      {/* 优化标识（开发模式下显示） */}
-      {import.meta.env.DEV && imageLoaded && (
-        <div className="absolute top-1 left-1 text-xs bg-black bg-opacity-60 text-white px-1 rounded">
-          {format}
-          {networkOptimized && '⚡'}
-          {actualSize !== size && `→${actualSize}`}
-        </div>
-      )}
+      {/* 优化标识在生产环境中不显示 */}
 
       {/* 加载进度条 */}
       {loading && (
