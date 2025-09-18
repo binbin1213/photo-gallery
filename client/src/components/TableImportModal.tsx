@@ -104,8 +104,10 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
       })
 
       const result = await response.json()
+      console.log('API 响应结果:', result)
 
       if (result.success) {
+        console.log('解析的数据:', result.data)
         setPreviewData(result.data)
         setShowPreview(true)
       } else {
@@ -327,7 +329,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
           /* 预览区域 */
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-white">数据预览</h3>
+              <h3 className="text-lg font-semibold text-white">数据预览 ({previewData.length} 条记录)</h3>
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowPreview(false)}
@@ -371,6 +373,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
                 </thead>
                 <tbody>
                   {previewData.slice(0, 10).map((star, index) => {
+                    console.log('渲染数据行:', index, star)
                     const matchedPhoto = findMatchingPhoto(star, index)
                     return (
                       <tr key={index} className="border-b border-white/10">
