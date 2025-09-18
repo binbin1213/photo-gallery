@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { usePhotosPaginated } from '../hooks/usePhotosPaginated'
+import { usePhotosFromFiles } from '../hooks/usePhotosFromFiles'
 import PhotoCard from './PhotoCard'
 import { Photo } from '../types/photo'
 
@@ -28,9 +29,29 @@ export default function InfinitePhotoGrid({
   const [allPhotos, setAllPhotos] = useState<Photo[]>([])
   const [page, setPage] = useState(1)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [useFileMode, setUseFileMode] = useState(false)
   const queryClient = useQueryClient()
   
-  const { data, isLoading, error } = usePhotosPaginated(page, 20, search, sortBy, sortOrder)
+  // 尝试从数据库获取照片
+  const { data: dbData, isLoading: dbLoading, error: dbError } = usePhotosPaginated(page, 20, search, sortBy, sortOrder)
+  
+  // 从文件获取照片（备用模式）
+  const { data: fileData, isLoading: fileLoading, error: fileError } = usePhotosFromFiles(page, 20, search)
+
+  // 自动切换模式：如果数据库为空或出错，使用文件模式
+  useEffect(() => {
+    if (dbData && dbData.photos.length === 0 && page === 1) {
+      console.log('数据库为空，切换到文件模式')
+      setUseFileMode(true)
+    } else if (dbData && dbData.photos.length > 0) {
+      setUseFileMode(false)
+    }
+  }, [dbData, page])
+
+  // 选择使用哪个数据源
+  const data = useFileMode ? fileData : dbData
+  const isLoading = useFileMode ? fileLoading : dbLoading
+  const error = useFileMode ? fileError : dbError
   
   // 当数据加载完成时，添加到总列表中
   useEffect(() => {

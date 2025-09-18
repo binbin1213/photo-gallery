@@ -331,6 +331,24 @@ app.post('/api/stars/associate-photo', async (req, res) => {
   }
 });
 
+// 清空所有数据
+app.post('/api/stars/clear-all', async (req, res) => {
+  try {
+    const deleteResult = await Star.deleteMany({});
+    console.log(`清空数据库：删除了 ${deleteResult.deletedCount} 条记录`);
+
+    res.json({
+      success: true,
+      deletedCount: deleteResult.deletedCount,
+      message: `数据库已清空：删除了 ${deleteResult.deletedCount} 条记录`
+    });
+
+  } catch (error) {
+    console.error('清空数据库失败:', error);
+    res.status(500).json({ error: '清空失败: ' + error.message });
+  }
+});
+
 // 清理重复数据
 app.post('/api/stars/cleanup-duplicates', async (req, res) => {
   try {

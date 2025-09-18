@@ -45,6 +45,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
   const [updateMode, setUpdateMode] = useState<'smart' | 'clear'>('smart')
   const [isCleaningUp, setIsCleaningUp] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isClearingAll, setIsClearingAll] = useState(false)
   const [previewData, setPreviewData] = useState<StarData[]>([])
   const [showPreview, setShowPreview] = useState(false)
 
@@ -177,6 +178,38 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
       alert('生成失败：' + (error as Error).message)
     } finally {
       setIsGenerating(false)
+    }
+  }
+
+  // 清空所有数据
+  const handleClearAll = async () => {
+    if (!confirm('⚠️ 确定要清空所有数据吗？这将删除数据库中的所有记录，但照片文件会保留，之后可以手动关联。')) {
+      return
+    }
+
+    setIsClearingAll(true)
+    try {
+      const response = await fetch('/api/stars/clear-all', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert(`清空成功：${result.message}`)
+        // 清空成功后，关闭模态框让用户看到照片仍然显示
+        onClose()
+      } else {
+        throw new Error(result.error || '清空失败')
+      }
+    } catch (error) {
+      console.error('清空数据库失败:', error)
+      alert('清空失败：' + (error as Error).message)
+    } finally {
+      setIsClearingAll(false)
     }
   }
 
@@ -395,7 +428,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
                 下载模板文件
               </button>
               
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={handleGeneratePhotoRecords}
                   className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2 disabled:opacity-50"
@@ -410,6 +443,24 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
                     <>
                       <FileSpreadsheet className="w-4 h-4" />
                       恢复照片卡片
+                    </>
+                  )}
+                </button>
+                
+                <button
+                  onClick={handleClearAll}
+                  className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+                  disabled={isClearingAll}
+                >
+                  {isClearingAll ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      清空中...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      清空所有数据
                     </>
                   )}
                 </button>
