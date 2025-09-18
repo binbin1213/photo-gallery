@@ -40,10 +40,7 @@ export default function SmartImage({
   const {
     src,
     loading,
-    error,
-    format,
-    actualSize,
-    networkOptimized
+    error
   } = useThumbnail({
     filename,
     size,
