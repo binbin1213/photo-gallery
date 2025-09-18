@@ -29,8 +29,8 @@ const starSchema = new mongoose.Schema({
   height: {
     type: Number // 厘米
   },
-  weight: {
-    type: Number // 公斤
+  age: {
+    type: Number // 年龄（根据出生日期自动计算）
   },
   
   // 教育信息
@@ -95,11 +95,38 @@ const starSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
-// 更新时自动设置 updatedAt
+// 虚拟字段：自动计算年龄
+starSchema.virtual('calculatedAge').get(function() {
+  if (!this.birthDate) return null;
+  
+  const today = new Date();
+  const birthDate = new Date(this.birthDate);
+  
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  // 如果还没到生日，年龄减1
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+});
+
+// 保存前自动计算并更新年龄
 starSchema.pre('save', function(next) {
   this.updatedAt = new Date();
+  
+  // 如果有出生日期，自动计算年龄
+  if (this.birthDate) {
+    this.age = this.calculatedAge;
+  }
+  
   next();
 });
 
@@ -107,6 +134,7 @@ starSchema.pre('save', function(next) {
 starSchema.index({ englishName: 1 });
 starSchema.index({ chineseName: 1 });
 starSchema.index({ birthMonth: 1 });
+starSchema.index({ age: 1 });
 starSchema.index({ university: 1 });
 starSchema.index({ isActive: 1 });
 
