@@ -9,6 +9,7 @@ interface Star {
   birthDate: string
   height: number
   age?: number
+  calculatedAge?: number
   university?: string
   major?: string
   degree?: string
@@ -35,6 +36,19 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
     return `${year}年${month}月${day}日`
   }
 
+  // 根据生日即时计算年龄（后端缺失时兜底）
+  const calcAgeFromBirthDate = (dateString?: string) => {
+    if (!dateString) return undefined
+    const today = new Date()
+    const birth = new Date(dateString)
+    let age = today.getFullYear() - birth.getFullYear()
+    const m = today.getMonth() - birth.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--
+    }
+    return age
+  }
+
   // 格式化身高
   const formatHeight = (height: number) => {
     return `${height} cm`
@@ -42,8 +56,10 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
 
   // 格式化年龄
   const formatAge = (age?: number) => {
-    return age ? `${age} 岁` : 'N/A'
+    return typeof age === 'number' && !Number.isNaN(age) ? `${age} 岁` : 'N/A'
   }
+
+  const displayAge = star.calculatedAge ?? star.age ?? calcAgeFromBirthDate(star.birthDate)
 
   return (
     <div 
@@ -149,7 +165,7 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
                 <div>
                   <p className="text-sm text-gray-500">年龄</p>
                   <p className="text-sm text-gray-700">
-                    {formatAge(star.age)}
+                    {formatAge(displayAge)}
                   </p>
                 </div>
               </div>
