@@ -753,7 +753,8 @@ app.post('/api/import/table', tableUpload.single('file'), async (req, res) => {
         major: (major || '').toString().trim() || undefined,
         degree: '',
         representativeWorks: works,
-        photoFilename: (photoFilename || '').toString().trim() || `placeholder_${index + 1}.jpg`,
+        // 不设置photoFilename，让照片保持文件模式显示
+        // photoFilename: undefined,
         description: '',
         tags: ['待完善'],
         isActive: true
