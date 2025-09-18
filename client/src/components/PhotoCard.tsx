@@ -139,7 +139,7 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
   return (
     <>
       <div
-        className="bg-white rounded-xl overflow-hidden shadow-md cursor-pointer hover:shadow-2xl hover:-translate-y-2 hover:scale-105 transition-all duration-300 ease-out photo-card-fixed-height group"
+        className="bg-gray-100 rounded-xl overflow-hidden shadow-md cursor-pointer hover:shadow-2xl hover:-translate-y-2 hover:scale-105 transition-all duration-300 ease-out photo-card-fixed-height group"
         onClick={handlePhotoClick}
         data-photo-id={photo.id}
       >
@@ -147,7 +147,7 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
           <SmartThumbnail
             filename={photo.filename}
             alt={photo.chineseName}
-            className="transition-all duration-300 group-hover:scale-110"
+            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
             fallbackToOriginal={true}
             onError={() => console.error('图片加载失败:', photo.filename)}
           />
