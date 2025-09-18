@@ -154,10 +154,15 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
           
           {/* Name Text - 直接显示在照片上，无背景 */}
           <div className="absolute bottom-2 left-2 right-2 flex items-center justify-center gap-1 text-center">
-            <span className="font-bold text-sm sm:text-base transition-all duration-300 group-hover:scale-105 truncate text-white" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-              {photo.chineseName}
-            </span>
-            <span className="text-sm flex-shrink-0 text-white/80" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>•</span>
+            {/* 检查是否是默认的中文名（照片_xxx格式），如果是则不显示 */}
+            {photo.chineseName && !photo.chineseName.startsWith('照片_') && (
+              <>
+                <span className="font-bold text-sm sm:text-base transition-all duration-300 group-hover:scale-105 truncate text-white" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+                  {photo.chineseName}
+                </span>
+                <span className="text-sm flex-shrink-0 text-white/80" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>•</span>
+              </>
+            )}
             <span className="font-medium text-sm sm:text-base italic transition-all duration-300 group-hover:scale-105 truncate text-white/90" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               {photo.englishName}
             </span>
