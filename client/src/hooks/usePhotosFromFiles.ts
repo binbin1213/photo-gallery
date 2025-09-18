@@ -43,15 +43,24 @@ export function usePhotosFromFiles(
       }
 
       // 转换为Photo格式
-      const allPhotos: Photo[] = photoFiles.map((file, index) => ({
-        id: `file_${file.filename}`, // 使用文件名作为临时ID
-        filename: file.filename,
-        chineseName: `照片_${file.filename.split('.')[0]}`, // 临时中文名
-        englishName: `Photo_${file.filename.split('.')[0]}`, // 临时英文名
-        tags: ['未关联'],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }))
+      const allPhotos: Photo[] = photoFiles.map((file) => {
+        // 从文件名提取数字作为ID，如果没有数字则用hash
+        const filenameNumber = parseInt(file.filename.split('.')[0])
+        const id = isNaN(filenameNumber) ? Math.abs(file.filename.split('').reduce((a, b) => {
+          a = ((a << 5) - a) + b.charCodeAt(0)
+          return a & a
+        }, 0)) : filenameNumber
+        
+        return {
+          id,
+          filename: file.filename,
+          chineseName: `照片_${file.filename.split('.')[0]}`, // 临时中文名
+          englishName: `Photo_${file.filename.split('.')[0]}`, // 临时英文名
+          tags: ['未关联'],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      })
 
       // 分页处理
       const startIndex = (page - 1) * limit
