@@ -176,7 +176,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(enhancedData)
+        body: JSON.stringify({ stars: enhancedData })
       })
 
       const result = await response.json()
