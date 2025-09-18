@@ -60,7 +60,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
   const loadAvailablePhotos = async () => {
     setIsLoadingPhotos(true)
     try {
-      const response = await fetch('/photos/files')
+      const response = await fetch('/api/photos/files')
       const data = await response.json()
       
       if (data.success) {
@@ -98,7 +98,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
       const formData = new FormData()
       formData.append('file', file)
 
-      const response = await fetch('/import/table', {
+      const response = await fetch('/api/import/table', {
         method: 'POST',
         body: formData
       })
@@ -169,7 +169,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
       })
 
       // 发送到后端
-      const response = await fetch('/stars/batch-import', {
+      const response = await fetch('/api/stars/import', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
