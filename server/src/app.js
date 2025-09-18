@@ -458,17 +458,27 @@ app.post('/api/import/table', tableUpload.single('file'), async (req, res) => {
     await fs.unlink(filePath);
 
     // 数据映射和验证
+    console.log('解析到的原始数据:', data);
+    if (data.length > 0) {
+      console.log('第一行数据示例:', data[0]);
+      console.log('数据的所有列名:', Object.keys(data[0]));
+    }
+    
     const mappedData = data.map((row, index) => {
-      // 字段映射
-      const englishName = row['姓名(英)'] || row['English Name'] || row['englishName'] || '';
-      const chineseName = row['姓名(中)'] || row['Chinese Name'] || row['chineseName'] || '';
+      console.log(`处理第 ${index + 1} 行数据:`, row);
+      
+      // 字段映射 - 添加更多可能的列名变体
+      const englishName = row['姓名(英)'] || row['英文名'] || row['English Name'] || row['englishName'] || '';
+      const chineseName = row['姓名(中)'] || row['中文名'] || row['Chinese Name'] || row['chineseName'] || '';
       const nickname = row['昵称'] || row['Nickname'] || row['nickname'] || '';
       const birthDate = row['生日'] || row['Birth Date'] || row['birthDate'] || '';
-      const height = parseInt(row['身高(cm)'] || row['Height'] || row['height'] || '175');
-      const university = row['毕业(就读)院校'] || row['University'] || row['university'] || '';
-      const major = row['所学专业'] || row['Major'] || row['major'] || '';
+      const height = parseInt(row['身高(cm)'] || row['身高'] || row['Height'] || row['height'] || '0');
+      const university = row['毕业(就读)院校'] || row['毕业院校'] || row['大学'] || row['University'] || row['university'] || '';
+      const major = row['所学专业'] || row['专业'] || row['Major'] || row['major'] || '';
       const representativeWorks = row['代表作'] || row['Representative Works'] || row['representativeWorks'] || '';
       const photoFilename = row['照片文件名'] || row['Photo Filename'] || row['photoFilename'] || '';
+      
+      console.log(`映射结果:`, { englishName, chineseName, nickname, birthDate, height, university, major });
 
       // 处理代表作（可能是用顿号或逗号分隔的字符串）
       let works = [];
