@@ -44,6 +44,7 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
   } | null>(null)
   const [updateMode, setUpdateMode] = useState<'smart' | 'clear'>('smart')
   const [isCleaningUp, setIsCleaningUp] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
   const [previewData, setPreviewData] = useState<StarData[]>([])
   const [showPreview, setShowPreview] = useState(false)
 
@@ -145,6 +146,38 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
 
     // 3. 按顺序分配
     return availableUnusedPhotos[index]?.filename || null
+  }
+
+  // 生成照片记录
+  const handleGeneratePhotoRecords = async () => {
+    if (!confirm('确定要为所有照片生成基本记录吗？这将为photos文件夹中的每张照片创建一个卡片。')) {
+      return
+    }
+
+    setIsGenerating(true)
+    try {
+      const response = await fetch('/api/stars/generate-records', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert(`生成成功：${result.message}`)
+        // 生成成功后，关闭模态框让用户看到照片卡片
+        onClose()
+      } else {
+        throw new Error(result.error || '生成失败')
+      }
+    } catch (error) {
+      console.error('生成照片记录失败:', error)
+      alert('生成失败：' + (error as Error).message)
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   // 清理重复数据
@@ -362,23 +395,43 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
                 下载模板文件
               </button>
               
-              <button
-                onClick={handleCleanupDuplicates}
-                className="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 disabled:opacity-50"
-                disabled={isCleaningUp}
-              >
-                {isCleaningUp ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    清理中...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="w-4 h-4" />
-                    清理重复数据
-                  </>
-                )}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleGeneratePhotoRecords}
+                  className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2 disabled:opacity-50"
+                  disabled={isGenerating}
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      生成中...
+                    </>
+                  ) : (
+                    <>
+                      <FileSpreadsheet className="w-4 h-4" />
+                      恢复照片卡片
+                    </>
+                  )}
+                </button>
+                
+                <button
+                  onClick={handleCleanupDuplicates}
+                  className="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 disabled:opacity-50"
+                  disabled={isCleaningUp}
+                >
+                  {isCleaningUp ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      清理中...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      清理重复数据
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         ) : (
