@@ -38,13 +38,23 @@ export default function InfinitePhotoGrid({
   // 从文件获取照片（备用模式）
   const { data: fileData, isLoading: fileLoading, error: fileError } = usePhotosFromFiles(page, 20, search)
 
-  // 自动切换模式：如果数据库为空或出错，使用文件模式
+  // 自动切换模式：如果数据库为空、出错，或记录没有关联照片，使用文件模式
   useEffect(() => {
-    if (dbData && dbData.photos.length === 0 && page === 1) {
-      console.log('数据库为空，切换到文件模式')
-      setUseFileMode(true)
-    } else if (dbData && dbData.photos.length > 0) {
-      setUseFileMode(false)
+    if (dbData && page === 1) {
+      // 检查是否有实际的照片文件关联
+      const hasValidPhotos = dbData.photos.some(photo => 
+        photo.filename && 
+        !photo.filename.startsWith('placeholder_') && 
+        !photo.filename.startsWith('unmatched_')
+      )
+      
+      if (dbData.photos.length === 0 || !hasValidPhotos) {
+        console.log('数据库为空或无有效照片关联，切换到文件模式')
+        setUseFileMode(true)
+      } else {
+        console.log('数据库有有效照片，使用数据库模式')
+        setUseFileMode(false)
+      }
     }
   }, [dbData, page])
 
