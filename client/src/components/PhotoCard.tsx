@@ -7,6 +7,7 @@ import StarProfile from './StarProfile'
 import StarEditModal from './StarEditModal'
 import StarSearchModal from './StarSearchModal'
 import FavoriteButton from './FavoriteButton'
+import { SmartThumbnail } from './SmartImage'
 import { API_BASE_URL } from '../config/api'
 
 interface PhotoCardProps {
@@ -144,17 +145,12 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
         data-photo-id={photo.id}
       >
         <div className="relative w-full h-full">
-          {!imageLoaded && (
-            <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-          )}
-          <img
-            src={`/uploads/photos/${photo.filename}`}
+          <SmartThumbnail
+            filename={photo.filename}
             alt={photo.chineseName}
-            loading="lazy"
-            className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-110 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            className="transition-all duration-300 group-hover:scale-110"
             onLoad={() => setImageLoaded(true)}
+            onError={() => console.error('图片加载失败:', photo.filename)}
           />
           
           {/* Name Overlay */}

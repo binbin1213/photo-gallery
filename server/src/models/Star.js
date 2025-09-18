@@ -58,6 +58,20 @@ const starSchema = new mongoose.Schema({
     type: String
   },
   
+  // 缩略图元数据
+  thumbnails: {
+    small: {
+      webp: { url: String, size: Number, lastGenerated: Date },
+      jpeg: { url: String, size: Number, lastGenerated: Date },
+      png: { url: String, size: Number, lastGenerated: Date }
+    },
+    medium: {
+      webp: { url: String, size: Number, lastGenerated: Date },
+      jpeg: { url: String, size: Number, lastGenerated: Date },
+      png: { url: String, size: Number, lastGenerated: Date }
+    }
+  },
+  
   // 其他信息
   description: {
     type: String,

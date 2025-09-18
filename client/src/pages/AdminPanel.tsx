@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { ArrowLeft, Upload, Download, Database, Users } from 'lucide-react'
+import { ArrowLeft, Upload, Download, Database, Users, Image } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BatchEditModal from '../components/BatchEditModal'
 import DataImportModal from '../components/DataImportModal'
 import EnhancedDataImportModal from '../components/EnhancedDataImportModal'
 import TableImportModal from '../components/TableImportModal'
+import ThumbnailManager from '../components/ThumbnailManager'
 
 export default function AdminPanel() {
   const [isUploading, setIsUploading] = useState(false)
@@ -293,6 +294,11 @@ export default function AdminPanel() {
                      </button>
                    </div>
                  </div>
+        </div>
+
+        {/* 缩略图管理部分 - 全宽布局 */}
+        <div className="mt-8">
+          <ThumbnailManager />
         </div>
       </main>
 

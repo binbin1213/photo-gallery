@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs').promises;
 const Star = require('./models/Star');
 const XLSX = require('xlsx'); // 用于解析Excel文件
+const { thumbnailMiddleware, preGenerateThumbnails } = require('./middleware/thumbnailGenerator');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -889,6 +890,67 @@ app.post('/api/stars/generate-records', async (req, res) => {
     res.status(500).json({ error: '批量生成失败: ' + error.message });
   }
 });
+
+// 批量生成缩略图API（管理员功能）
+app.post('/api/thumbnails/generate', async (req, res) => {
+  try {
+    console.log('🚀 开始批量生成缩略图...');
+    const photosDir = '/app/uploads/photos';
+    
+    // 异步执行，不阻塞响应
+    preGenerateThumbnails(photosDir).catch(error => {
+      console.error('❌ 后台缩略图生成失败:', error);
+    });
+    
+    res.json({ 
+      success: true, 
+      message: '缩略图生成任务已启动，请稍后查看进度' 
+    });
+    
+  } catch (error) {
+    console.error('批量生成缩略图失败:', error);
+    res.status(500).json({ error: '批量生成失败: ' + error.message });
+  }
+});
+
+// 获取缩略图生成状态
+app.get('/api/thumbnails/status', async (req, res) => {
+  try {
+    const photosDir = '/app/uploads/photos';
+    const thumbnailsDir = '/app/uploads/thumbnails';
+    
+    // 统计原图数量
+    const photoFiles = await fs.readdir(photosDir);
+    const imageFiles = photoFiles.filter(file => 
+      /\.(jpg|jpeg|png|gif)$/i.test(file)
+    );
+    
+    // 统计缩略图数量
+    let thumbnailCount = 0;
+    try {
+      const thumbnailFiles = await fs.readdir(thumbnailsDir);
+      thumbnailCount = thumbnailFiles.length;
+    } catch (error) {
+      // 目录不存在
+      thumbnailCount = 0;
+    }
+    
+    res.json({
+      totalPhotos: imageFiles.length,
+      thumbnailFiles: thumbnailCount,
+      coverage: imageFiles.length > 0 ? (thumbnailCount / (imageFiles.length * 6)).toFixed(2) : '0.00', // 每张图6个缩略图文件
+      photosDir,
+      thumbnailsDir
+    });
+    
+  } catch (error) {
+    console.error('获取缩略图状态失败:', error);
+    res.status(500).json({ error: '获取状态失败: ' + error.message });
+  }
+});
+
+// 缩略图服务 - 智能生成和缓存
+app.get('/uploads/thumbnails/:filename', thumbnailMiddleware);
 
 // 提供静态文件服务
 app.use('/uploads', express.static('/app/uploads'));
