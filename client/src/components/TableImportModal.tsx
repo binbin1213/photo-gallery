@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { UploadCloud, X, FileSpreadsheet, Check, AlertCircle, Download } from 'lucide-react'
+import { UploadCloud, X, FileSpreadsheet, Check, AlertCircle, Download, Trash2 } from 'lucide-react'
 
 interface PhotoFile {
   filename: string
@@ -42,6 +42,8 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
     message: string
     count?: number
   } | null>(null)
+  const [updateMode, setUpdateMode] = useState<'smart' | 'clear'>('smart')
+  const [isCleaningUp, setIsCleaningUp] = useState(false)
   const [previewData, setPreviewData] = useState<StarData[]>([])
   const [showPreview, setShowPreview] = useState(false)
 
@@ -145,6 +147,39 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
     return availableUnusedPhotos[index]?.filename || null
   }
 
+  // 清理重复数据
+  const handleCleanupDuplicates = async () => {
+    if (!confirm('确定要清理重复数据吗？这将删除所有没有照片的记录，只保留有照片的记录。')) {
+      return
+    }
+
+    setIsCleaningUp(true)
+    try {
+      const response = await fetch('/api/stars/cleanup-duplicates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert(`清理成功：${result.message}`)
+        // 清理成功后，可以重新导入数据
+        setShowPreview(false)
+        setPreviewData([])
+      } else {
+        throw new Error(result.error || '清理失败')
+      }
+    } catch (error) {
+      console.error('清理重复数据失败:', error)
+      alert('清理失败：' + (error as Error).message)
+    } finally {
+      setIsCleaningUp(false)
+    }
+  }
+
   // 处理导入
   const handleImport = async () => {
     if (previewData.length === 0) {
@@ -176,7 +211,10 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ stars: enhancedData })
+        body: JSON.stringify({ 
+          stars: enhancedData,
+          updateMode: updateMode 
+        })
       })
 
       const result = await response.json()
@@ -323,11 +361,64 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
                 <Download className="w-4 h-4" />
                 下载模板文件
               </button>
+              
+              <button
+                onClick={handleCleanupDuplicates}
+                className="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 disabled:opacity-50"
+                disabled={isCleaningUp}
+              >
+                {isCleaningUp ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    清理中...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    清理重复数据
+                  </>
+                )}
+              </button>
             </div>
           </div>
         ) : (
           /* 预览区域 */
           <div className="space-y-6">
+            {/* 更新模式选择 */}
+            <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+              <h4 className="text-sm font-medium text-white mb-3">导入模式</h4>
+              <div className="space-y-2">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="updateMode"
+                    value="smart"
+                    checked={updateMode === 'smart'}
+                    onChange={(e) => setUpdateMode(e.target.value as 'smart' | 'clear')}
+                    className="w-4 h-4 text-green-500"
+                  />
+                  <div>
+                    <span className="text-white font-medium">智能更新模式</span>
+                    <p className="text-gray-400 text-xs">根据姓名或照片文件名匹配现有记录并更新，保留原有照片</p>
+                  </div>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="updateMode"
+                    value="clear"
+                    checked={updateMode === 'clear'}
+                    onChange={(e) => setUpdateMode(e.target.value as 'smart' | 'clear')}
+                    className="w-4 h-4 text-red-500"
+                  />
+                  <div>
+                    <span className="text-white font-medium">清空重建模式</span>
+                    <p className="text-gray-400 text-xs">清空所有现有数据，重新导入（⚠️ 会丢失现有照片关联）</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+            
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold text-white">数据预览 ({previewData.length} 条记录)</h3>
               <div className="flex gap-2">

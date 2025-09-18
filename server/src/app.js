@@ -214,29 +214,123 @@ app.get('/api/stars/by-photo/:filename', async (req, res) => {
   }
 });
 
+// 清理重复数据
+app.post('/api/stars/cleanup-duplicates', async (req, res) => {
+  try {
+    // 查找所有记录
+    const allStars = await Star.find({});
+    console.log(`找到 ${allStars.length} 条记录`);
+
+    // 按照片文件名分组，找出有照片的记录和没照片的记录
+    const withPhotos = allStars.filter(star => star.photoFilename && !star.photoFilename.startsWith('placeholder_'));
+    const withoutPhotos = allStars.filter(star => !star.photoFilename || star.photoFilename.startsWith('placeholder_'));
+
+    console.log(`有照片的记录: ${withPhotos.length} 条`);
+    console.log(`无照片的记录: ${withoutPhotos.length} 条`);
+
+    // 删除没有照片的重复记录（假设它们是新导入的）
+    const deleteResult = await Star.deleteMany({
+      $or: [
+        { photoFilename: { $exists: false } },
+        { photoFilename: null },
+        { photoFilename: { $regex: '^placeholder_' } }
+      ]
+    });
+
+    console.log(`删除了 ${deleteResult.deletedCount} 条没有照片的记录`);
+
+    res.json({
+      success: true,
+      deletedCount: deleteResult.deletedCount,
+      remainingCount: withPhotos.length,
+      message: `清理完成：删除 ${deleteResult.deletedCount} 条重复记录，保留 ${withPhotos.length} 条有照片的记录`
+    });
+
+  } catch (error) {
+    console.error('清理重复数据失败:', error);
+    res.status(500).json({ error: '清理失败: ' + error.message });
+  }
+});
+
 // 批量导入明星数据
 app.post('/api/stars/import', async (req, res) => {
   try {
-    const { stars } = req.body;
+    const { stars, updateMode = 'smart' } = req.body;
     
     if (!Array.isArray(stars)) {
       return res.status(400).json({ error: '请提供正确的明星数据数组' });
     }
 
-    // 清空现有数据（可选）
-    if (req.query.clear === 'true') {
+    let updatedCount = 0;
+    let createdCount = 0;
+    let skippedCount = 0;
+
+    if (updateMode === 'clear') {
+      // 清空现有数据模式
       await Star.deleteMany({});
       console.log('已清空现有数据');
+      const result = await Star.insertMany(stars);
+      createdCount = result.length;
+    } else {
+      // 智能更新模式
+      for (const starData of stars) {
+        try {
+          // 尝试通过照片文件名匹配现有记录
+          let existingRecord = null;
+          
+          if (starData.photoFilename) {
+            existingRecord = await Star.findOne({ photoFilename: starData.photoFilename });
+          }
+          
+          // 如果没找到，尝试通过姓名匹配
+          if (!existingRecord && (starData.englishName || starData.chineseName)) {
+            const nameQuery = {};
+            if (starData.englishName) nameQuery.englishName = starData.englishName;
+            if (starData.chineseName) nameQuery.chineseName = starData.chineseName;
+            
+            existingRecord = await Star.findOne({
+              $or: [
+                nameQuery.englishName ? { englishName: nameQuery.englishName } : {},
+                nameQuery.chineseName ? { chineseName: nameQuery.chineseName } : {}
+              ].filter(obj => Object.keys(obj).length > 0)
+            });
+          }
+
+          if (existingRecord) {
+            // 更新现有记录，保留原有的照片文件名
+            const updateData = {
+              ...starData,
+              photoFilename: existingRecord.photoFilename // 保留原有照片
+            };
+            
+            await Star.findByIdAndUpdate(existingRecord._id, updateData);
+            updatedCount++;
+            console.log(`更新记录: ${starData.englishName || starData.chineseName} -> ${existingRecord.photoFilename}`);
+          } else {
+            // 创建新记录
+            await Star.create(starData);
+            createdCount++;
+            console.log(`创建新记录: ${starData.englishName || starData.chineseName}`);
+          }
+        } catch (error) {
+          console.error(`处理记录失败:`, starData, error.message);
+          skippedCount++;
+        }
+      }
     }
 
-    // 批量插入
-    const result = await Star.insertMany(stars);
-    console.log(`成功导入 ${result.length} 条明星数据`);
+    const message = updateMode === 'clear' 
+      ? `成功导入 ${createdCount} 条明星数据`
+      : `处理完成: 更新 ${updatedCount} 条, 新建 ${createdCount} 条, 跳过 ${skippedCount} 条`;
+
+    console.log(message);
 
     res.json({ 
       success: true, 
-      count: result.length,
-      message: `成功导入 ${result.length} 条明星数据`
+      updatedCount,
+      createdCount,
+      skippedCount,
+      message
     });
   } catch (error) {
     console.error('批量导入失败:', error);
