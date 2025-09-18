@@ -472,15 +472,15 @@ app.post('/api/import/table', tableUpload.single('file'), async (req, res) => {
 
       // 处理代表作（可能是用顿号或逗号分隔的字符串）
       let works = [];
-      if (representativeWorks) {
+      if (representativeWorks && typeof representativeWorks === 'string') {
         works = representativeWorks.split(/[、，,]/).map(work => 
-          work.trim().replace(/《|》/g, '')
+          (work || '').toString().trim().replace(/《|》/g, '')
         ).filter(work => work);
       }
 
       // 处理生日格式
       let processedBirthDate = birthDate;
-      if (birthDate && birthDate.includes('.')) {
+      if (birthDate && typeof birthDate === 'string' && birthDate.includes('.')) {
         // 处理 1995.1.4 格式
         const parts = birthDate.split('.');
         if (parts.length === 3) {
@@ -492,19 +492,19 @@ app.post('/api/import/table', tableUpload.single('file'), async (req, res) => {
       }
 
       return {
-        englishName: englishName.trim(),
-        chineseName: chineseName.trim(),
+        englishName: (englishName || '').toString().trim(),
+        chineseName: (chineseName || '').toString().trim(),
         thaiName: '',
-        nickname: nickname.trim(),
+        nickname: (nickname || '').toString().trim(),
         birthDate: processedBirthDate,
         birthMonth: processedBirthDate ? new Date(processedBirthDate).getMonth() + 1 : 1,
         height: height || 175,
         weight: null,
-        university: university.trim(),
-        major: major.trim(),
+        university: (university || '').toString().trim(),
+        major: (major || '').toString().trim(),
         degree: '',
         representativeWorks: works,
-        photoFilename: photoFilename.trim(),
+        photoFilename: (photoFilename || '').toString().trim(),
         description: '',
         tags: ['待完善'],
         isActive: true
