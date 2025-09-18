@@ -4,12 +4,10 @@ const starSchema = new mongoose.Schema({
   // 基本信息
   englishName: {
     type: String,
-    required: true,
     trim: true
   },
   chineseName: {
     type: String,
-    required: true,
     trim: true
   },
   thaiName: {
@@ -23,16 +21,13 @@ const starSchema = new mongoose.Schema({
   
   // 个人信息
   birthDate: {
-    type: Date,
-    required: true
+    type: Date
   },
   birthMonth: {
-    type: Number, // 1-12
-    required: true
+    type: Number // 1-12
   },
   height: {
-    type: Number, // 厘米
-    required: true
+    type: Number // 厘米
   },
   weight: {
     type: Number // 公斤
@@ -60,8 +55,7 @@ const starSchema = new mongoose.Schema({
   
   // 照片信息
   photoFilename: {
-    type: String,
-    required: true
+    type: String
   },
   
   // 其他信息

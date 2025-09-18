@@ -492,24 +492,24 @@ app.post('/api/import/table', tableUpload.single('file'), async (req, res) => {
       }
 
       return {
-        englishName: (englishName || '').toString().trim(),
-        chineseName: (chineseName || '').toString().trim(),
+        englishName: (englishName || '').toString().trim() || undefined,
+        chineseName: (chineseName || '').toString().trim() || undefined,
         thaiName: '',
-        nickname: (nickname || '').toString().trim(),
-        birthDate: processedBirthDate,
-        birthMonth: processedBirthDate ? new Date(processedBirthDate).getMonth() + 1 : 1,
-        height: height || 175,
+        nickname: (nickname || '').toString().trim() || undefined,
+        birthDate: processedBirthDate ? new Date(processedBirthDate) : undefined,
+        birthMonth: processedBirthDate ? new Date(processedBirthDate).getMonth() + 1 : undefined,
+        height: height || undefined,
         weight: null,
-        university: (university || '').toString().trim(),
-        major: (major || '').toString().trim(),
+        university: (university || '').toString().trim() || undefined,
+        major: (major || '').toString().trim() || undefined,
         degree: '',
         representativeWorks: works,
-        photoFilename: (photoFilename || '').toString().trim(),
+        photoFilename: (photoFilename || '').toString().trim() || `placeholder_${index + 1}.jpg`,
         description: '',
         tags: ['待完善'],
         isActive: true
       };
-    }).filter(item => item.englishName && item.chineseName); // 过滤掉空行
+    }).filter(item => item.englishName || item.chineseName); // 只要有英文名或中文名其中一个即可
 
     res.json({
       success: true,
