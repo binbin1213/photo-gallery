@@ -69,22 +69,30 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
         const data = await response.json()
         const star = data.star
         
-        // 检查是否是默认生成的数据（需要重新关联）
-        const isDefaultData = star.englishName?.startsWith('Star_') || 
-                             star.chineseName?.startsWith('明星_') ||
-                             star.description?.includes('请完善相关信息')
-        
-        if (isDefaultData) {
-          // 默认数据，显示搜索模态框让用户关联真实艺人
+               // 检查是否是默认生成的数据（需要重新关联）
+               const isDefaultData = star.englishName?.startsWith('Star_') || 
+                                    star.chineseName?.startsWith('明星_') ||
+                                    star.description?.includes('请完善相关信息')
+               
+               if (isDefaultData) {
+                 // 默认数据，只有管理员可以关联
+                 if (isAdmin) {
+                   setShowSearchModal(true)
+                 } else {
+                   alert('只有管理员可以关联艺人信息')
+                 }
+               } else {
+                 // 真实数据，直接显示资料
+                 setStarInfo(star)
+                 setShowProfile(true)
+               }
+      } else if (response.status === 404) {
+        // 未找到关联的明星信息，只有管理员可以关联
+        if (isAdmin) {
           setShowSearchModal(true)
         } else {
-          // 真实数据，直接显示资料
-          setStarInfo(star)
-          setShowProfile(true)
+          alert('只有管理员可以关联艺人信息')
         }
-      } else if (response.status === 404) {
-        // 未找到关联的明星信息，显示搜索模态框
-        setShowSearchModal(true)
       } else {
         const data = await response.json()
         alert('获取明星信息失败：' + (data.error || '未知错误'))
@@ -120,8 +128,12 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
 
   // 处理重新关联
   const handleReassociate = () => {
-    setShowProfile(false)
-    setShowSearchModal(true)
+    if (isAdmin) {
+      setShowProfile(false)
+      setShowSearchModal(true)
+    } else {
+      alert('只有管理员可以重新关联艺人信息')
+    }
   }
 
   return (

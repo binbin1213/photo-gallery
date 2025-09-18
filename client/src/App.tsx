@@ -3,20 +3,27 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 import PhotoGallery from './pages/PhotoGallery'
 import AdminPanel from './pages/AdminPanel'
+import ProtectedAdminRoute from './components/ProtectedAdminRoute'
+import { AdminProvider } from './contexts/AdminContext'
 
 const queryClient = new QueryClient()
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router basename="/">
-        <div className="min-h-screen" style={{
-          backgroundColor: '#4b5563'
-        }}>
-          <Routes>
-            <Route path="/" element={<PhotoGallery />} />
-            <Route path="/admin" element={<AdminPanel />} />
-          </Routes>
+      <AdminProvider>
+        <Router basename="/">
+          <div className="min-h-screen" style={{
+            backgroundColor: '#4b5563'
+          }}>
+            <Routes>
+              <Route path="/" element={<PhotoGallery />} />
+              <Route path="/admin" element={
+                <ProtectedAdminRoute>
+                  <AdminPanel />
+                </ProtectedAdminRoute>
+              } />
+            </Routes>
           <Toaster 
             position="top-right"
             toastOptions={{
@@ -35,7 +42,8 @@ function App() {
             }}
           />
         </div>
-      </Router>
+        </Router>
+      </AdminProvider>
     </QueryClientProvider>
   )
 }

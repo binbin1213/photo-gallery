@@ -5,6 +5,7 @@ import SearchBar from '../components/SearchBar'
 import AdminLoginModal from '../components/AdminLoginModal'
 import StatsPanel from '../components/StatsPanel'
 import FilterBar from '../components/FilterBar'
+import { useAdmin } from '../contexts/AdminContext'
 // 移除usePhotos，改用InfinitePhotoGrid
 import { Photo } from '../types/photo'
 import { API_BASE_URL } from '../config/api'
@@ -15,7 +16,7 @@ export default function PhotoGallery() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   // 移除随机排序相关状态，改用InfinitePhotoGrid
   const [showAdminLogin, setShowAdminLogin] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { isAdmin, setIsAdmin } = useAdmin()
   const [replacingPhoto, setReplacingPhoto] = useState<Photo | null>(null)
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
