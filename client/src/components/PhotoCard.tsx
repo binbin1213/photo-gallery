@@ -5,6 +5,7 @@ import { RefreshCw, X } from 'lucide-react'
 import { Photo } from '../types/photo'
 import StarProfile from './StarProfile'
 import StarEditModal from './StarEditModal'
+import StarSearchModal from './StarSearchModal'
 import FavoriteButton from './FavoriteButton'
 import { API_BASE_URL } from '../config/api'
 
@@ -17,6 +18,7 @@ interface PhotoCardProps {
 export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCardProps) {
   const [showProfile, setShowProfile] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showSearchModal, setShowSearchModal] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [starInfo, setStarInfo] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -62,17 +64,21 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
     setLoading(true)
     try {
       const response = await fetch(`${API_BASE_URL}/stars/by-photo/${photo.filename}`)
-      const data = await response.json()
       
-      if (data.star) {
+      if (response.ok) {
+        const data = await response.json()
         setStarInfo(data.star)
         setShowProfile(true)
+      } else if (response.status === 404) {
+        // 未找到关联的明星信息，显示搜索模态框
+        setShowSearchModal(true)
       } else {
-        alert('未找到该明星的详细信息')
+        const data = await response.json()
+        alert('获取明星信息失败：' + (data.error || '未知错误'))
       }
     } catch (error) {
       console.error('获取明星信息失败:', error)
-      alert('获取明星信息失败')
+      alert('获取明星信息失败：网络错误')
     } finally {
       setLoading(false)
     }
@@ -90,6 +96,13 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
     setShowEditModal(false)
     // 可以在这里添加成功提示
     alert('明星信息更新成功！')
+  }
+
+  // 处理艺人关联成功
+  const handleAssociate = (associatedStar: any) => {
+    setStarInfo(associatedStar)
+    setShowSearchModal(false)
+    setShowProfile(true)
   }
 
   return (
@@ -179,6 +192,16 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
                  onClose={() => setShowEditModal(false)}
                  star={starInfo}
                  onSave={handleSaveEdit}
+               />,
+               document.body
+             )}
+
+             {showSearchModal && createPortal(
+               <StarSearchModal
+                 isOpen={showSearchModal}
+                 onClose={() => setShowSearchModal(false)}
+                 photoFilename={photo.filename}
+                 onAssociate={handleAssociate}
                />,
                document.body
              )}
