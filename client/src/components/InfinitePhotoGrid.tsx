@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { usePhotosPaginated } from '../hooks/usePhotosPaginated'
-import { usePhotosFromFiles } from '../hooks/usePhotosFromFiles'
+import { usePhotosWithAssociations } from '../hooks/usePhotosWithAssociations' // 支持关联显示的hook
 import PhotoCard from './PhotoCard'
 import { Photo } from '../types/photo'
 
@@ -35,8 +35,8 @@ export default function InfinitePhotoGrid({
   // 尝试从数据库获取照片
   const { data: dbData, isLoading: dbLoading, error: dbError } = usePhotosPaginated(page, 20, search, sortBy, sortOrder)
   
-  // 从文件获取照片（备用模式）
-  const { data: fileData, isLoading: fileLoading, error: fileError } = usePhotosFromFiles(page, 20, search)
+  // 从文件获取照片并显示关联信息
+  const { data: fileData, isLoading: fileLoading, error: fileError } = usePhotosWithAssociations(page, 20, search)
 
   // 强制使用文件模式：显示实际照片文件，等待手动关联艺人信息
   useEffect(() => {
