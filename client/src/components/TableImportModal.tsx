@@ -257,13 +257,11 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
     setImportResult(null)
 
     try {
-      // 为每个明星数据匹配照片
+      // 导入艺人数据，不自动关联照片（等待手动关联）
       const enhancedData = previewData.map((starData, index) => {
-        const matchedPhoto = findMatchingPhoto(starData, index)
-        
         return {
           ...starData,
-          photoFilename: matchedPhoto || `unmatched_${index + 1}.jpg`,
+          // 不设置photoFilename，让照片保持文件模式显示，等待手动关联
           birthDate: starData.birthDate ? new Date(starData.birthDate).toISOString() : new Date('1990-01-01').toISOString(),
           birthMonth: starData.birthMonth || 1,
           height: starData.height || 175,
@@ -569,7 +567,6 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
                 <tbody>
                   {previewData.slice(0, 10).map((star, index) => {
                     console.log('渲染数据行:', index, star)
-                    const matchedPhoto = findMatchingPhoto(star, index)
                     return (
                       <tr key={index} className="border-b border-white/10">
                         <td className="px-3 py-2">{star.englishName}</td>
@@ -580,10 +577,8 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
                         <td className="px-3 py-2">{star.university || '-'}</td>
                         <td className="px-3 py-2">{star.major || '-'}</td>
                         <td className="px-3 py-2">
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            matchedPhoto ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                          }`}>
-                            {matchedPhoto || '未匹配'}
+                          <span className="px-2 py-1 rounded text-xs bg-blue-500/20 text-blue-400">
+                            待手动关联
                           </span>
                         </td>
                       </tr>
