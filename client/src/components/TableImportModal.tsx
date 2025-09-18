@@ -133,15 +133,15 @@ export default function TableImportModal({ isOpen, onClose }: TableImportModalPr
     
     // 1. 精确匹配
     const exactMatch = availableUnusedPhotos.find(photo => 
-      photo.filename.toLowerCase().includes(starData.englishName.toLowerCase()) ||
-      photo.filename.toLowerCase().includes(starData.chineseName.toLowerCase())
+      (starData.englishName && photo.filename.toLowerCase().includes(starData.englishName.toLowerCase())) ||
+      (starData.chineseName && photo.filename.toLowerCase().includes(starData.chineseName.toLowerCase()))
     )
     if (exactMatch) return exactMatch.filename
 
     // 2. 部分匹配
     const partialMatch = availableUnusedPhotos.find(photo => 
-      starData.englishName.toLowerCase().includes(photo.filename.split('.')[0].toLowerCase()) ||
-      starData.chineseName.toLowerCase().includes(photo.filename.split('.')[0].toLowerCase())
+      (starData.englishName && starData.englishName.toLowerCase().includes(photo.filename.split('.')[0].toLowerCase())) ||
+      (starData.chineseName && starData.chineseName.toLowerCase().includes(photo.filename.split('.')[0].toLowerCase()))
     )
     if (partialMatch) return partialMatch.filename
 
