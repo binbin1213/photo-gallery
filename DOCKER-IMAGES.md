@@ -1,162 +1,149 @@
-# Docker镜像使用指南
+# Docker镜像构建和发布指南
 
-## 🐳 **GitHub Container Registry镜像**
+## 📦 镜像信息
 
-### **镜像地址**
-- **前端镜像**: `ghcr.io/binbin1213/photo-gallery-frontend:latest`
-- **后端镜像**: `ghcr.io/binbin1213/photo-gallery-backend:latest`
+### 前端镜像
+- **镜像名称**: `ghcr.io/binbin1213/photo-gallery-frontend`
+- **基础镜像**: `nginx:alpine`
+- **构建上下文**: `./client`
+- **暴露端口**: `80`
 
-### **拉取镜像**
+### 后端镜像
+- **镜像名称**: `ghcr.io/binbin1213/photo-gallery-backend`
+- **基础镜像**: `node:18-alpine`
+- **构建上下文**: `./server`
+- **暴露端口**: `5000`
+
+## 🔧 本地构建
+
+### 构建前端镜像
 ```bash
-# 拉取最新镜像
-docker pull ghcr.io/binbin1213/photo-gallery-frontend:latest
-docker pull ghcr.io/binbin1213/photo-gallery-backend:latest
-
-# 拉取特定版本
-docker pull ghcr.io/binbin1213/photo-gallery-frontend:v1.0.0
-docker pull ghcr.io/binbin1213/photo-gallery-backend:v1.0.0
-```
-
-## 🚀 **快速部署**
-
-### **方法1：使用预构建镜像**
-```bash
-# 1. 克隆仓库
-git clone https://github.com/binbin1213/photo-gallery.git
-cd photo-gallery
-
-# 2. 创建生产环境配置
-cat > docker-compose.prod.yml << EOF
-services:
-  api:
-    image: ghcr.io/binbin1213/photo-gallery-backend:latest
-    container_name: photo-gallery-api
-    restart: unless-stopped
-    ports:
-      - "5551:5000"
-    environment:
-      NODE_ENV: production
-      PORT: 5000
-      UPLOAD_PATH: /app/uploads
-    volumes:
-      - ./photos:/app/uploads/photos:ro
-      - ./data:/app/data
-      - api_uploads:/app/uploads
-    networks:
-      - photo-network
-
-  web:
-    image: ghcr.io/binbin1213/photo-gallery-frontend:latest
-    container_name: photo-gallery-web
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    depends_on:
-      - api
-    networks:
-      - photo-network
-
-volumes:
-  api_uploads:
-
-networks:
-  photo-network:
-    driver: bridge
-EOF
-
-# 3. 启动服务
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-### **方法2：本地构建**
-```bash
-# 使用本地构建
-docker-compose up -d --build
-```
-
-## 📋 **镜像标签说明**
-
-### **标签格式**
-- `latest` - 最新版本
-- `v1.0.0` - 语义化版本标签
-- `abc1234` - Git提交哈希
-
-### **查看可用标签**
-访问 [GitHub Container Registry](https://github.com/binbin1213/photo-gallery/pkgs/container/photo-gallery-frontend)
-
-## 🔧 **开发环境**
-
-### **本地开发**
-```bash
-# 前端开发
 cd client
-npm install
-npm run dev
+docker build -t photo-gallery-frontend:local .
+```
 
-# 后端开发
+### 构建后端镜像
+```bash
 cd server
-npm install
-npm run dev
+docker build -t photo-gallery-backend:local .
 ```
 
-### **Docker开发**
+### 本地测试
 ```bash
-# 构建并启动
-docker-compose up -d
+# 启动MongoDB
+docker run -d --name test-mongodb \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=photo_gallery_2024 \
+  -e MONGO_INITDB_DATABASE=photo_gallery \
+  -p 27017:27017 \
+  mongo:7.0
 
-# 查看日志
-docker-compose logs -f
+# 启动后端
+docker run -d --name test-backend \
+  -e NODE_ENV=production \
+  -e MONGODB_URI=mongodb://admin:photo_gallery_2024@host.docker.internal:27017/photo_gallery?authSource=admin \
+  -e DB_NAME=photo_gallery \
+  -p 5551:5000 \
+  photo-gallery-backend:local
 
-# 停止服务
-docker-compose down
+# 启动前端
+docker run -d --name test-frontend \
+  -p 8080:80 \
+  photo-gallery-frontend:local
 ```
 
-## 📊 **镜像大小优化**
+## 🚀 自动构建和发布
 
-### **前端镜像**
-- 基础镜像: `nginx:alpine`
-- 构建后大小: ~80MB
-- 包含: React应用 + Nginx
+### GitHub Actions工作流
 
-### **后端镜像**
-- 基础镜像: `node:18-alpine`
-- 构建后大小: ~350MB
-- 包含: Node.js应用 + 依赖
+项目使用GitHub Actions自动构建和发布Docker镜像：
 
-## 🔄 **自动构建**
+1. **触发条件**:
+   - 推送到`main`分支
+   - 创建新的标签（`v*`）
+   - 手动触发
 
-### **触发条件**
-- 推送到 `main` 分支
-- 创建标签 (如 `v1.0.0`)
-- 手动触发
+2. **构建过程**:
+   - 设置Docker Buildx
+   - 登录GitHub Container Registry
+   - 构建前端和后端镜像
+   - 推送镜像到GHCR
+   - 生成生产环境配置文件
 
-### **构建状态**
-查看 [Actions页面](https://github.com/binbin1213/photo-gallery/actions)
+3. **镜像标签**:
+   - `latest`: 最新的main分支构建
+   - `<commit-sha>`: 特定提交的镜像
+   - `<tag>`: 版本标签镜像
 
-## 🛠️ **故障排除**
+### 发布新版本
 
-### **权限问题**
-```bash
-# 登录GitHub Container Registry
-echo $GITHUB_TOKEN | docker login ghcr.io -u binbin1213 --password-stdin
-```
+1. **创建版本标签**:
+   ```bash
+   git tag -a v2.1.0 -m "Release v2.1.0"
+   git push origin v2.1.0
+   ```
 
-### **镜像拉取失败**
-```bash
-# 检查网络连接
-docker pull hello-world
+2. **GitHub Actions自动执行**:
+   - 构建Docker镜像
+   - 推送到Container Registry
+   - 创建GitHub Release
+   - 生成发布说明
 
-# 检查镜像是否存在
-docker search ghcr.io/binbin1213/photo-gallery
-```
+## 📋 镜像版本历史
 
-### **服务启动失败**
-```bash
-# 查看详细日志
-docker-compose logs -f api
-docker-compose logs -f web
+### v2.0.0 (当前版本)
+- ✨ 照片-艺人关联系统
+- 🗄️ MongoDB数据库集成
+- 📊 Excel/CSV数据导入
+- 🔐 安全权限控制
+- 🎨 现代化UI设计
 
-# 检查端口占用
-netstat -tulpn | grep :80
-netstat -tulpn | grep :5551
-```
+### v1.0.0
+- 🎯 基础照片展示
+- 🔍 简单搜索功能
+- 📱 响应式设计
+
+## 🔍 镜像详情
+
+### 镜像大小优化
+- 使用Alpine Linux基础镜像
+- 多阶段构建减少镜像体积
+- 仅安装生产环境依赖
+
+### 安全特性
+- 非root用户运行
+- 健康检查配置
+- 最小化攻击面
+
+### 性能优化
+- Nginx静态文件服务
+- Node.js生产模式
+- 压缩和缓存配置
+
+## 🛠️ 故障排除
+
+### 常见问题
+
+1. **镜像拉取失败**:
+   ```bash
+   # 检查镜像是否存在
+   docker pull ghcr.io/binbin1213/photo-gallery-frontend:latest
+   ```
+
+2. **容器启动失败**:
+   ```bash
+   # 查看容器日志
+   docker logs <container-name>
+   ```
+
+3. **权限问题**:
+   ```bash
+   # 确保有权限访问GHCR
+   echo $GITHUB_TOKEN | docker login ghcr.io -u <username> --password-stdin
+   ```
+
+## 📖 相关文档
+
+- [部署指南](./README.md)
+- [群晖部署](./SYNOLOGY-DEPLOYMENT.md)
+- [Docker Compose配置](./docker-compose.yml)

@@ -73,18 +73,55 @@ jobs:
         tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
         body: |
-          🚀 **Docker Images Released**
+          🎉 **照片展示墙 v2.0 - Docker镜像发布**
           
-          **Frontend Image:**
-          `${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ github.sha }}`
+          ## 🆕 新功能
+          - 🎭 **照片-艺人关联系统**：智能搜索和关联功能
+          - 📊 **Excel/CSV批量导入**：支持艺人数据批量管理
+          - 🔐 **安全权限控制**：管理员身份验证和权限管理
+          - 🗄️ **MongoDB集成**：完整的数据库支持
           
-          **Backend Image:**
-          `${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ github.sha }}`
+          ## 📦 Docker镜像
           
-          **Usage:**
+          **前端镜像:**
           ```bash
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ github.sha }}
+          ```
+          
+          **后端镜像:**
+          ```bash
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:latest
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ github.sha }}
           ```
+          
+          ## 🚀 快速部署
+          
+          **群晖部署:**
+          ```bash
+          # 下载配置文件
+          wget https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.synology.yml
+          
+          # 启动服务
+          docker-compose -f docker-compose.synology.yml up -d
+          ```
+          
+          **通用部署:**
+          ```bash
+          # 下载配置文件
+          wget https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.prod.yml
+          
+          # 启动服务
+          docker-compose -f docker-compose.prod.yml up -d
+          ```
+          
+          ## 📖 文档
+          - [部署指南](https://github.com/${{ github.repository }}/blob/main/README.md)
+          - [群晖部署](https://github.com/${{ github.repository }}/blob/main/SYNOLOGY-DEPLOYMENT.md)
+          
+          ## ⚠️ 重要提醒
+          - v2.0需要MongoDB数据库支持
+          - 首次部署请创建必要的数据目录
+          - 建议定期备份MongoDB数据
         draft: false
         prerelease: false

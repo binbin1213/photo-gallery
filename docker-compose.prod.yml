@@ -1,4 +1,23 @@
+version: '3.8'
+
 services:
+  # MongoDB数据库服务
+  mongodb:
+    image: mongo:7.0
+    container_name: photo-gallery-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: photo_gallery_2024
+      MONGO_INITDB_DATABASE: photo_gallery
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - photo-network
+
+  # 后端API服务
   api:
     image: ghcr.io/binbin1213/photo-gallery-backend:latest
     container_name: photo-gallery-api
@@ -9,13 +28,19 @@ services:
       NODE_ENV: production
       PORT: 5000
       UPLOAD_PATH: /app/uploads
+      # MongoDB连接配置
+      MONGODB_URI: mongodb://admin:photo_gallery_2024@mongodb:27017/photo_gallery?authSource=admin
+      DB_NAME: photo_gallery
     volumes:
       - ./photos:/app/uploads/photos:ro
       - ./data:/app/data
       - api_uploads:/app/uploads
+    depends_on:
+      - mongodb
     networks:
       - photo-network
 
+  # 前端服务
   web:
     image: ghcr.io/binbin1213/photo-gallery-frontend:latest
     container_name: photo-gallery-web
@@ -29,6 +54,7 @@ services:
 
 volumes:
   api_uploads:
+  mongodb_data:
 
 networks:
   photo-network:
