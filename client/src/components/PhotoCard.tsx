@@ -153,13 +153,13 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
           />
           
           {/* Name Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent p-1.5 sm:p-2 transition-all duration-300 group-hover:bg-gradient-to-t group-hover:from-black/50 group-hover:via-black/25 group-hover:to-transparent">
-            <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center" style={{color: 'white'}}>
-              <span className="font-bold text-xs sm:text-sm transition-all duration-300 group-hover:scale-105 truncate" style={{color: 'white'}}>
+          <div className="absolute bottom-0 left-0 right-0 p-1.5 sm:p-2">
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-center">
+              <span className="font-bold text-xs sm:text-sm transition-all duration-300 group-hover:scale-105 truncate text-white drop-shadow-lg" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
                 {photo.chineseName}
               </span>
-              <span className="text-xs flex-shrink-0" style={{color: 'rgba(255,255,255,0.6)'}}>•</span>
-              <span className="font-medium text-xs sm:text-sm italic transition-all duration-300 group-hover:scale-105 truncate" style={{color: 'rgba(255,255,255,0.9)'}}>
+              <span className="text-xs flex-shrink-0 text-white/80 drop-shadow-lg" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>•</span>
+              <span className="font-medium text-xs sm:text-sm italic transition-all duration-300 group-hover:scale-105 truncate text-white/90 drop-shadow-lg" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
                 {photo.englishName}
               </span>
             </div>
