@@ -61,6 +61,13 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
   const [castListData, setCastListData] = useState<CastListData | null>(null)
   const [isLoadingCast, setIsLoadingCast] = useState(false)
   const [selectedMovie, setSelectedMovie] = useState<string | null>(null)
+  
+  // 调试信息
+  console.log('🔍 StarProfile接收到的数据:', star)
+  console.log('🔍 数据来源:', star.source)
+  console.log('🔍 出生地:', star.placeOfBirth)
+  console.log('🔍 个人简介:', star.biography)
+  console.log('🔍 性别:', star.gender)
 
   // 格式化生日
   const formatBirthDate = (dateString: string) => {

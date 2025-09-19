@@ -170,6 +170,10 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
       }
       
       console.log('✅ 艺人详情获取成功:', detailData)
+      console.log('🔍 出生地:', detailData.place_of_birth)
+      console.log('🔍 个人简介:', detailData.biography)
+      console.log('🔍 性别:', detailData.gender)
+      console.log('🔍 别名:', detailData.also_known_as)
       
       // 使用详情数据创建新艺人
       const createResponse = await fetch(`${API_BASE_URL}/stars`, {
