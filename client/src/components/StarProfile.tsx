@@ -18,6 +18,15 @@ interface Star {
   representativeWorks?: string[]
   photoFilename: string
   description?: string
+  // TMDB相关字段
+  source?: 'tmdb' | 'local'
+  tmdbId?: number
+  popularity?: number
+  department?: string
+  placeOfBirth?: string
+  biography?: string
+  profileImage?: string
+  knownFor?: string[]
 }
 
 interface CastMember {
@@ -203,38 +212,113 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
 
           {/* 基本信息 */}
           <div className="space-y-4">
-            {/* 生日 */}
-            <div className="flex items-center space-x-3">
-              <Calendar className="w-5 h-5 text-blue-500 flex-shrink-0" />
-              <div>
-                <p className="text-sm text-gray-500">出生日期</p>
-                <p className="text-sm text-gray-700">
-                  {formatBirthDate(star.birthDate)}
-                </p>
+            {/* 数据来源标识 */}
+            {star.source === 'tmdb' && (
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                  TMDB数据
+                </div>
+                {star.popularity && (
+                  <div className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                    热度: {Math.round(star.popularity)}
+                  </div>
+                )}
               </div>
-            </div>
+            )}
 
-            {/* 身高年龄 */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center space-x-3">
-                <Ruler className="w-5 h-5 text-green-500 flex-shrink-0" />
-                <div>
-                  <p className="text-sm text-gray-500">身高</p>
-                  <p className="text-sm text-gray-700">
-                    {formatHeight(star.height)}
-                  </p>
+            {/* 根据数据来源显示不同模板 */}
+            {star.source === 'tmdb' ? (
+              // TMDB模板
+              <>
+                {/* 生日 */}
+                {star.birthDate && star.birthDate !== 'undefined' && (
+                  <div className="flex items-center space-x-3">
+                    <Calendar className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">出生日期</p>
+                      <p className="text-sm text-gray-700">
+                        {formatBirthDate(star.birthDate)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 出生地 */}
+                {star.placeOfBirth && (
+                  <div className="flex items-center space-x-3">
+                    <User className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">出生地</p>
+                      <p className="text-sm text-gray-700">
+                        {star.placeOfBirth}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 职业部门 */}
+                {star.department && (
+                  <div className="flex items-center space-x-3">
+                    <Film className="w-5 h-5 text-red-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">职业</p>
+                      <p className="text-sm text-gray-700">
+                        {star.department}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 年龄 */}
+                {displayAge && (
+                  <div className="flex items-center space-x-3">
+                    <User className="w-5 h-5 text-purple-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">年龄</p>
+                      <p className="text-sm text-gray-700">
+                        {formatAge(displayAge)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              // 本地数据库模板
+              <>
+                {/* 生日 */}
+                <div className="flex items-center space-x-3">
+                  <Calendar className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-gray-500">出生日期</p>
+                    <p className="text-sm text-gray-700">
+                      {formatBirthDate(star.birthDate)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <User className="w-5 h-5 text-purple-500 flex-shrink-0" />
-                <div>
-                  <p className="text-sm text-gray-500">年龄</p>
-                  <p className="text-sm text-gray-700">
-                    {formatAge(displayAge)}
-                  </p>
+
+                {/* 身高年龄 */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-3">
+                    <Ruler className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">身高</p>
+                      <p className="text-sm text-gray-700">
+                        {formatHeight(star.height)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <User className="w-5 h-5 text-purple-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500">年龄</p>
+                      <p className="text-sm text-gray-700">
+                        {formatAge(displayAge)}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
 
             {/* 教育信息 */}
             {(star.university || star.major) && (
@@ -279,11 +363,11 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
             )}
 
             {/* 个人描述 */}
-            {star.description && (
+            {(star.description || star.biography) && (
               <div className="pt-2 border-t border-gray-200">
                 <p className="text-sm text-gray-500 mb-2">个人简介</p>
                 <p className="text-sm text-gray-700 leading-relaxed">
-                  {star.description}
+                  {star.biography || star.description}
                 </p>
               </div>
             )}
