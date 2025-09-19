@@ -165,7 +165,7 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
             )}
             <span className="font-medium text-sm sm:text-base italic transition-all duration-300 group-hover:scale-105 truncate text-white/90" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               {photo.englishName}
-            </span>呢
+            </span>
           </div>
 
           {/* Loading Overlay */}
