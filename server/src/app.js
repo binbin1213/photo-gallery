@@ -8,6 +8,7 @@ const Star = require('./models/Star');
 const XLSX = require('xlsx'); // 用于解析Excel文件
 const { thumbnailMiddleware, preGenerateThumbnails } = require('./middleware/thumbnailGenerator');
 const { HttpsProxyAgent } = require('https-proxy-agent');
+const https = require('https');
 
 // TMDB API配置
 const TMDB_ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZWRhYTA1YzBmY2RlMmRiYjE3ZTdjZDg4ZDI0ZjNkOSIsIm5iZiI6MTU5OTk2NjM5MS43NDcsInN1YiI6IjVmNWQ4Y2I3NjNkOTM3MDAzNmJiMmZjMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.saAFMNKEZz_51mxXyTq-CjJSMI3Tjpk6KzTmbYQqaCo';
@@ -16,6 +17,58 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 // 配置代理（如果需要）
 const proxyUrl = process.env.HTTP_PROXY || process.env.http_proxy;
 const agent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
+
+// TMDB API请求函数
+function makeTMDBRequest(url) {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    
+    const options = {
+      hostname: urlObj.hostname,
+      port: urlObj.port || 443,
+      path: urlObj.pathname + urlObj.search,
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
+        'accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+      },
+      agent: agent
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          const result = JSON.parse(data);
+          resolve({
+            ok: res.statusCode >= 200 && res.statusCode < 300,
+            status: res.statusCode,
+            json: () => Promise.resolve(result)
+          });
+        } catch (e) {
+          reject(new Error(`JSON解析失败: ${e.message}`));
+        }
+      });
+    });
+
+    req.on('error', (e) => {
+      reject(new Error(`请求失败: ${e.message}`));
+    });
+
+    req.setTimeout(10000, () => {
+      req.destroy();
+      reject(new Error('请求超时'));
+    });
+
+    req.end();
+  });
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -1039,14 +1092,7 @@ app.get('/api/tmdb/search/person', async (req, res) => {
     
     const searchUrl = `${TMDB_BASE_URL}/search/person?query=${encodeURIComponent(query.trim())}&language=zh-CN&include_adult=false&page=1`;
     
-    const response = await fetch(searchUrl, {
-      headers: {
-        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
-        'accept': 'application/json'
-      },
-      agent: agent
-    });
-    
+    const response = await makeTMDBRequest(searchUrl);
     const data = await response.json();
     
     if (!response.ok) {
@@ -1097,14 +1143,7 @@ app.get('/api/tmdb/search/movie', async (req, res) => {
     
     const searchUrl = `${TMDB_BASE_URL}/search/movie?query=${encodeURIComponent(query.trim())}&language=zh-CN&include_adult=false&page=1`;
     
-    const response = await fetch(searchUrl, {
-      headers: {
-        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
-        'accept': 'application/json'
-      },
-      agent: agent
-    });
-    
+    const response = await makeTMDBRequest(searchUrl);
     const data = await response.json();
     
     if (!response.ok) {
@@ -1151,14 +1190,7 @@ app.get('/api/tmdb/movie/:movieId/cast', async (req, res) => {
     
     const castUrl = `${TMDB_BASE_URL}/movie/${movieId}/credits`;
     
-    const response = await fetch(castUrl, {
-      headers: {
-        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
-        'accept': 'application/json'
-      },
-      agent: agent
-    });
-    
+    const response = await makeTMDBRequest(castUrl);
     const data = await response.json();
     
     if (!response.ok) {
@@ -1215,14 +1247,7 @@ app.get('/api/tmdb/person/:personId', async (req, res) => {
     
     const personUrl = `${TMDB_BASE_URL}/person/${personId}?language=zh-CN`;
     
-    const response = await fetch(personUrl, {
-      headers: {
-        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
-        'accept': 'application/json'
-      },
-      agent: agent
-    });
-    
+    const response = await makeTMDBRequest(personUrl);
     const data = await response.json();
     
     if (!response.ok) {
