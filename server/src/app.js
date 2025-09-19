@@ -7,6 +7,15 @@ const fs = require('fs').promises;
 const Star = require('./models/Star');
 const XLSX = require('xlsx'); // 用于解析Excel文件
 const { thumbnailMiddleware, preGenerateThumbnails } = require('./middleware/thumbnailGenerator');
+const { HttpsProxyAgent } = require('https-proxy-agent');
+
+// TMDB API配置
+const TMDB_ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZWRhYTA1YzBmY2RlMmRiYjE3ZTdjZDg4ZDI0ZjNkOSIsIm5iZiI6MTU5OTk2NjM5MS43NDcsInN1YiI6IjVmNWQ4Y2I3NjNkOTM3MDAzNmJiMmZjMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.saAFMNKEZz_51mxXyTq-CjJSMI3Tjpk6KzTmbYQqaCo';
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+
+// 配置代理（如果需要）
+const proxyUrl = process.env.HTTP_PROXY || process.env.http_proxy;
+const agent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -1017,6 +1026,239 @@ app.get('/api/thumbnails/status', async (req, res) => {
 
 // 缩略图服务 - 智能生成和缓存
 app.get('/uploads/thumbnails/:filename', thumbnailMiddleware);
+
+// TMDB API接口
+// 搜索艺人
+app.get('/api/tmdb/search/person', async (req, res) => {
+  try {
+    const { query, limit = 10 } = req.query;
+    
+    if (!query || query.trim() === '') {
+      return res.json({ results: [] });
+    }
+    
+    const searchUrl = `${TMDB_BASE_URL}/search/person?query=${encodeURIComponent(query.trim())}&language=zh-CN&include_adult=false&page=1`;
+    
+    const response = await fetch(searchUrl, {
+      headers: {
+        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
+        'accept': 'application/json'
+      },
+      agent: agent
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('TMDB API错误:', data);
+      return res.status(500).json({ error: 'TMDB API请求失败', details: data });
+    }
+    
+    // 格式化返回数据
+    const formattedResults = data.results.slice(0, parseInt(limit)).map(person => ({
+      id: person.id,
+      name: person.name,
+      chineseName: person.also_known_as?.[0] || person.name,
+      englishName: person.name,
+      birthday: person.birthday,
+      placeOfBirth: person.place_of_birth,
+      biography: person.biography,
+      profilePath: person.profile_path,
+      profileImage: person.profile_path ? `https://image.tmdb.org/t/p/w500${person.profile_path}` : null,
+      knownFor: person.known_for?.map(item => item.title || item.name) || [],
+      popularity: person.popularity,
+      department: person.known_for_department,
+      gender: person.gender,
+      adult: person.adult,
+      source: 'tmdb'
+    }));
+    
+    res.json({ 
+      results: formattedResults,
+      total: data.total_results,
+      page: data.page,
+      totalPages: data.total_pages
+    });
+    
+  } catch (error) {
+    console.error('TMDB搜索失败:', error);
+    res.status(500).json({ error: 'TMDB搜索失败', details: error.message });
+  }
+});
+
+// 搜索电影
+app.get('/api/tmdb/search/movie', async (req, res) => {
+  try {
+    const { query, limit = 10 } = req.query;
+    
+    if (!query || query.trim() === '') {
+      return res.json({ results: [] });
+    }
+    
+    const searchUrl = `${TMDB_BASE_URL}/search/movie?query=${encodeURIComponent(query.trim())}&language=zh-CN&include_adult=false&page=1`;
+    
+    const response = await fetch(searchUrl, {
+      headers: {
+        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
+        'accept': 'application/json'
+      },
+      agent: agent
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('TMDB电影搜索API错误:', data);
+      return res.status(500).json({ error: 'TMDB电影搜索失败', details: data });
+    }
+    
+    // 格式化返回数据
+    const formattedResults = data.results.slice(0, parseInt(limit)).map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      originalTitle: movie.original_title,
+      overview: movie.overview,
+      releaseDate: movie.release_date,
+      voteAverage: movie.vote_average,
+      voteCount: movie.vote_count,
+      popularity: movie.popularity,
+      posterPath: movie.poster_path,
+      posterImage: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+      backdropPath: movie.backdrop_path,
+      genreIds: movie.genre_ids,
+      adult: movie.adult,
+      originalLanguage: movie.original_language,
+      source: 'tmdb'
+    }));
+    
+    res.json({ 
+      results: formattedResults,
+      total: data.total_results,
+      page: data.page,
+      totalPages: data.total_pages
+    });
+    
+  } catch (error) {
+    console.error('TMDB电影搜索失败:', error);
+    res.status(500).json({ error: 'TMDB电影搜索失败', details: error.message });
+  }
+});
+
+// 获取电影演员列表
+app.get('/api/tmdb/movie/:movieId/cast', async (req, res) => {
+  try {
+    const { movieId } = req.params;
+    
+    const castUrl = `${TMDB_BASE_URL}/movie/${movieId}/credits`;
+    
+    const response = await fetch(castUrl, {
+      headers: {
+        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
+        'accept': 'application/json'
+      },
+      agent: agent
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('TMDB演员列表API错误:', data);
+      return res.status(500).json({ error: '获取演员列表失败', details: data });
+    }
+    
+    // 格式化演员数据
+    const formattedCast = data.cast.map(actor => ({
+      id: actor.id,
+      name: actor.name,
+      character: actor.character,
+      order: actor.order,
+      profilePath: actor.profile_path,
+      profileImage: actor.profile_path ? `https://image.tmdb.org/t/p/w500${actor.profile_path}` : null,
+      adult: actor.adult,
+      gender: actor.gender,
+      knownForDepartment: actor.known_for_department,
+      popularity: actor.popularity
+    }));
+    
+    // 格式化工作人员数据
+    const formattedCrew = data.crew.map(member => ({
+      id: member.id,
+      name: member.name,
+      job: member.job,
+      department: member.department,
+      profilePath: member.profile_path,
+      profileImage: member.profile_path ? `https://image.tmdb.org/t/p/w500${member.profile_path}` : null,
+      adult: member.adult,
+      gender: member.gender,
+      knownForDepartment: member.known_for_department,
+      popularity: member.popularity
+    }));
+    
+    res.json({
+      id: data.id,
+      cast: formattedCast,
+      crew: formattedCrew,
+      castCount: data.cast.length,
+      crewCount: data.crew.length
+    });
+    
+  } catch (error) {
+    console.error('获取演员列表失败:', error);
+    res.status(500).json({ error: '获取演员列表失败', details: error.message });
+  }
+});
+
+// 获取艺人详情
+app.get('/api/tmdb/person/:personId', async (req, res) => {
+  try {
+    const { personId } = req.params;
+    
+    const personUrl = `${TMDB_BASE_URL}/person/${personId}?language=zh-CN`;
+    
+    const response = await fetch(personUrl, {
+      headers: {
+        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
+        'accept': 'application/json'
+      },
+      agent: agent
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('TMDB艺人详情API错误:', data);
+      return res.status(500).json({ error: '获取艺人详情失败', details: data });
+    }
+    
+    // 格式化艺人详情数据
+    const formattedPerson = {
+      id: data.id,
+      name: data.name,
+      chineseName: data.also_known_as?.[0] || data.name,
+      englishName: data.name,
+      birthday: data.birthday,
+      deathday: data.deathday,
+      placeOfBirth: data.place_of_birth,
+      biography: data.biography,
+      profilePath: data.profile_path,
+      profileImage: data.profile_path ? `https://image.tmdb.org/t/p/w500${data.profile_path}` : null,
+      popularity: data.popularity,
+      gender: data.gender,
+      adult: data.adult,
+      knownForDepartment: data.known_for_department,
+      imdbId: data.imdb_id,
+      homepage: data.homepage,
+      alsoKnownAs: data.also_known_as || [],
+      source: 'tmdb'
+    };
+    
+    res.json(formattedPerson);
+    
+  } catch (error) {
+    console.error('获取艺人详情失败:', error);
+    res.status(500).json({ error: '获取艺人详情失败', details: error.message });
+  }
+});
 
 // 提供静态文件服务
 app.use('/uploads', express.static('/app/uploads'));
