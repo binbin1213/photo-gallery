@@ -155,28 +155,39 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
     setSelectedStarId(tmdbPerson.id.toString())
 
     try {
-      // 首先创建新艺人
+      // 先获取完整的艺人详情
+      console.log('🔍 获取艺人详情:', tmdbPerson.id)
+      const detailResponse = await fetch(`${API_BASE_URL}/tmdb/person/${tmdbPerson.id}`)
+      const detailData = await detailResponse.json()
+      
+      if (!detailResponse.ok) {
+        throw new Error('获取艺人详情失败: ' + detailData.error)
+      }
+      
+      console.log('✅ 艺人详情获取成功:', detailData)
+      
+      // 使用详情数据创建新艺人
       const createResponse = await fetch(`${API_BASE_URL}/stars`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          englishName: tmdbPerson.englishName,
-          chineseName: tmdbPerson.chineseName,
-          birthDate: tmdbPerson.birthday ? new Date(tmdbPerson.birthday).toISOString() : undefined,
-          description: tmdbPerson.biography,
-          representativeWorks: tmdbPerson.knownFor || [],
-          tags: tmdbPerson.department ? [tmdbPerson.department] : [],
-          tmdbId: tmdbPerson.id,
-          tmdbData: tmdbPerson,
+          englishName: detailData.name || tmdbPerson.englishName,
+          chineseName: detailData.also_known_as?.[0] || tmdbPerson.chineseName,
+          birthDate: detailData.birthday ? new Date(detailData.birthday).toISOString() : undefined,
+          description: detailData.biography || tmdbPerson.biography,
+          representativeWorks: detailData.known_for?.map(item => item.title || item.name) || tmdbPerson.knownFor || [],
+          tags: detailData.known_for_department ? [detailData.known_for_department] : [],
+          tmdbId: detailData.id || tmdbPerson.id,
+          tmdbData: detailData,
           // TMDB相关字段
           source: 'tmdb',
-          popularity: tmdbPerson.popularity,
-          department: tmdbPerson.department,
-          placeOfBirth: tmdbPerson.placeOfBirth,
-          biography: tmdbPerson.biography,
-          knownFor: tmdbPerson.knownFor
+          popularity: detailData.popularity || tmdbPerson.popularity,
+          department: detailData.known_for_department || tmdbPerson.department,
+          placeOfBirth: detailData.place_of_birth || tmdbPerson.placeOfBirth,
+          biography: detailData.biography || tmdbPerson.biography,
+          knownFor: detailData.known_for?.map(item => item.title || item.name) || tmdbPerson.knownFor
         })
       })
 
