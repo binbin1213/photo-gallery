@@ -40,14 +40,7 @@ export function usePhotosWithAssociations(
       const { data: filesResult } = await api.get('/photos/files')
       let photoFiles: PhotoFile[] = filesResult.photos || []
 
-      // 2. 如果有搜索条件，先过滤文件名
-      if (normalizedSearch) {
-        photoFiles = photoFiles.filter((photo: PhotoFile) => 
-          photo.filename.toLowerCase().includes(normalizedSearch.toLowerCase())
-        )
-      }
-
-      // 3. 为每个照片文件查询关联的艺人信息
+      // 2. 为每个照片文件查询关联的艺人信息（不过滤，获取所有数据）
       const photosWithAssociations: Photo[] = await Promise.all(
         photoFiles.map(async (file: PhotoFile) => {
           try {
@@ -92,7 +85,7 @@ export function usePhotosWithAssociations(
         })
       )
 
-      // 4. 如果有搜索条件，再次过滤（包括艺人姓名）
+      // 3. 如果有搜索条件，过滤（包括文件名和艺人姓名）
       let filteredPhotos = photosWithAssociations
       if (normalizedSearch) {
         filteredPhotos = photosWithAssociations.filter(photo =>
@@ -102,14 +95,14 @@ export function usePhotosWithAssociations(
         )
       }
 
-      // 5. 按英文名字母顺序排序
+      // 4. 按英文名字母顺序排序
       const sortedPhotos = filteredPhotos.sort((a, b) => {
         const nameA = a.englishName || ''
         const nameB = b.englishName || ''
         return nameA.localeCompare(nameB, 'en', { numeric: true })
       })
 
-      // 6. 分页处理
+      // 5. 分页处理
       const startIndex = (page - 1) * limit
       const endIndex = startIndex + limit
       const photos = sortedPhotos.slice(startIndex, endIndex)
