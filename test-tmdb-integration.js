@@ -12,8 +12,8 @@ const { HttpsProxyAgent } = require('https-proxy-agent');
 const API_BASE_URL = 'http://localhost:5551'; // 本地API地址
 const TMDB_ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZWRhYTA1YzBmY2RlMmRiYjE3ZTdjZDg4ZDI0ZjNkOSIsIm5iZiI6MTU5OTk2NjM5MS43NDcsInN1YiI6IjVmNWQ4Y2I3NjNkOTM3MDAzNmJiMmZjMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.saAFMNKEZz_51mxXyTq-CjJSMI3Tjpk6KzTmbYQqaCo';
 
-// 代理配置（如果需要）
-const proxyUrl = process.env.HTTP_PROXY || process.env.http_proxy;
+// 代理配置
+const proxyUrl = process.env.HTTP_PROXY || process.env.http_proxy || 'http://192.168.1.108:7890';
 const agent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
 
 // 测试用例

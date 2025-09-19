@@ -29,11 +29,11 @@ services:
       PORT: 5000
       UPLOAD_PATH: /app/uploads
       MONGODB_URI: mongodb://admin:password123@mongodb:27017/thai_stars?authSource=admin
-      # TMDB API 代理配置（如果需要）
-      HTTP_PROXY: ${HTTP_PROXY:-}
-      HTTPS_PROXY: ${HTTPS_PROXY:-}
-      http_proxy: ${http_proxy:-}
-      https_proxy: ${https_proxy:-}
+      # TMDB API 代理配置
+      HTTP_PROXY: http://192.168.1.108:7890
+      HTTPS_PROXY: http://192.168.1.108:7890
+      http_proxy: http://192.168.1.108:7890
+      https_proxy: http://192.168.1.108:7890
     volumes:
       - ./photos:/app/uploads/photos
       - ./data:/app/data
