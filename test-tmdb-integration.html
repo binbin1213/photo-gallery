@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMDB集成效果预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #4b5563;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .search-modal {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .search-instruction {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .search-btn {
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .result-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid #e1e5e9;
+        }
+        
+        .result-info {
+            flex: 1;
+        }
+        
+        .result-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+        
+        .result-details {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .result-source {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .preview-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .preview-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .photo-card {
+            width: 200px;
+            height: 250px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .photo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 15px 10px 10px;
+        }
+        
+        .photo-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .photo-details {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .integration-note {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 TMDB集成效果预览</h1>
+            <p>模拟照片展示墙中的艺人搜索和关联功能</p>
+        </div>
+        
+        <div class="search-modal">
+            <div class="modal-header">
+                <div class="modal-title">选择艺人关联</div>
+                <button class="close-btn">×</button>
+            </div>
+            
+            <div class="search-instruction">
+                为照片 <strong>10.jpg</strong> 选择对应的艺人
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="搜索艺人姓名或昵称..." value="周杰伦">
+                <button id="searchBtn" class="search-btn">搜索</button>
+            </div>
+            
+            <div class="search-results" id="searchResults">
+                <div class="no-results">请输入艺人姓名开始搜索</div>
+            </div>
+        </div>
+        
+        <div class="preview-section">
+            <div class="preview-title">关联效果预览</div>
+            <div class="photo-card">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDIwMCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjUwIiBmaWxsPSIjRjhGOUZBIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTI1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOUNBM0FGIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiPjEwLmpwZzwvdGV4dD4KPC9zdmc+Cg==" alt="10.jpg" class="photo-image">
+                <div class="photo-overlay">
+                    <div class="photo-name" id="photoName">照片_10</div>
+                    <div class="photo-details" id="photoDetails">未关联</div>
+                </div>
+            </div>
+            
+            <div class="integration-note">
+                <strong>💡 集成说明：</strong><br>
+                1. 用户点击照片后，弹出此搜索模态框<br>
+                2. 搜索TMDB API获取艺人信息<br>
+                3. 用户选择艺人后，照片显示真实姓名和作品信息<br>
+                4. 数据保存到本地数据库，下次直接显示
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TMDB_ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZWRhYTA1YzBmY2RlMmRiYjE3ZTdjZDg4ZDI0ZjNkOSIsIm5iZiI6MTU5OTk2NjM5MS43NDcsInN1YiI6IjVmNWQ4Y2I3NjNkOTM3MDAzNmJiMmZjMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.saAFMNKEZz_51mxXyTq-CjJSMI3Tjpk6KzTmbYQqaCo';
+        
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchResults = document.getElementById('searchResults');
+        const photoName = document.getElementById('photoName');
+        const photoDetails = document.getElementById('photoDetails');
+        
+        // 搜索功能
+        async function searchPerson() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                searchResults.innerHTML = '<div class="no-results">请输入搜索关键词</div>';
+                return;
+            }
+            
+            searchBtn.disabled = true;
+            searchBtn.textContent = '搜索中...';
+            searchResults.innerHTML = '<div class="loading">⏳ 正在搜索...</div>';
+            
+            try {
+                const url = `https://api.themoviedb.org/3/search/person?query=${encodeURIComponent(query)}&language=zh-CN&include_adult=false&page=1`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
+                        'accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displaySearchResults(data.results);
+                } else {
+                    throw new Error(data.status_message || '搜索失败');
+                }
+                
+            } catch (error) {
+                searchResults.innerHTML = `<div class="error">❌ 搜索失败: ${error.message}</div>`;
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = '搜索';
+            }
+        }
+        
+        // 显示搜索结果
+        function displaySearchResults(results) {
+            if (results.length === 0) {
+                searchResults.innerHTML = '<div class="no-results">没有找到相关艺人</div>';
+                return;
+            }
+            
+            const resultsHTML = results.map(person => `
+                <div class="result-item" onclick="selectPerson('${person.id}', '${person.name}', '${person.known_for_department || ''}', '${person.known_for ? person.known_for.map(item => item.title || item.name).slice(0, 2).join(', ') : ''}')">
+                    <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w500${person.profile_path}` : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNFOUVDRUYiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxNSIgeT0iMTUiPgo8cGF0aCBkPSJNMTAgMTBDMTIuNzYxNCAxMCAxNSAxMi4yMzg2IDE1IDE1QzE1IDE3Ljc2MTQgMTIuNzYxNCAyMCAxMCAyMEM3LjIzODYgMjAgNSAxNy43NjE0IDUgMTVDNSAxMi4yMzg2IDcuMjM4NiAxMCAxMCAxMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxNSIgeT0iMTUiPgo8cGF0aCBkPSJNMTAgMTNDOC4zNDMxNSAxMyA3LjAwMDAxIDE0LjM0MzEgNy4wMDAwMSAxNkM3LjAwMDAxIDE3LjY1NjkgOC4zNDMxNSAxOSAxMCAxOUMxMS42NTY5IDE5IDEzIDE3LjY1NjkgMTMgMTZDMTMgMTQuMzQzMSAxMS42NTY5IDEzIDEwIDEzWiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4KPC9zdmc+Cg=='}" 
+                         alt="${person.name}" 
+                         class="result-avatar"
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNFOUVDRUYiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxNSIgeT0iMTUiPgo8cGF0aCBkPSJNMTAgMTBDMTIuNzYxNCAxMCAxNSAxMi4yMzg2IDE1IDE1QzE1IDE3Ljc2MTQgMTIuNzYxNCAyMCAxMCAyMEM3LjIzODYgMjAgNSAxNy43NjE0IDUgMTVDNSAxMi4yMzg2IDcuMjM4NiAxMCAxMCAxMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxNSIgeT0iMTUiPgo8cGF0aCBkPSJNMTAgMTNDOC4zNDMxNSAxMyA3LjAwMDAxIDE0LjM0MzEgNy4wMDAwMSAxNkM3LjAwMDAxIDE3LjY1NjkgOC4zNDMxNSAxOSAxMCAxOUMxMS42NTY5IDE5IDEzIDE3LjY1NjkgMTMgMTZDMTMgMTQuMzQzMSAxMS42NTY5IDEzIDEwIDEzWiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4KPC9zdmc+Cg=='">
+                    <div class="result-info">
+                        <div class="result-name">${person.name}</div>
+                        <div class="result-details">
+                            ${person.known_for_department || '未知职业'} • 
+                            ${person.known_for && person.known_for.length > 0 ? person.known_for.slice(0, 2).map(item => item.title || item.name).join(', ') : '暂无作品'}
+                        </div>
+                    </div>
+                    <div class="result-source">TMDB</div>
+                </div>
+            `).join('');
+            
+            searchResults.innerHTML = resultsHTML;
+        }
+        
+        // 选择艺人
+        function selectPerson(id, name, department, works) {
+            // 更新照片显示
+            photoName.textContent = name;
+            photoDetails.textContent = `${department} • ${works || '暂无作品'}`;
+            
+            // 显示成功消息
+            searchResults.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: #4caf50;">
+                    ✅ 已选择艺人: <strong>${name}</strong><br>
+                    <small>照片已关联到TMDB艺人信息</small>
+                </div>
+            `;
+            
+            // 模拟保存到数据库
+            console.log('保存艺人信息到数据库:', {
+                tmdbId: id,
+                name: name,
+                department: department,
+                works: works,
+                photoFilename: '10.jpg'
+            });
+        }
+        
+        // 事件监听
+        searchBtn.addEventListener('click', searchPerson);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchPerson();
+            }
+        });
+        
+        // 页面加载时自动搜索
+        window.onload = function() {
+            searchPerson();
+        };
+    </script>
+</body>
+</html>

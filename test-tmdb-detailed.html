@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMDB详细数据展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .search-btn {
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .results-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .person-detail-card {
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background: #fafbfc;
+        }
+        
+        .person-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .person-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #3498db;
+        }
+        
+        .person-basic-info {
+            flex: 1;
+        }
+        
+        .person-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .person-id {
+            background: #ecf0f1;
+            color: #7f8c8d;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+        }
+        
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .info-item {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 100px;
+        }
+        
+        .info-value {
+            color: #666;
+            flex: 1;
+        }
+        
+        .popularity-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .popularity-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .popularity-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .popularity-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .known-for-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+        }
+        
+        .known-for-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .known-for-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .known-for-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .known-for-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .work-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .work-type {
+            font-size: 12px;
+            color: #7f8c8d;
+            background: #ecf0f1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        
+        .work-overview {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 TMDB详细数据展示测试</h1>
+            <p>展示TMDB API返回的完整艺人信息</p>
+        </div>
+        
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="输入艺人姓名（如：周杰伦、成龙、李连杰）" value="周杰伦">
+                <button id="searchBtn" class="search-btn">搜索艺人</button>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <div id="resultsContainer">
+                <div class="no-results">请输入搜索关键词开始搜索</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TMDB_ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZWRhYTA1YzBmY2RlMmRiYjE3ZTdjZDg4ZDI0ZjNkOSIsIm5iZiI6MTU5OTk2NjM5MS43NDcsInN1YiI6IjVmNWQ4Y2I3NjNkOTM3MDAzNmJiMmZjMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.saAFMNKEZz_51mxXyTq-CjJSMI3Tjpk6KzTmbYQqaCo';
+        
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        
+        // 搜索功能
+        async function searchPerson() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                resultsContainer.innerHTML = '<div class="no-results">请输入搜索关键词</div>';
+                return;
+            }
+            
+            searchBtn.disabled = true;
+            searchBtn.textContent = '搜索中...';
+            resultsContainer.innerHTML = '<div class="loading">⏳ 正在搜索...</div>';
+            
+            try {
+                const url = `https://api.themoviedb.org/3/search/person?query=${encodeURIComponent(query)}&language=zh-CN&include_adult=false&page=1`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
+                        'accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayDetailedResults(data.results);
+                } else {
+                    throw new Error(data.status_message || '搜索失败');
+                }
+                
+            } catch (error) {
+                resultsContainer.innerHTML = `<div class="error">❌ 搜索失败: ${error.message}</div>`;
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = '搜索艺人';
+            }
+        }
+        
+        // 显示详细搜索结果
+        function displayDetailedResults(results) {
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div class="no-results">没有找到相关艺人</div>';
+                return;
+            }
+            
+            const resultsHTML = results.map(person => `
+                <div class="person-detail-card">
+                    <div class="person-header">
+                        <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w500${person.profile_path}` : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iMTIiIGZpbGw9IiNFOUVDRUYiLz4KPHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIzNiIgeT0iMzYiPgo8cGF0aCBkPSJNMjQgMjRDMjguNDE4MyAyNCAzMiAyMC40MTgzIDMyIDE2QzMyIDExLjU4MTcgMjguNDE4MyA4IDI0IDhDMTkuNTgxNyA4IDE2IDExLjU4MTcgMTYgMTZDMTYgMjAuNDE4MyAxOS41ODE3IDI0IDI0IDI0WiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMjQgMjhDMTguNzgwMSAyOCAxNC4wMDAyIDMxLjU4IDEzLjE4MDEgMzYuMTZMMTEuODE5OSAzNS44NEMxMi45OTk5IDMwLjU4IDE3LjIwMDEgMjYgMjQgMjZDMzAuNzk5OSAyNiAzNS4wMDAxIDMwLjU4IDM2LjE4MDEgMzUuODRMMzQuODE5OSAzNi4xNkMzNCAzMS41OCAyOS4yMTk5IDI4IDI0IDI4WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4KPC9zdmc+Cg=='}" 
+                             alt="${person.name}" 
+                             class="person-avatar"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iMTIiIGZpbGw9IiNFOUVDRUYiLz4KPHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIzNiIgeT0iMzYiPgo8cGF0aCBkPSJNMjQgMjRDMjguNDE4MyAyNCAzMiAyMC40MTgzIDMyIDE2QzMyIDExLjU4MTcgMjguNDE4MyA4IDI0IDhDMTkuNTgxNyA4IDE2IDExLjU4MTcgMTYgMTZDMTYgMjAuNDE4MyAxOS41ODE3IDI0IDI0IDI0WiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMjQgMjhDMTguNzgwMSAyOCAxNC4wMDAyIDMxLjU4IDEzLjE4MDEgMzYuMTZMMTEuODE5OSAzNS44NEMxMi45OTk5IDMwLjU4IDE3LjIwMDEgMjYgMjQgMjZDMzAuNzk5OSAyNiAzNS4wMDAxIDMwLjU4IDM2LjE4MDEgMzUuODRMMzQuODE5OSAzNi4xNkMzNCAzMS41OCAyOS4yMTk5IDI4IDI0IDI4WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4KPC9zdmc+Cg=='">
+                        <div class="person-basic-info">
+                            <div class="person-name">${person.name}</div>
+                            <div class="person-id">TMDB ID: ${person.id}</div>
+                            
+                            <div class="popularity-section">
+                                <div class="popularity-title">知名度评分</div>
+                                <div class="popularity-bar">
+                                    <div class="popularity-fill" style="width: ${Math.min(person.popularity * 10, 100)}%"></div>
+                                </div>
+                                <div style="margin-top: 5px; font-size: 14px;">${person.popularity.toFixed(2)} / 10</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-section">
+                            <div class="info-title">基本信息</div>
+                            <div class="info-item">
+                                <span class="info-label">姓名:</span>
+                                <span class="info-value">${person.name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">原名:</span>
+                                <span class="info-value">${person.original_name || person.name}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">职业:</span>
+                                <span class="info-value">${person.known_for_department || '未知'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">性别:</span>
+                                <span class="info-value">${person.gender === 1 ? '女' : person.gender === 2 ? '男' : '未知'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">成人内容:</span>
+                                <span class="info-value">${person.adult ? '是' : '否'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <div class="info-title">统计信息</div>
+                            <div class="info-item">
+                                <span class="info-label">TMDB ID:</span>
+                                <span class="info-value">${person.id}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">知名度:</span>
+                                <span class="info-value">${person.popularity.toFixed(2)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">代表作品数:</span>
+                                <span class="info-value">${person.known_for ? person.known_for.length : 0} 部</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">头像状态:</span>
+                                <span class="info-value">${person.profile_path ? '有头像' : '无头像'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${person.known_for && person.known_for.length > 0 ? `
+                        <div class="known-for-section">
+                            <div class="known-for-title">代表作品 (${person.known_for.length} 部)</div>
+                            <div class="known-for-grid">
+                                ${person.known_for.map(work => `
+                                    <div class="known-for-item">
+                                        <div class="work-type">${work.media_type === 'movie' ? '电影' : work.media_type === 'tv' ? '电视剧' : work.media_type || '未知'}</div>
+                                        <div class="work-title">${work.title || work.name}</div>
+                                        ${work.release_date ? `<div style="font-size: 12px; color: #7f8c8d; margin-bottom: 8px;">${work.release_date}</div>` : ''}
+                                        ${work.vote_average ? `<div style="font-size: 12px; color: #7f8c8d; margin-bottom: 8px;">评分: ${work.vote_average}/10</div>` : ''}
+                                        ${work.overview ? `<div class="work-overview">${work.overview}</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            resultsContainer.innerHTML = resultsHTML;
+        }
+        
+        // 事件监听
+        searchBtn.addEventListener('click', searchPerson);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchPerson();
+            }
+        });
+        
+        // 页面加载时自动搜索
+        window.onload = function() {
+            searchPerson();
+        };
+    </script>
+</body>
+</html>

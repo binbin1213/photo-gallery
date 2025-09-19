@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMDB API测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            color: #007bff;
+            font-style: italic;
+        }
+        .person-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+        }
+        .person-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .person-info {
+            color: #666;
+            margin: 5px 0;
+        }
+        .person-image {
+            max-width: 100px;
+            max-height: 150px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 TMDB API测试工具</h1>
+        <p>测试TMDB API的艺人搜索功能</p>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="输入艺人姓名（如：周杰伦、成龙、李连杰）" value="周杰伦">
+            <button onclick="searchPerson()">搜索艺人</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const TMDB_API_KEY = '0edaa05c0fcde2dbb17e7cd88d24f3d9';
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        
+        async function searchPerson() {
+            const searchInput = document.getElementById('searchInput');
+            const resultDiv = document.getElementById('result');
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                resultDiv.innerHTML = '<div class="result error">请输入搜索关键词</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="result loading">⏳ 正在搜索...</div>';
+            
+            try {
+                const url = `${TMDB_BASE_URL}/search/person?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=zh-CN`;
+                console.log('请求URL:', url);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>✅ 搜索成功！</h3>
+                            <p><strong>搜索关键词:</strong> ${query}</p>
+                            <p><strong>找到结果:</strong> ${data.results.length} 个</p>
+                            <h4>🎭 艺人列表:</h4>
+                            ${data.results.map(person => `
+                                <div class="person-card">
+                                    <div class="person-name">${person.name}</div>
+                                    <div class="person-info">ID: ${person.id}</div>
+                                    <div class="person-info">知名度: ${person.popularity}</div>
+                                    <div class="person-info">代表作品: ${person.known_for?.map(item => item.title || item.name).join(', ') || '无'}</div>
+                                    ${person.profile_path ? `<img src="https://image.tmdb.org/t/p/w500${person.profile_path}" alt="${person.name}" class="person-image">` : ''}
+                                </div>
+                            `).join('')}
+                            <h4>📊 原始数据:</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>❌ 搜索失败</h3>
+                            <p><strong>状态码:</strong> ${response.status}</p>
+                            <p><strong>错误信息:</strong> ${data.status_message || '未知错误'}</p>
+                            <h4>📊 原始响应:</h4>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ 请求失败</h3>
+                        <p><strong>错误信息:</strong> ${error.message}</p>
+                        <h4>💡 可能的原因:</h4>
+                        <ul>
+                            <li>网络连接问题</li>
+                            <li>CORS跨域限制</li>
+                            <li>API Key无效</li>
+                            <li>TMDB服务不可用</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+        
+        // 页面加载时自动搜索
+        window.onload = function() {
+            searchPerson();
+        };
+        
+        // 回车键搜索
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchPerson();
+            }
+        });
+    </script>
+</body>
+</html>

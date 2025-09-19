@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>豆瓣API测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .loading {
+            color: #007bff;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 豆瓣API测试工具</h1>
+        <p>测试豆瓣API的数据格式和返回内容</p>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="输入搜索关键词（如：周杰伦、电影、演员）" value="周杰伦">
+            <button onclick="searchDouban()">搜索</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function searchDouban() {
+            const searchInput = document.getElementById('searchInput');
+            const resultDiv = document.getElementById('result');
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                resultDiv.innerHTML = '<div class="result error">请输入搜索关键词</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="result loading">⏳ 正在搜索...</div>';
+            
+            try {
+                // 尝试多个豆瓣API端点
+                const endpoints = [
+                    `https://api.douban.com/v2/movie/search?q=${encodeURIComponent(query)}`,
+                    `https://api.douban.com/v2/movie/in_theaters`,
+                    `https://api.douban.com/v2/movie/top250`,
+                    `https://api.douban.com/v2/movie/search?q=电影`
+                ];
+                
+                let success = false;
+                let lastError = null;
+                
+                for (const endpoint of endpoints) {
+                    try {
+                        console.log(`尝试端点: ${endpoint}`);
+                        const response = await fetch(endpoint);
+                        const data = await response.json();
+                        
+                        resultDiv.innerHTML = `
+                            <div class="result success">
+                                <h3>✅ 请求成功！</h3>
+                                <p><strong>端点:</strong> ${endpoint}</p>
+                                <p><strong>状态码:</strong> ${response.status}</p>
+                                <h4>📊 返回数据:</h4>
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            </div>
+                        `;
+                        success = true;
+                        break;
+                        
+                    } catch (error) {
+                        lastError = error;
+                        console.log(`端点失败: ${endpoint}`, error);
+                    }
+                }
+                
+                if (!success) {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>❌ 所有端点都失败了</h3>
+                            <p><strong>最后错误:</strong> ${lastError.message}</p>
+                            <h4>💡 可能的原因:</h4>
+                            <ul>
+                                <li>豆瓣API需要API Key</li>
+                                <li>网络连接问题</li>
+                                <li>CORS跨域限制</li>
+                                <li>API端点已更改</li>
+                            </ul>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ 请求失败</h3>
+                        <p><strong>错误信息:</strong> ${error.message}</p>
+                        <h4>💡 建议:</h4>
+                        <ul>
+                            <li>检查网络连接</li>
+                            <li>尝试使用代理</li>
+                            <li>考虑使用其他数据源</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+        
+        // 页面加载时自动搜索
+        window.onload = function() {
+            searchDouban();
+        };
+        
+        // 回车键搜索
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchDouban();
+            }
+        });
+    </script>
+</body>
+</html>
