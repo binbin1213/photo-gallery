@@ -1,4 +1,6 @@
-import { X, Calendar, Ruler, User, GraduationCap, Film, Edit, Search } from 'lucide-react'
+import { X, Calendar, Ruler, User, GraduationCap, Film, Edit, Search, Users } from 'lucide-react'
+import { useState } from 'react'
+import { API_BASE_URL } from '../config/api'
 
 interface Star {
   _id: string
@@ -18,6 +20,26 @@ interface Star {
   description?: string
 }
 
+interface CastMember {
+  id: number
+  name: string
+  character: string
+  order: number
+  profileImage?: string
+  adult: boolean
+  gender: number
+  knownForDepartment: string
+  popularity: number
+}
+
+interface CastListData {
+  id: number
+  cast: CastMember[]
+  crew: any[]
+  castCount: number
+  crewCount: number
+}
+
 interface StarProfileProps {
   star: Star
   onClose: () => void
@@ -27,6 +49,10 @@ interface StarProfileProps {
 }
 
 export default function StarProfile({ star, onClose, isAdmin = false, onEdit, onReassociate }: StarProfileProps) {
+  const [castListData, setCastListData] = useState<CastListData | null>(null)
+  const [isLoadingCast, setIsLoadingCast] = useState(false)
+  const [selectedMovie, setSelectedMovie] = useState<string | null>(null)
+
   // 格式化生日
   const formatBirthDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -47,6 +73,45 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
       age--
     }
     return age
+  }
+
+  // 获取电影演员列表
+  const fetchCastList = async (movieTitle: string) => {
+    setIsLoadingCast(true)
+    setSelectedMovie(movieTitle)
+    
+    try {
+      // 首先搜索电影获取TMDB ID
+      const searchResponse = await fetch(`${API_BASE_URL}/api/tmdb/search/movie?query=${encodeURIComponent(movieTitle)}&limit=1`)
+      const searchResult = await searchResponse.json()
+      
+      if (searchResult.results && searchResult.results.length > 0) {
+        const movie = searchResult.results[0]
+        
+        // 获取演员列表
+        const castResponse = await fetch(`${API_BASE_URL}/api/tmdb/movie/${movie.id}/cast`)
+        const castResult = await castResponse.json()
+        
+        if (castResult.cast) {
+          setCastListData(castResult)
+        } else {
+          alert('获取演员列表失败')
+        }
+      } else {
+        alert('未找到该电影的信息')
+      }
+    } catch (error) {
+      console.error('获取演员列表失败:', error)
+      alert('获取演员列表失败：' + (error as Error).message)
+    } finally {
+      setIsLoadingCast(false)
+    }
+  }
+
+  // 关闭演员列表
+  const closeCastList = () => {
+    setCastListData(null)
+    setSelectedMovie(null)
   }
 
   // 格式化身高
@@ -193,9 +258,22 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
                 <Film className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-sm text-gray-500 mb-2">代表作</p>
-                  <p className="text-sm text-gray-700">
-                    《{star.representativeWorks.map(work => work.replace(/《+|》+/g, '')).join('》、《')}》
-                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {star.representativeWorks.map((work, index) => {
+                      const cleanWork = work.replace(/《+|》+/g, '')
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => fetchCastList(cleanWork)}
+                          disabled={isLoadingCast}
+                          className="text-sm text-blue-600 hover:text-blue-800 hover:underline disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          《{cleanWork}》
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">点击作品名称查看演员列表</p>
                 </div>
               </div>
             )}
@@ -212,6 +290,88 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
           </div>
         </div>
       </div>
+      
+      {/* 演员列表模态框 */}
+      {castListData && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+          <div className="bg-white rounded-2xl overflow-hidden shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">演员列表</h2>
+                <p className="text-gray-600 mt-1">《{selectedMovie}》的演员阵容</p>
+              </div>
+              <button
+                onClick={closeCastList}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Cast List */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {isLoadingCast ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                  <span className="ml-3 text-gray-600">加载演员列表中...</span>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Users className="w-5 h-5 text-blue-500" />
+                    <span className="text-lg font-semibold text-gray-900">
+                      主要演员 ({castListData.castCount} 人)
+                    </span>
+                  </div>
+                  
+                  <div className="grid gap-4">
+                    {castListData.cast.slice(0, 20).map((actor) => (
+                      <div
+                        key={actor.id}
+                        className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          {actor.profileImage ? (
+                            <img
+                              src={actor.profileImage}
+                              alt={actor.name}
+                              className="w-12 h-12 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                              <User className="w-6 h-6 text-gray-400" />
+                            </div>
+                          )}
+                          
+                          <div className="flex-1">
+                            <h4 className="text-lg font-semibold text-gray-900">
+                              {actor.name}
+                            </h4>
+                            <p className="text-sm text-gray-600">
+                              饰演：{actor.character}
+                            </p>
+                            <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                              <span>热度: {Math.round(actor.popularity)}</span>
+                              <span>部门: {actor.knownForDepartment}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {castListData.castCount > 20 && (
+                    <p className="text-center text-gray-500 text-sm mt-4">
+                      显示前20位演员，共{castListData.castCount}位演员
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

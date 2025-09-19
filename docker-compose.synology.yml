@@ -32,6 +32,11 @@ services:
       # MongoDB连接配置
       MONGODB_URI: mongodb://admin:photo_gallery_2024@mongodb:27017/photo_gallery?authSource=admin
       DB_NAME: photo_gallery
+      # TMDB API 代理配置（如果需要）
+      HTTP_PROXY: ${HTTP_PROXY:-}
+      HTTPS_PROXY: ${HTTPS_PROXY:-}
+      http_proxy: ${http_proxy:-}
+      https_proxy: ${https_proxy:-}
     volumes:
       # 群晖路径映射 - 需要根据实际情况调整
       - /volume1/docker/photo-gallery/photos:/app/uploads/photos:ro
