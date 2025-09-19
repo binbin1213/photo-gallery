@@ -111,7 +111,7 @@ export default function AdminPanel() {
             formData.append('photos', file)
           })
           
-          const response = await fetch('/upload-multiple', {
+          const response = await fetch('/api/upload-multiple', {
             method: 'POST',
             body: formData
           })
@@ -168,7 +168,7 @@ export default function AdminPanel() {
         formData.append('photos', file)
       })
       
-      const response = await fetch('/upload-multiple', {
+      const response = await fetch('/api/upload-multiple', {
         method: 'POST',
         body: formData
       })
