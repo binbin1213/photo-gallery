@@ -27,6 +27,7 @@ interface Star {
   biography?: string
   profileImage?: string
   knownFor?: string[]
+  gender?: number
 }
 
 interface CastMember {
