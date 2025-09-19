@@ -986,6 +986,15 @@ app.post('/api/thumbnails/generate', async (req, res) => {
   }
 });
 
+// 健康检查端点
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    message: 'API服务正常运行'
+  });
+});
+
 // 获取缩略图生成状态
 app.get('/api/thumbnails/status', async (req, res) => {
   try {

@@ -32,7 +32,6 @@ services:
     volumes:
       - ./photos:/app/uploads/photos
       - ./data:/app/data
-      - api_uploads:/app/uploads
     depends_on:
       - mongodb
     networks:
