@@ -84,7 +84,7 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
 
     setIsSearching(true)
     try {
-      const response = await fetch(`${API_BASE_URL}/api/tmdb/search/person?query=${encodeURIComponent(query)}&limit=20`)
+      const response = await fetch(`${API_BASE_URL}/tmdb/search/person?query=${encodeURIComponent(query)}&limit=20`)
       const result = await response.json()
 
       if (result.results) {
