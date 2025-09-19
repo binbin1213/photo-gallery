@@ -66,7 +66,7 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in-0 duration-300"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
-      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-lg w-full h-[94vh] max-h-[97vh] flex flex-col animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+      <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl max-w-2xl w-full h-[94vh] max-h-[97vh] flex flex-col animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
                {/* 关闭按钮和编辑按钮 */}
                <div className="absolute top-4 right-4 z-10 flex gap-2">
                  {onReassociate && (
