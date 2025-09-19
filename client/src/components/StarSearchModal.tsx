@@ -174,6 +174,31 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
       console.log('🔍 个人简介:', detailData.biography)
       console.log('🔍 性别:', detailData.gender)
       console.log('🔍 别名:', detailData.also_known_as)
+      console.log('🔍 完整TMDB数据:', JSON.stringify(detailData, null, 2))
+      
+      // 准备创建艺人的数据
+      const createData = {
+        englishName: detailData.name || tmdbPerson.englishName,
+        chineseName: detailData.also_known_as?.[0] || tmdbPerson.chineseName,
+        birthDate: detailData.birthday ? new Date(detailData.birthday).toISOString() : undefined,
+        description: detailData.biography || tmdbPerson.biography,
+        representativeWorks: detailData.known_for?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor || [],
+        tags: detailData.known_for_department ? [detailData.known_for_department] : [],
+        tmdbId: detailData.id || tmdbPerson.id,
+        tmdbData: detailData,
+        // TMDB相关字段
+        source: 'tmdb',
+        popularity: detailData.popularity || tmdbPerson.popularity,
+        department: detailData.known_for_department || tmdbPerson.department,
+        placeOfBirth: detailData.place_of_birth || tmdbPerson.placeOfBirth,
+        biography: detailData.biography || tmdbPerson.biography,
+        knownFor: detailData.known_for?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor,
+        gender: detailData.gender
+      }
+      
+      console.log('🔍 准备创建艺人的数据:', createData)
+      console.log('🔍 出生地字段值:', createData.placeOfBirth)
+      console.log('🔍 性别字段值:', createData.gender)
       
       // 使用详情数据创建新艺人
       const createResponse = await fetch(`${API_BASE_URL}/stars`, {
@@ -181,23 +206,7 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          englishName: detailData.name || tmdbPerson.englishName,
-          chineseName: detailData.also_known_as?.[0] || tmdbPerson.chineseName,
-          birthDate: detailData.birthday ? new Date(detailData.birthday).toISOString() : undefined,
-          description: detailData.biography || tmdbPerson.biography,
-          representativeWorks: detailData.known_for?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor || [],
-          tags: detailData.known_for_department ? [detailData.known_for_department] : [],
-          tmdbId: detailData.id || tmdbPerson.id,
-          tmdbData: detailData,
-          // TMDB相关字段
-          source: 'tmdb',
-          popularity: detailData.popularity || tmdbPerson.popularity,
-          department: detailData.known_for_department || tmdbPerson.department,
-          placeOfBirth: detailData.place_of_birth || tmdbPerson.placeOfBirth,
-          biography: detailData.biography || tmdbPerson.biography,
-          knownFor: detailData.known_for?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor
-        })
+        body: JSON.stringify(createData)
       })
 
       const createResult = await createResponse.json()
