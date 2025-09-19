@@ -296,9 +296,9 @@ app.put('/api/stars/:id', async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    // 验证必填字段
-    if (!updateData.englishName || !updateData.chineseName) {
-      return res.status(400).json({ error: '英文名和中文名不能为空' });
+    // 验证至少有一个名字不为空
+    if (!updateData.englishName?.trim() && !updateData.chineseName?.trim()) {
+      return res.status(400).json({ error: '至少需要填写英文名或中文名中的一个' });
     }
 
     // 处理生日和出生月份

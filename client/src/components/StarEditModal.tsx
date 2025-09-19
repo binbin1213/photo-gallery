@@ -80,9 +80,9 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
   const handleSave = async () => {
     if (!star) return
 
-    // 验证必填字段
-    if (!formData.englishName?.trim() || !formData.chineseName?.trim()) {
-      setError('英文名和中文名不能为空')
+    // 验证至少有一个名字不为空
+    if (!formData.englishName?.trim() && !formData.chineseName?.trim()) {
+      setError('至少需要填写英文名或中文名中的一个')
       return
     }
 
@@ -155,7 +155,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                英文名 *
+                英文名
               </label>
               <input
                 type="text"
@@ -167,7 +167,7 @@ export default function StarEditModal({ isOpen, onClose, star, onSave }: StarEdi
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                中文名 *
+                中文名
               </label>
               <input
                 type="text"
