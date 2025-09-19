@@ -33,6 +33,11 @@ interface TMDBPersonResult {
   source: 'tmdb'
 }
 
+interface TMDBKnownForItem {
+  title?: string
+  name?: string
+}
+
 interface StarSearchModalProps {
   isOpen: boolean
   onClose: () => void
@@ -177,7 +182,7 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
           chineseName: detailData.also_known_as?.[0] || tmdbPerson.chineseName,
           birthDate: detailData.birthday ? new Date(detailData.birthday).toISOString() : undefined,
           description: detailData.biography || tmdbPerson.biography,
-          representativeWorks: detailData.known_for?.map(item => item.title || item.name) || tmdbPerson.knownFor || [],
+          representativeWorks: detailData.known_for?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor || [],
           tags: detailData.known_for_department ? [detailData.known_for_department] : [],
           tmdbId: detailData.id || tmdbPerson.id,
           tmdbData: detailData,
@@ -187,7 +192,7 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
           department: detailData.known_for_department || tmdbPerson.department,
           placeOfBirth: detailData.place_of_birth || tmdbPerson.placeOfBirth,
           biography: detailData.biography || tmdbPerson.biography,
-          knownFor: detailData.known_for?.map(item => item.title || item.name) || tmdbPerson.knownFor
+          knownFor: detailData.known_for?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor
         })
       })
 
