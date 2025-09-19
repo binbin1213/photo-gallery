@@ -4,7 +4,6 @@ import InfinitePhotoGrid from '../components/InfinitePhotoGrid'
 import SearchBar from '../components/SearchBar'
 import AdminLoginModal from '../components/AdminLoginModal'
 import StatsPanel from '../components/StatsPanel'
-import FilterBar from '../components/FilterBar'
 import { useAdmin } from '../contexts/AdminContext'
 // 移除usePhotos，改用InfinitePhotoGrid
 import { Photo } from '../types/photo'
@@ -20,7 +19,6 @@ export default function PhotoGallery() {
   const [replacingPhoto, setReplacingPhoto] = useState<Photo | null>(null)
   const [sortBy, setSortBy] = useState('createdAt')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
-  const [filters, setFilters] = useState({})
   const [totalPhotos, setTotalPhotos] = useState(0)
   const settingsRef = useRef<HTMLDivElement>(null)
   // 移除旧的usePhotos，改用InfinitePhotoGrid内部管理
@@ -227,16 +225,6 @@ export default function PhotoGallery() {
           {/* 统计面板 */}
           <StatsPanel totalPhotos={totalPhotos} />
           
-          {/* 筛选和排序栏 */}
-          <div className="relative">
-            <FilterBar 
-              onSortChange={(sort, order) => {
-                setSortBy(sort)
-                setSortOrder(order)
-              }}
-              onFilterChange={setFilters}
-            />
-          </div>
           
           {/* 照片网格 */}
           <InfinitePhotoGrid 
@@ -246,7 +234,6 @@ export default function PhotoGallery() {
             search={searchQuery}
             sortBy={sortBy}
             sortOrder={sortOrder}
-            filters={filters}
             onTotalChange={setTotalPhotos}
           />
         </div>

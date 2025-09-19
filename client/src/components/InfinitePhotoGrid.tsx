@@ -11,7 +11,6 @@ interface InfinitePhotoGridProps {
   search?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
-  filters?: any
   onTotalChange?: (total: number) => void
 }
 
@@ -21,11 +20,8 @@ export default function InfinitePhotoGrid({
   search, 
   sortBy = 'createdAt', 
   sortOrder = 'desc', 
-  filters = {}, // TODO: 将来用于高级筛选功能
   onTotalChange 
 }: InfinitePhotoGridProps) {
-  // 暂时使用 filters 来避免 TypeScript 警告，将来会实现筛选功能
-  console.debug('Filters received:', filters)
   const [allPhotos, setAllPhotos] = useState<Photo[]>([])
   const [page, setPage] = useState(1)
   const [isLoadingMore, setIsLoadingMore] = useState(false)

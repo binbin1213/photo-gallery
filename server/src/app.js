@@ -101,15 +101,38 @@ app.get('/api/stats', async (req, res) => {
     })
     const totalUniversities = universities.length
     
-    // 平均年龄
+    // 平均年龄 - 优先使用age字段，如果没有则从birthDate计算
+    let averageAge = 0
+    
+    // 先尝试使用age字段
     const starsWithAge = await Star.find({ 
       isActive: true, 
       age: { $exists: true, $ne: null, $gt: 0 } 
     }).select('age')
     
-    const averageAge = starsWithAge.length > 0 
-      ? Math.round(starsWithAge.reduce((sum, star) => sum + star.age, 0) / starsWithAge.length)
-      : 0
+    if (starsWithAge.length > 0) {
+      averageAge = Math.round(starsWithAge.reduce((sum, star) => sum + star.age, 0) / starsWithAge.length)
+    } else {
+      // 如果没有age字段，从birthDate计算
+      const starsWithBirthDate = await Star.find({ 
+        isActive: true, 
+        birthDate: { $exists: true, $ne: null } 
+      }).select('birthDate')
+      
+      if (starsWithBirthDate.length > 0) {
+        const now = new Date()
+        const ages = starsWithBirthDate.map(star => {
+          const birthDate = new Date(star.birthDate)
+          let age = now.getFullYear() - birthDate.getFullYear()
+          const monthDiff = now.getMonth() - birthDate.getMonth()
+          if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birthDate.getDate())) {
+            age--
+          }
+          return age
+        })
+        averageAge = Math.round(ages.reduce((sum, age) => sum + age, 0) / ages.length)
+      }
+    }
     
     // 本月新增（当前月份创建的记录）
     const now = new Date()
