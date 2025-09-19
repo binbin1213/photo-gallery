@@ -61,9 +61,9 @@ function makeTMDBRequest(url) {
       reject(new Error(`请求失败: ${e.message}`));
     });
 
-    req.setTimeout(10000, () => {
+    req.setTimeout(30000, () => {
       req.destroy();
-      reject(new Error('请求超时'));
+      reject(new Error('请求超时 (30秒)'));
     });
 
     req.end();
@@ -1090,7 +1090,9 @@ app.get('/api/tmdb/search/person', async (req, res) => {
       return res.json({ results: [] });
     }
     
+    console.log(`🔍 TMDB搜索艺人: "${query}"`);
     const searchUrl = `${TMDB_BASE_URL}/search/person?query=${encodeURIComponent(query.trim())}&language=zh-CN&include_adult=false&page=1`;
+    console.log(`📡 请求URL: ${searchUrl}`);
     
     const response = await makeTMDBRequest(searchUrl);
     const data = await response.json();
@@ -1127,7 +1129,8 @@ app.get('/api/tmdb/search/person', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('TMDB搜索失败:', error);
+    console.error('❌ TMDB搜索失败:', error.message);
+    console.error('错误详情:', error);
     res.status(500).json({ error: 'TMDB搜索失败', details: error.message });
   }
 });
