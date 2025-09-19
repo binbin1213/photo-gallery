@@ -75,7 +75,7 @@ export default function InfinitePhotoGrid({
         }
       } else {
         // 后续页面，追加数据
-        setAllPhotos(prev => [...prev, ...data.photos])
+        setAllPhotos((prev: Photo[]) => [...prev, ...data.photos])
       }
       setIsLoadingMore(false)
     }
@@ -96,7 +96,7 @@ export default function InfinitePhotoGrid({
   const loadMore = useCallback(() => {
     if (data?.hasMore && !isLoadingMore) {
       setIsLoadingMore(true)
-      setPage(prev => prev + 1)
+      setPage((prev: number) => prev + 1)
     }
   }, [data?.hasMore, isLoadingMore])
   
@@ -139,7 +139,7 @@ export default function InfinitePhotoGrid({
   return (
     <div>
       <div className="photo-grid-container">
-        {allPhotos.map((photo, index) => (
+        {allPhotos.map((photo: Photo, index: number) => (
           <div
             key={photo.id}
             className="animate-in fade-in-0 slide-in-from-bottom-4 duration-500"

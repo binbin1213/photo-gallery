@@ -5,6 +5,15 @@ export interface Photo {
   chineseName: string
   englishName: string
   tags?: string[]
+  birthDate?: string
+  birthMonth?: number
+  height?: number
+  age?: number
+  university?: string
+  major?: string
+  degree?: string
+  representativeWorks?: string[]
+  description?: string
   metadata?: {
     size: number
     width: number
