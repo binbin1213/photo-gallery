@@ -102,16 +102,23 @@ export function usePhotosWithAssociations(
         )
       }
 
-      // 5. 分页处理
+      // 5. 按英文名字母顺序排序
+      const sortedPhotos = filteredPhotos.sort((a, b) => {
+        const nameA = a.englishName || ''
+        const nameB = b.englishName || ''
+        return nameA.localeCompare(nameB, 'en', { numeric: true })
+      })
+
+      // 6. 分页处理
       const startIndex = (page - 1) * limit
       const endIndex = startIndex + limit
-      const photos = filteredPhotos.slice(startIndex, endIndex)
+      const photos = sortedPhotos.slice(startIndex, endIndex)
 
       return {
         photos,
-        total: filteredPhotos.length,
+        total: sortedPhotos.length,
         page,
-        hasMore: endIndex < filteredPhotos.length
+        hasMore: endIndex < sortedPhotos.length
       }
     },
     staleTime: 30 * 1000, // 30秒缓存，因为需要实时反映关联状态
