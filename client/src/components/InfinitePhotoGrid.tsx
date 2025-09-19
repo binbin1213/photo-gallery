@@ -5,12 +5,29 @@ import { usePhotosWithAssociations } from '../hooks/usePhotosWithAssociations' /
 import PhotoCard from './PhotoCard'
 import { Photo } from '../types/photo'
 
+interface FilterOptions {
+  ageRange: {
+    min: number | null
+    max: number | null
+  }
+  heightRange: {
+    min: number | null
+    max: number | null
+  }
+  universities: string[]
+  birthMonths: number[]
+  degrees: string[]
+  tags: string[]
+  searchText: string
+}
+
 interface InfinitePhotoGridProps {
   isAdmin?: boolean
   onReplace?: (photo: Photo) => void
   search?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  filters?: FilterOptions
   onTotalChange?: (total: number) => void
 }
 
@@ -20,6 +37,7 @@ export default function InfinitePhotoGrid({
   search, 
   sortBy = 'createdAt', 
   sortOrder = 'desc', 
+  filters,
   onTotalChange 
 }: InfinitePhotoGridProps) {
   const [allPhotos, setAllPhotos] = useState<Photo[]>([])
@@ -32,7 +50,7 @@ export default function InfinitePhotoGrid({
   const { data: dbData, isLoading: dbLoading, error: dbError } = usePhotosPaginated(page, 20, search, sortBy, sortOrder)
   
   // 从文件获取照片并显示关联信息
-  const { data: fileData, isLoading: fileLoading, error: fileError } = usePhotosWithAssociations(page, 20, search)
+  const { data: fileData, isLoading: fileLoading, error: fileError } = usePhotosWithAssociations(page, 20, search, filters)
 
   // 强制使用文件模式：显示实际照片文件，等待手动关联艺人信息
   useEffect(() => {
@@ -63,7 +81,7 @@ export default function InfinitePhotoGrid({
     }
   }, [data, page, search, onTotalChange])
   
-  // 搜索时重置
+  // 搜索或筛选时重置
   useEffect(() => {
     setPage(1)
     setAllPhotos([])
@@ -71,7 +89,8 @@ export default function InfinitePhotoGrid({
     window.scrollTo({ top: 0, behavior: 'smooth' })
     // 失效相关缓存，确保立即重新拉取
     queryClient.invalidateQueries({ queryKey: ['photos-paginated'] })
-  }, [search, queryClient])
+    queryClient.invalidateQueries({ queryKey: ['photos-with-associations'] })
+  }, [search, filters, queryClient])
   
   // 加载更多
   const loadMore = useCallback(() => {

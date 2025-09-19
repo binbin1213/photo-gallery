@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { Settings, Grid, List, Download, User } from 'lucide-react'
+import { Settings, Grid, List, Download, User, Filter } from 'lucide-react'
 import InfinitePhotoGrid from '../components/InfinitePhotoGrid'
 import SearchBar from '../components/SearchBar'
 import AdminLoginModal from '../components/AdminLoginModal'
 import StatsPanel from '../components/StatsPanel'
+import FilterPanel from '../components/FilterPanel'
 import { useAdmin } from '../contexts/AdminContext'
 // 移除usePhotos，改用InfinitePhotoGrid
 import { Photo } from '../types/photo'
@@ -15,11 +16,21 @@ export default function PhotoGallery() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   // 移除随机排序相关状态，改用InfinitePhotoGrid
   const [showAdminLogin, setShowAdminLogin] = useState(false)
+  const [showFilterPanel, setShowFilterPanel] = useState(false)
   const { isAdmin, setIsAdmin } = useAdmin()
   const [replacingPhoto, setReplacingPhoto] = useState<Photo | null>(null)
   const [sortBy] = useState('createdAt')
   const [sortOrder] = useState<'asc' | 'desc'>('desc')
   const [totalPhotos, setTotalPhotos] = useState(0)
+  const [filters, setFilters] = useState({
+    ageRange: { min: null, max: null },
+    heightRange: { min: null, max: null },
+    universities: [],
+    birthMonths: [],
+    degrees: [],
+    tags: [],
+    searchText: ''
+  })
   const settingsRef = useRef<HTMLDivElement>(null)
   // 移除旧的usePhotos，改用InfinitePhotoGrid内部管理
 
@@ -145,6 +156,17 @@ export default function PhotoGallery() {
                         {viewMode === 'grid' ? '列表视图' : '网格视图'}
                       </button>
                       
+                      <button
+                        onClick={() => {
+                          setShowFilterPanel(true)
+                          setShowSettings(false)
+                        }}
+                        className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
+                      >
+                        <Filter className="w-4 h-4" />
+                        高级筛选
+                      </button>
+                      
                         {/* 移除随机排序按钮 */}
                       
                       <div className="border-t border-gray-200/50 mt-1 pt-1">
@@ -228,12 +250,13 @@ export default function PhotoGallery() {
           
           {/* 照片网格 */}
           <InfinitePhotoGrid 
-            key={`${searchQuery || 'all'}-${sortBy}-${sortOrder}`}
+            key={`${searchQuery || 'all'}-${sortBy}-${sortOrder}-${JSON.stringify(filters)}`}
             isAdmin={isAdmin}
             onReplace={handleReplacePhoto}
             search={searchQuery}
             sortBy={sortBy}
             sortOrder={sortOrder}
+            filters={filters}
             onTotalChange={setTotalPhotos}
           />
         </div>
@@ -248,6 +271,28 @@ export default function PhotoGallery() {
           window.open('/admin', '_blank')
           setShowAdminLogin(false)
         }}
+      />
+
+      {/* 筛选面板 */}
+      <FilterPanel
+        isOpen={showFilterPanel}
+        onClose={() => setShowFilterPanel(false)}
+        onApplyFilters={(newFilters) => {
+          setFilters(newFilters)
+          setShowFilterPanel(false)
+        }}
+        onClearFilters={() => {
+          setFilters({
+            ageRange: { min: null, max: null },
+            heightRange: { min: null, max: null },
+            universities: [],
+            birthMonths: [],
+            degrees: [],
+            tags: [],
+            searchText: ''
+          })
+        }}
+        currentFilters={filters}
       />
 
       {/* 隐藏的文件输入框用于替换 */}
