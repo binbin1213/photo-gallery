@@ -170,29 +170,29 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
       }
       
       console.log('✅ 艺人详情获取成功:', detailData)
-      console.log('🔍 出生地:', detailData.place_of_birth)
+      console.log('🔍 出生地:', detailData.placeOfBirth)
       console.log('🔍 个人简介:', detailData.biography)
       console.log('🔍 性别:', detailData.gender)
-      console.log('🔍 别名:', detailData.also_known_as)
+      console.log('🔍 别名:', detailData.alsoKnownAs)
       console.log('🔍 完整TMDB数据:', JSON.stringify(detailData, null, 2))
       
       // 准备创建艺人的数据
       const createData = {
         englishName: detailData.name || tmdbPerson.englishName,
-        chineseName: detailData.also_known_as?.[0] || tmdbPerson.chineseName,
+        chineseName: detailData.alsoKnownAs?.[0] || tmdbPerson.chineseName,
         birthDate: detailData.birthday ? new Date(detailData.birthday).toISOString() : undefined,
         description: detailData.biography || tmdbPerson.biography,
-        representativeWorks: detailData.known_for?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor || [],
-        tags: detailData.known_for_department ? [detailData.known_for_department] : [],
+        representativeWorks: detailData.knownFor?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor || [],
+        tags: detailData.knownForDepartment ? [detailData.knownForDepartment] : [],
         tmdbId: detailData.id || tmdbPerson.id,
         tmdbData: detailData,
         // TMDB相关字段
         source: 'tmdb',
         popularity: detailData.popularity || tmdbPerson.popularity,
-        department: detailData.known_for_department || tmdbPerson.department,
-        placeOfBirth: detailData.place_of_birth || tmdbPerson.placeOfBirth,
+        department: detailData.knownForDepartment || tmdbPerson.department,
+        placeOfBirth: detailData.placeOfBirth || tmdbPerson.placeOfBirth,
         biography: detailData.biography || tmdbPerson.biography,
-        knownFor: detailData.known_for?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor,
+        knownFor: detailData.knownFor?.map((item: TMDBKnownForItem) => item.title || item.name) || tmdbPerson.knownFor,
         gender: detailData.gender
       }
       
