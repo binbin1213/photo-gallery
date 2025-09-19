@@ -8,10 +8,10 @@
   position: relative;
 }
 
-/* 照片网格样式 - 优化卡片比例，增加宽度 */
+/* 照片网格样式 - 匹配根目录index.html的尺寸 */
 .photo-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
   padding: 0 20px;
   max-width: 1400px;
@@ -63,7 +63,7 @@
 /* 响应式设计 - 优化移动端 */
 @media (max-width: 768px) {
   .photo-grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 12px;
     padding: 0 12px;
   }
@@ -79,7 +79,7 @@
 
 @media (max-width: 480px) {
   .photo-grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 10px;
     padding: 0 10px;
   }
