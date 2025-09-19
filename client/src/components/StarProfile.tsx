@@ -99,14 +99,14 @@ export default function StarProfile({ star, onClose, isAdmin = false, onEdit, on
     
     try {
       // 首先搜索电影获取TMDB ID
-      const searchResponse = await fetch(`${API_BASE_URL}/api/tmdb/search/movie?query=${encodeURIComponent(movieTitle)}&limit=1`)
+      const searchResponse = await fetch(`${API_BASE_URL}/tmdb/search/movie?query=${encodeURIComponent(movieTitle)}&limit=1`)
       const searchResult = await searchResponse.json()
       
       if (searchResult.results && searchResult.results.length > 0) {
         const movie = searchResult.results[0]
         
         // 获取演员列表
-        const castResponse = await fetch(`${API_BASE_URL}/api/tmdb/movie/${movie.id}/cast`)
+        const castResponse = await fetch(`${API_BASE_URL}/tmdb/movie/${movie.id}/cast`)
         const castResult = await castResponse.json()
         
         if (castResult.cast) {
