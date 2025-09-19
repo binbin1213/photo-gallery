@@ -680,13 +680,19 @@ app.delete('/api/photos/:filename', async (req, res) => {
 app.post('/api/photos/:filename/replace', upload.single('photo'), async (req, res) => {
   try {
     const { filename } = req.params;
+    console.log('🔄 开始替换文件:', filename);
 
     if (!req.file) {
+      console.log('❌ 没有上传文件');
       return res.status(400).json({ error: '没有上传文件' });
     }
 
+    console.log('📁 上传的文件:', req.file.filename);
     const oldFilePath = path.join('/app/uploads/photos', filename);
     const newFilePath = path.join('/app/uploads/photos', req.file.filename);
+    
+    console.log('📂 原文件路径:', oldFilePath);
+    console.log('📂 新文件路径:', newFilePath);
 
     // 检查原文件是否存在
     try {
@@ -719,7 +725,8 @@ app.post('/api/photos/:filename/replace', upload.single('photo'), async (req, re
       message: '文件替换成功'
     });
   } catch (error) {
-    console.error('文件替换失败:', error);
+    console.error('❌ 文件替换失败:', error);
+    console.error('错误详情:', error.stack);
     res.status(500).json({ error: '文件替换失败: ' + error.message });
   }
 });
