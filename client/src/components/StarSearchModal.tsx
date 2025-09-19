@@ -169,7 +169,14 @@ export default function StarSearchModal({ isOpen, onClose, photoFilename, onAsso
           representativeWorks: tmdbPerson.knownFor || [],
           tags: tmdbPerson.department ? [tmdbPerson.department] : [],
           tmdbId: tmdbPerson.id,
-          tmdbData: tmdbPerson
+          tmdbData: tmdbPerson,
+          // TMDB相关字段
+          source: 'tmdb',
+          popularity: tmdbPerson.popularity,
+          department: tmdbPerson.department,
+          placeOfBirth: tmdbPerson.placeOfBirth,
+          biography: tmdbPerson.biography,
+          knownFor: tmdbPerson.knownFor
         })
       })
 

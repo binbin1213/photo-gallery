@@ -82,6 +82,38 @@ const starSchema = new mongoose.Schema({
     trim: true
   }],
   
+  // TMDB相关字段
+  source: {
+    type: String,
+    enum: ['local', 'tmdb'],
+    default: 'local'
+  },
+  tmdbId: {
+    type: Number
+  },
+  popularity: {
+    type: Number
+  },
+  department: {
+    type: String,
+    trim: true
+  },
+  placeOfBirth: {
+    type: String,
+    trim: true
+  },
+  biography: {
+    type: String,
+    trim: true
+  },
+  knownFor: [{
+    type: String,
+    trim: true
+  }],
+  tmdbData: {
+    type: mongoose.Schema.Types.Mixed
+  },
+  
   // 系统信息
   isActive: {
     type: Boolean,
