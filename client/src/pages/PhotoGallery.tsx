@@ -17,8 +17,8 @@ export default function PhotoGallery() {
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const { isAdmin, setIsAdmin } = useAdmin()
   const [replacingPhoto, setReplacingPhoto] = useState<Photo | null>(null)
-  const [sortBy, setSortBy] = useState('createdAt')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [sortBy] = useState('createdAt')
+  const [sortOrder] = useState<'asc' | 'desc'>('desc')
   const [totalPhotos, setTotalPhotos] = useState(0)
   const settingsRef = useRef<HTMLDivElement>(null)
   // 移除旧的usePhotos，改用InfinitePhotoGrid内部管理
