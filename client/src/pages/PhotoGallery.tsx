@@ -22,7 +22,15 @@ export default function PhotoGallery() {
   const [sortBy] = useState('createdAt')
   const [sortOrder] = useState<'asc' | 'desc'>('desc')
   const [totalPhotos, setTotalPhotos] = useState(0)
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    ageRange: { min: number | null; max: number | null }
+    heightRange: { min: number | null; max: number | null }
+    universities: string[]
+    birthMonths: number[]
+    degrees: string[]
+    tags: string[]
+    searchText: string
+  }>({
     ageRange: { min: null, max: null },
     heightRange: { min: null, max: null },
     universities: [],
