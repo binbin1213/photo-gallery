@@ -246,7 +246,7 @@ export default function PhotoGallery() {
       <main className="max-w-7xl mx-auto px-2 py-2 pt-14 sm:px-6 sm:py-8 sm:pt-20">
         <div className="flex gap-4">
           {/* 左侧生日艺人侧边栏 */}
-          <div className="hidden lg:block flex-shrink-0 w-64">
+          <div className="hidden lg:block flex-shrink-0 w-80">
             <BirthdaySidebar />
           </div>
           

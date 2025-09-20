@@ -51,13 +51,32 @@ export default function BirthdaySidebar({}: BirthdaySidebarProps) {
         const currentDate = new Date()
         const currentMonth = currentDate.getMonth() + 1
         
-        // 从数据库获取所有艺人信息
-        const response = await fetch(`${API_BASE_URL}/api/stars`)
+        // 从数据库获取所有艺人信息（不限制数量）
+        const response = await fetch(`${API_BASE_URL}/stars?limit=1000`)
         if (!response.ok) {
           throw new Error('Failed to fetch stars')
         }
         
-        const stars: Star[] = await response.json()
+        const data = await response.json()
+        const stars: Star[] = data.stars || []
+        console.log('🎂 获取到的所有艺人数据:', stars.length, '条')
+        console.log('🎂 当前月份:', currentMonth)
+        
+        // 检查有生日信息的艺人
+        const starsWithBirthDate = stars.filter(star => star.birthDate)
+        console.log('🎂 有生日信息的艺人:', starsWithBirthDate.length, '条')
+        
+        // 检查9月份生日的艺人
+        const septemberStars = starsWithBirthDate.filter(star => {
+          if (star.birthDate) {
+            const birthDate = new Date(star.birthDate)
+            const birthMonth = birthDate.getMonth() + 1
+            return birthMonth === 9
+          }
+          return false
+        })
+        console.log('🎂 9月份生日的艺人:', septemberStars.map(s => ({ name: s.englishName, birthDate: s.birthDate })))
+        
         const birthdayMap = new Map<string, BirthdayPerson>()
         
         stars.forEach(star => {
@@ -90,6 +109,13 @@ export default function BirthdaySidebar({}: BirthdaySidebarProps) {
         
         // 转换为数组并按生日日期排序
         const birthdayList = Array.from(birthdayMap.values()).sort((a, b) => a.birthDay - b.birthDay)
+        
+        console.log('🎂 当月生日艺人列表:', birthdayList.map(p => ({ 
+          name: p.star.englishName, 
+          birthDate: p.birthDate, 
+          birthMonth: p.birthMonth, 
+          birthDay: p.birthDay 
+        })))
         
         setBirthdayPeople(birthdayList)
         setCurrentMonth(currentMonth)
@@ -186,7 +212,7 @@ export default function BirthdaySidebar({}: BirthdaySidebarProps) {
                 {/* 艺人照片 */}
                 <div className="relative">
                   <img
-                    src={person.star.photoFilename ? `${API_BASE_URL}/api/thumbnails/${person.star.photoFilename}/small` : undefined}
+                    src={person.star.photoFilename ? `/uploads/thumbnails/${person.star.photoFilename}?size=small` : undefined}
                     alt={person.star.englishName}
                     className="w-16 h-16 rounded-full object-cover border-2 border-white/20 group-hover:border-blue-400/50 transition-colors"
                     onError={(e) => {
