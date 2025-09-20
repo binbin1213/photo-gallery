@@ -139,6 +139,8 @@ export default function PhotoGallery() {
                 onChange={setSearchQuery}
                 placeholder="搜索姓名..."
               />
+              
+              
               <div className="relative" ref={settingsRef}>
                 <button 
                   onClick={() => setShowSettings(!showSettings)}
@@ -164,16 +166,6 @@ export default function PhotoGallery() {
                         {viewMode === 'grid' ? '列表视图' : '网格视图'}
                       </button>
                       
-                      <button
-                        onClick={() => {
-                          setShowFilterPanel(true)
-                          setShowSettings(false)
-                        }}
-                        className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
-                      >
-                        <Filter className="w-4 h-4" />
-                        高级筛选
-                      </button>
                       
                         {/* 移除随机排序按钮 */}
                       
@@ -255,6 +247,134 @@ export default function PhotoGallery() {
           {/* 统计面板 */}
           <StatsPanel totalPhotos={totalPhotos} />
           
+          {/* 筛选标签栏 */}
+          <div className="mt-6 mb-4">
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-white/80 text-sm font-medium mr-2">筛选:</span>
+              
+              {/* 年龄筛选 */}
+              {(filters.ageRange.min !== null || filters.ageRange.max !== null) && (
+                <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  年龄 {filters.ageRange.min || '不限'}-{filters.ageRange.max || '不限'}岁
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, ageRange: { min: null, max: null } }))}
+                    className="ml-1 hover:text-blue-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              
+              {/* 身高筛选 */}
+              {(filters.heightRange.min !== null || filters.heightRange.max !== null) && (
+                <span className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  身高 {filters.heightRange.min || '不限'}-{filters.heightRange.max || '不限'}cm
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, heightRange: { min: null, max: null } }))}
+                    className="ml-1 hover:text-green-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              
+              {/* 大学筛选 */}
+              {filters.universities.length > 0 && (
+                <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  大学 {filters.universities.join(', ')}
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, universities: [] }))}
+                    className="ml-1 hover:text-purple-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              
+              {/* 出生月份筛选 */}
+              {filters.birthMonths.length > 0 && (
+                <span className="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  月份 {filters.birthMonths.map(m => `${m}月`).join(', ')}
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, birthMonths: [] }))}
+                    className="ml-1 hover:text-orange-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              
+              {/* 学位筛选 */}
+              {filters.degrees.length > 0 && (
+                <span className="bg-pink-500/20 text-pink-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  学位 {filters.degrees.join(', ')}
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, degrees: [] }))}
+                    className="ml-1 hover:text-pink-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              
+              {/* 标签筛选 */}
+              {filters.tags.length > 0 && (
+                <span className="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  标签 {filters.tags.join(', ')}
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, tags: [] }))}
+                    className="ml-1 hover:text-yellow-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              
+              {/* 高级搜索 */}
+              {filters.searchText.trim() !== '' && (
+                <span className="bg-red-500/20 text-red-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  搜索 "{filters.searchText}"
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, searchText: '' }))}
+                    className="ml-1 hover:text-red-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              
+              {/* 添加筛选按钮 */}
+              <button
+                onClick={() => setShowFilterPanel(true)}
+                className="bg-white/10 hover:bg-white/20 text-white/90 px-3 py-1 rounded-full text-sm flex items-center gap-1 transition-colors"
+              >
+                <Filter className="w-3 h-3" />
+                添加筛选
+              </button>
+              
+              {/* 清除所有筛选 */}
+              {(filters.ageRange.min !== null || filters.ageRange.max !== null ||
+                filters.heightRange.min !== null || filters.heightRange.max !== null ||
+                filters.universities.length > 0 || filters.birthMonths.length > 0 ||
+                filters.degrees.length > 0 || filters.tags.length > 0 ||
+                filters.searchText.trim() !== '') && (
+                <button
+                  onClick={() => setFilters({
+                    ageRange: { min: null, max: null },
+                    heightRange: { min: null, max: null },
+                    universities: [],
+                    birthMonths: [],
+                    degrees: [],
+                    tags: [],
+                    searchText: ''
+                  })}
+                  className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-3 py-1 rounded-full text-sm transition-colors"
+                >
+                  清除所有
+                </button>
+              )}
+            </div>
+          </div>
           
           {/* 照片网格 */}
           <InfinitePhotoGrid 
