@@ -280,6 +280,7 @@ export function usePreloadThumbnails(filenames: string[], size: 'small' | 'mediu
  */
 export function useThumbnailGeneration() {
   const [generating, setGenerating] = useState(false)
+  const [clearing, setClearing] = useState(false)
   const [status, setStatus] = useState<{
     totalPhotos: number
     thumbnailFiles: number
@@ -341,6 +342,35 @@ export function useThumbnailGeneration() {
     }, 600000)
   }
 
+  const clearThumbnails = async () => {
+    try {
+      setClearing(true)
+      
+      const response = await fetch('/api/thumbnails/clear', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (!response.ok) {
+        throw new Error('清除缩略图失败')
+      }
+      
+      const result = await response.json()
+      console.log('✅ 缩略图清除完成:', result.message)
+      
+      // 刷新状态
+      await getStatus()
+      
+    } catch (error) {
+      console.error('❌ 清除缩略图失败:', error)
+      throw error
+    } finally {
+      setClearing(false)
+    }
+  }
+
   const getStatus = async () => {
     try {
       const response = await fetch('/api/thumbnails/status')
@@ -357,8 +387,10 @@ export function useThumbnailGeneration() {
 
   return {
     generating,
+    clearing,
     status,
     generateThumbnails,
+    clearThumbnails,
     getStatus
   }
 }

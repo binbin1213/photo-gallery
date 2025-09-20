@@ -970,6 +970,14 @@ app.post('/api/thumbnails/generate', async (req, res) => {
     console.log('🚀 开始批量生成缩略图...');
     const photosDir = '/app/uploads/photos';
     
+    // 先统计需要处理的文件数量
+    const photoFiles = await fs.readdir(photosDir);
+    const imageFiles = photoFiles.filter(file => 
+      /\.(jpg|jpeg|png|gif)$/i.test(file)
+    );
+    
+    console.log(`📊 找到 ${imageFiles.length} 个图片文件需要处理`);
+    
     // 异步执行，不阻塞响应
     preGenerateThumbnails(photosDir).catch(error => {
       console.error('❌ 后台缩略图生成失败:', error);
@@ -977,7 +985,9 @@ app.post('/api/thumbnails/generate', async (req, res) => {
     
     res.json({ 
       success: true, 
-      message: '缩略图生成任务已启动，请稍后查看进度' 
+      message: '缩略图生成任务已启动，智能跳过已存在的缩略图',
+      totalFiles: imageFiles.length,
+      note: '系统会自动跳过已存在且较新的缩略图文件'
     });
     
   } catch (error) {
@@ -1028,6 +1038,75 @@ app.get('/api/thumbnails/status', async (req, res) => {
   } catch (error) {
     console.error('获取缩略图状态失败:', error);
     res.status(500).json({ error: '获取状态失败: ' + error.message });
+  }
+});
+
+// 清除所有缩略图API（管理员功能）
+app.post('/api/thumbnails/clear', async (req, res) => {
+  try {
+    console.log('🗑️  开始清除所有缩略图...');
+    const thumbnailsDir = '/app/uploads/thumbnails';
+    
+    let deletedFiles = 0;
+    let errors = 0;
+    
+    try {
+      // 检查缩略图目录是否存在
+      await fs.access(thumbnailsDir);
+      
+      // 读取所有缩略图文件
+      const thumbnailFiles = await fs.readdir(thumbnailsDir);
+      console.log(`📊 找到 ${thumbnailFiles.length} 个缩略图文件`);
+      
+      // 删除所有缩略图文件
+      for (const file of thumbnailFiles) {
+        try {
+          const filePath = path.join(thumbnailsDir, file);
+          await fs.unlink(filePath);
+          deletedFiles++;
+          
+          if (deletedFiles % 50 === 0) {
+            console.log(`🗑️  删除进度: ${deletedFiles}/${thumbnailFiles.length}`);
+          }
+        } catch (error) {
+          console.error(`❌ 删除文件失败 ${file}:`, error.message);
+          errors++;
+        }
+      }
+      
+      // 清除数据库中的缩略图记录
+      try {
+        const result = await Star.updateMany(
+          { thumbnails: { $exists: true } },
+          { $unset: { thumbnails: "" } }
+        );
+        console.log(`🗄️  清除数据库缩略图记录: ${result.modifiedCount} 条`);
+      } catch (dbError) {
+        console.error('❌ 清除数据库记录失败:', dbError.message);
+        errors++;
+      }
+      
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.log('📁 缩略图目录不存在，无需清除');
+      } else {
+        throw error;
+      }
+    }
+    
+    console.log(`✅ 缩略图清除完成: 删除文件 ${deletedFiles} 个, 错误 ${errors} 个`);
+    
+    res.json({ 
+      success: true, 
+      message: `缩略图清除完成`,
+      deletedFiles,
+      errors,
+      details: `删除了 ${deletedFiles} 个缩略图文件，清除了数据库记录`
+    });
+    
+  } catch (error) {
+    console.error('清除缩略图失败:', error);
+    res.status(500).json({ error: '清除失败: ' + error.message });
   }
 });
 
