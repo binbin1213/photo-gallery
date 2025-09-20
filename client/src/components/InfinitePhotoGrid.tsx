@@ -29,6 +29,7 @@ interface InfinitePhotoGridProps {
   sortOrder?: 'asc' | 'desc'
   filters?: FilterOptions
   onTotalChange?: (total: number) => void
+  onPhotosChange?: (photos: Photo[]) => void
 }
 
 export default function InfinitePhotoGrid({ 
@@ -38,7 +39,8 @@ export default function InfinitePhotoGrid({
   sortBy = 'createdAt', 
   sortOrder = 'desc', 
   filters,
-  onTotalChange 
+  onTotalChange,
+  onPhotosChange
 }: InfinitePhotoGridProps) {
   const [allPhotos, setAllPhotos] = useState<Photo[]>([])
   const [page, setPage] = useState(1)
@@ -73,13 +75,22 @@ export default function InfinitePhotoGrid({
         if (onTotalChange) {
           onTotalChange(data.total)
         }
+        // 回调照片数据给父组件
+        if (onPhotosChange) {
+          onPhotosChange(data.photos)
+        }
       } else {
         // 后续页面，追加数据
-        setAllPhotos((prev: Photo[]) => [...prev, ...data.photos])
+        const newPhotos = [...allPhotos, ...data.photos]
+        setAllPhotos(newPhotos)
+        // 回调更新后的照片数据给父组件
+        if (onPhotosChange) {
+          onPhotosChange(newPhotos)
+        }
       }
       setIsLoadingMore(false)
     }
-  }, [data, page, search, onTotalChange])
+  }, [data, page, search, onTotalChange, onPhotosChange, allPhotos])
   
   // 搜索或筛选时重置
   useEffect(() => {
