@@ -35,6 +35,7 @@ services:
     volumes:
       # 群晖路径映射 - 需要根据实际情况调整
       - /volume1/docker/photo-gallery/photos:/app/uploads/photos
+      - /volume1/docker/photo-gallery/thumbnails:/app/uploads/thumbnails
       - /volume1/docker/photo-gallery/data:/app/data
     depends_on:
       - mongodb
