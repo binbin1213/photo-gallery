@@ -245,9 +245,9 @@ export default function PhotoGallery() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-2 py-2 pt-14 sm:px-6 sm:py-8 sm:pt-20">
-        <div className="flex gap-6">
+        <div className="flex gap-4">
           {/* 左侧生日艺人侧边栏 */}
-          <div className="hidden lg:block flex-shrink-0">
+          <div className="hidden lg:block flex-shrink-0 w-72">
             <BirthdaySidebar photos={allPhotos} />
           </div>
           

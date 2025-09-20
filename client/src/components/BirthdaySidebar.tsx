@@ -40,10 +40,10 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
     const currentDate = new Date()
     const currentMonth = currentDate.getMonth() + 1
     
-    const birthdayList: BirthdayPerson[] = []
+    const birthdayMap = new Map<string, BirthdayPerson>()
     
     photos.forEach(photo => {
-      if (photo.birthDate) {
+      if (photo.birthDate && photo.id) {
         try {
           const birthDate = new Date(photo.birthDate)
           const birthMonth = birthDate.getMonth() + 1
@@ -51,13 +51,18 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
           
           if (birthMonth === currentMonth) {
             const age = currentDate.getFullYear() - birthDate.getFullYear()
-            birthdayList.push({
-              photo,
-              birthDate: photo.birthDate,
-              birthMonth,
-              birthDay,
-              age
-            })
+            const key = `${photo.id}-${birthMonth}-${birthDay}`
+            
+            // 使用Map避免重复
+            if (!birthdayMap.has(key)) {
+              birthdayMap.set(key, {
+                photo,
+                birthDate: photo.birthDate,
+                birthMonth,
+                birthDay,
+                age
+              })
+            }
           }
         } catch (error) {
           console.warn('Invalid birth date:', photo.birthDate)
@@ -65,8 +70,8 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
       }
     })
     
-    // 按生日日期排序
-    birthdayList.sort((a, b) => a.birthDay - b.birthDay)
+    // 转换为数组并按生日日期排序
+    const birthdayList = Array.from(birthdayMap.values()).sort((a, b) => a.birthDay - b.birthDay)
     
     setBirthdayPeople(birthdayList)
     setCurrentMonth(currentMonth)
@@ -119,7 +124,7 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
   }
 
   return (
-    <div className="w-80 bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+    <div className="w-full bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
       {/* 标题 */}
       <div className="flex items-center gap-3 mb-6">
         <Calendar className="w-6 h-6 text-blue-400" />
@@ -160,6 +165,17 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
                     src={`/api/photos/${person.photo.filename}`}
                     alt={person.photo.englishName}
                     className="w-16 h-16 rounded-full object-cover border-2 border-white/20 group-hover:border-blue-400/50 transition-colors"
+                    onError={(e) => {
+                      // 如果图片加载失败，显示默认头像
+                      const target = e.target as HTMLImageElement;
+                      target.src = `data:image/svg+xml;base64,${btoa(`
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="64" height="64" rx="32" fill="#374151"/>
+                          <path d="M32 32C36.4183 32 40 28.4183 40 24C40 19.5817 36.4183 16 32 16C27.5817 16 24 19.5817 24 24C24 28.4183 27.5817 32 32 32Z" fill="#9CA3AF"/>
+                          <path d="M32 36C24.268 36 18 42.268 18 50H46C46 42.268 39.732 36 32 36Z" fill="#9CA3AF"/>
+                        </svg>
+                      `)}`;
+                    }}
                   />
                   {/* 生日装饰 */}
                   <div className="absolute -top-1 -right-1">
