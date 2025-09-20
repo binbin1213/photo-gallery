@@ -232,7 +232,7 @@ function BirthdayPersonCard({ person, status, index }: {
   status: { text: string; color: string; bgColor: string }
   index: number
 }) {
-  const { src: thumbnailUrl, loading, error } = useThumbnail({
+  const { src: thumbnailUrl } = useThumbnail({
     filename: person.star.photoFilename || '',
     size: 'small',
     fallbackToOriginal: true
