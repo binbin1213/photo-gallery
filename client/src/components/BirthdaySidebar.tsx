@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Heart, Star, Gift, Cake, Sparkles } from 'lucide-react'
-import { Photo } from '../types/photo'
+import { API_BASE_URL } from '../config/api'
+
+interface Star {
+  _id: string
+  englishName: string
+  chineseName?: string
+  birthDate?: string
+  age?: number
+  photoFilename?: string
+}
 
 interface BirthdaySidebarProps {
-  photos: Photo[]
+  // 移除photos参数，直接从数据库获取
 }
 
 interface BirthdayPerson {
-  photo: Photo
+  star: Star
   birthDate: string
   birthMonth: number
   birthDay: number
@@ -30,52 +39,67 @@ const birthdayBlessings = [
   "🌺 祝你生日快乐，愿你的未来更加精彩！"
 ]
 
-export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
+export default function BirthdaySidebar({}: BirthdaySidebarProps) {
   const [birthdayPeople, setBirthdayPeople] = useState<BirthdayPerson[]>([])
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1)
   const [blessingIndex, setBlessingIndex] = useState(0)
 
-  // 获取当月生日的人
+  // 获取当月生日的艺人
   useEffect(() => {
-    const currentDate = new Date()
-    const currentMonth = currentDate.getMonth() + 1
-    
-    const birthdayMap = new Map<string, BirthdayPerson>()
-    
-    photos.forEach(photo => {
-      if (photo.birthDate && photo.id) {
-        try {
-          const birthDate = new Date(photo.birthDate)
-          const birthMonth = birthDate.getMonth() + 1
-          const birthDay = birthDate.getDate()
-          
-          if (birthMonth === currentMonth) {
-            const age = currentDate.getFullYear() - birthDate.getFullYear()
-            const key = `${photo.id}-${birthMonth}-${birthDay}`
-            
-            // 使用Map避免重复
-            if (!birthdayMap.has(key)) {
-              birthdayMap.set(key, {
-                photo,
-                birthDate: photo.birthDate,
-                birthMonth,
-                birthDay,
-                age
-              })
+    const fetchBirthdayStars = async () => {
+      try {
+        const currentDate = new Date()
+        const currentMonth = currentDate.getMonth() + 1
+        
+        // 从数据库获取所有艺人信息
+        const response = await fetch(`${API_BASE_URL}/api/stars`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch stars')
+        }
+        
+        const stars: Star[] = await response.json()
+        const birthdayMap = new Map<string, BirthdayPerson>()
+        
+        stars.forEach(star => {
+          if (star.birthDate && star._id) {
+            try {
+              const birthDate = new Date(star.birthDate)
+              const birthMonth = birthDate.getMonth() + 1
+              const birthDay = birthDate.getDate()
+              
+              if (birthMonth === currentMonth) {
+                const age = currentDate.getFullYear() - birthDate.getFullYear()
+                const key = `${star._id}-${birthMonth}-${birthDay}`
+                
+                // 使用Map避免重复
+                if (!birthdayMap.has(key)) {
+                  birthdayMap.set(key, {
+                    star,
+                    birthDate: star.birthDate,
+                    birthMonth,
+                    birthDay,
+                    age
+                  })
+                }
+              }
+            } catch (error) {
+              console.warn('Invalid birth date:', star.birthDate)
             }
           }
-        } catch (error) {
-          console.warn('Invalid birth date:', photo.birthDate)
-        }
+        })
+        
+        // 转换为数组并按生日日期排序
+        const birthdayList = Array.from(birthdayMap.values()).sort((a, b) => a.birthDay - b.birthDay)
+        
+        setBirthdayPeople(birthdayList)
+        setCurrentMonth(currentMonth)
+      } catch (error) {
+        console.error('Error fetching birthday stars:', error)
       }
-    })
+    }
     
-    // 转换为数组并按生日日期排序
-    const birthdayList = Array.from(birthdayMap.values()).sort((a, b) => a.birthDay - b.birthDay)
-    
-    setBirthdayPeople(birthdayList)
-    setCurrentMonth(currentMonth)
-  }, [photos])
+    fetchBirthdayStars()
+  }, [])
 
   // 随机选择祝福语
   useEffect(() => {
@@ -154,7 +178,7 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
           
           return (
             <div
-              key={`${person.photo.id}-${person.birthDay}`}
+              key={`${person.star._id}-${person.birthDay}`}
               className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 group"
               style={{ animationDelay: `${index * 100}ms` }}
             >
@@ -162,8 +186,8 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
                 {/* 艺人照片 */}
                 <div className="relative">
                   <img
-                    src={`/api/photos/${person.photo.filename}`}
-                    alt={person.photo.englishName}
+                    src={person.star.photoFilename ? `${API_BASE_URL}/api/thumbnails/${person.star.photoFilename}/small` : undefined}
+                    alt={person.star.englishName}
                     className="w-16 h-16 rounded-full object-cover border-2 border-white/20 group-hover:border-blue-400/50 transition-colors"
                     onError={(e) => {
                       // 如果图片加载失败，显示默认头像
@@ -188,13 +212,13 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
                 {/* 艺人信息 */}
                 <div className="flex-1 min-w-0">
                   <h4 className="text-white font-semibold truncate">
-                    {person.photo.chineseName && !person.photo.chineseName.startsWith('照片_') 
-                      ? person.photo.chineseName 
-                      : person.photo.englishName}
+                    {person.star.chineseName && !person.star.chineseName.startsWith('照片_') 
+                      ? person.star.chineseName 
+                      : person.star.englishName}
                   </h4>
-                  {person.photo.chineseName && !person.photo.chineseName.startsWith('照片_') && (
+                  {person.star.chineseName && !person.star.chineseName.startsWith('照片_') && (
                     <p className="text-white/70 text-sm truncate">
-                      {person.photo.englishName}
+                      {person.star.englishName}
                     </p>
                   )}
                   
@@ -226,9 +250,9 @@ export default function BirthdaySidebar({ photos }: BirthdaySidebarProps) {
                 <div className="mt-3 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
                   <span className="text-yellow-400 text-sm font-medium">
-                    今天是{person.photo.chineseName && !person.photo.chineseName.startsWith('照片_') 
-                      ? person.photo.chineseName 
-                      : person.photo.englishName}的生日！
+                    今天是{person.star.chineseName && !person.star.chineseName.startsWith('照片_') 
+                      ? person.star.chineseName 
+                      : person.star.englishName}的生日！
                   </span>
                 </div>
               )}

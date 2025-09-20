@@ -23,7 +23,6 @@ export default function PhotoGallery() {
   const [sortBy] = useState('createdAt')
   const [sortOrder] = useState<'asc' | 'desc'>('desc')
   const [totalPhotos, setTotalPhotos] = useState(0)
-  const [allPhotos, setAllPhotos] = useState<Photo[]>([])
   const [filters, setFilters] = useState<{
     ageRange: { min: number | null; max: number | null }
     heightRange: { min: number | null; max: number | null }
@@ -247,8 +246,8 @@ export default function PhotoGallery() {
       <main className="max-w-7xl mx-auto px-2 py-2 pt-14 sm:px-6 sm:py-8 sm:pt-20">
         <div className="flex gap-4">
           {/* 左侧生日艺人侧边栏 */}
-          <div className="hidden lg:block flex-shrink-0 w-72">
-            <BirthdaySidebar photos={allPhotos} />
+          <div className="hidden lg:block flex-shrink-0 w-64">
+            <BirthdaySidebar />
           </div>
           
           {/* 右侧主要内容区域 */}
@@ -395,7 +394,6 @@ export default function PhotoGallery() {
               sortOrder={sortOrder}
               filters={filters}
               onTotalChange={setTotalPhotos}
-              onPhotosChange={setAllPhotos}
             />
           </div>
         </div>
