@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Calendar, Heart, Star, Gift, Cake, Sparkles } from 'lucide-react'
 import { API_BASE_URL } from '../config/api'
+import { useThumbnail } from '../hooks/useThumbnail'
 
 interface Star {
   _id: string
@@ -203,86 +204,12 @@ export default function BirthdaySidebar({}: BirthdaySidebarProps) {
           const status = getBirthdayStatus(person.birthDay)
           
           return (
-            <div
+            <BirthdayPersonCard 
               key={`${person.star._id}-${person.birthDay}`}
-              className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 group"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="flex items-center gap-4">
-                {/* 艺人照片 */}
-                <div className="relative">
-                  <img
-                    src={person.star.photoFilename ? `/uploads/thumbnails/${person.star.photoFilename}?size=small` : undefined}
-                    alt={person.star.englishName}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-white/20 group-hover:border-blue-400/50 transition-colors"
-                    onError={(e) => {
-                      // 如果图片加载失败，显示默认头像
-                      const target = e.target as HTMLImageElement;
-                      target.src = `data:image/svg+xml;base64,${btoa(`
-                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <rect width="64" height="64" rx="32" fill="#374151"/>
-                          <path d="M32 32C36.4183 32 40 28.4183 40 24C40 19.5817 36.4183 16 32 16C27.5817 16 24 19.5817 24 24C24 28.4183 27.5817 32 32 32Z" fill="#9CA3AF"/>
-                          <path d="M32 36C24.268 36 18 42.268 18 50H46C46 42.268 39.732 36 32 36Z" fill="#9CA3AF"/>
-                        </svg>
-                      `)}`;
-                    }}
-                  />
-                  {/* 生日装饰 */}
-                  <div className="absolute -top-1 -right-1">
-                    <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                      <Cake className="w-3 h-3 text-yellow-800" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 艺人信息 */}
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-white font-semibold truncate">
-                    {person.star.chineseName && !person.star.chineseName.startsWith('照片_') 
-                      ? person.star.chineseName 
-                      : person.star.englishName}
-                  </h4>
-                  {person.star.chineseName && !person.star.chineseName.startsWith('照片_') && (
-                    <p className="text-white/70 text-sm truncate">
-                      {person.star.englishName}
-                    </p>
-                  )}
-                  
-                  {/* 生日信息 */}
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3 text-gray-400" />
-                      <span className="text-gray-300 text-xs">
-                        {person.birthMonth}月{person.birthDay}日
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 text-gray-400" />
-                      <span className="text-gray-300 text-xs">
-                        {person.age}岁
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 生日状态 */}
-                <div className={`px-2 py-1 rounded-full text-xs font-medium ${status.bgColor} ${status.color}`}>
-                  {status.text}
-                </div>
-              </div>
-
-              {/* 特殊效果 - 今天生日 */}
-              {person.birthDay === new Date().getDate() && (
-                <div className="mt-3 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
-                  <span className="text-yellow-400 text-sm font-medium">
-                    今天是{person.star.chineseName && !person.star.chineseName.startsWith('照片_') 
-                      ? person.star.chineseName 
-                      : person.star.englishName}的生日！
-                  </span>
-                </div>
-              )}
-            </div>
+              person={person}
+              status={status}
+              index={index}
+            />
           )
         })}
       </div>
@@ -295,6 +222,96 @@ export default function BirthdaySidebar({}: BirthdaySidebarProps) {
           <Gift className="w-4 h-4" />
         </div>
       </div>
+    </div>
+  )
+}
+
+// 生日艺人卡片组件
+function BirthdayPersonCard({ person, status, index }: {
+  person: BirthdayPerson
+  status: { text: string; color: string; bgColor: string }
+  index: number
+}) {
+  const { src: thumbnailUrl, loading, error } = useThumbnail({
+    filename: person.star.photoFilename || '',
+    size: 'small',
+    fallbackToOriginal: true
+  })
+  
+  return (
+    <div
+      className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300 group"
+      style={{ animationDelay: `${index * 100}ms` }}
+    >
+      <div className="flex items-center gap-4">
+        {/* 艺人照片 */}
+        <div className="relative">
+          <img
+            src={thumbnailUrl || `data:image/svg+xml;base64,${btoa(`
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="64" height="64" rx="32" fill="#374151"/>
+                <path d="M32 32C36.4183 32 40 28.4183 40 24C40 19.5817 36.4183 16 32 16C27.5817 16 24 19.5817 24 24C24 28.4183 27.5817 32 32 32Z" fill="#9CA3AF"/>
+                <path d="M32 36C24.268 36 18 42.268 18 50H46C46 42.268 39.732 36 32 36Z" fill="#9CA3AF"/>
+              </svg>
+            `)}`}
+            alt={person.star.englishName}
+            className="w-16 h-16 rounded-full object-cover border-2 border-white/20 group-hover:border-blue-400/50 transition-colors"
+          />
+          {/* 生日装饰 */}
+          <div className="absolute -top-1 -right-1">
+            <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+              <Cake className="w-3 h-3 text-yellow-800" />
+            </div>
+          </div>
+        </div>
+
+        {/* 艺人信息 */}
+        <div className="flex-1 min-w-0">
+          <h4 className="text-white font-semibold truncate">
+            {person.star.chineseName && !person.star.chineseName.startsWith('照片_') 
+              ? person.star.chineseName 
+              : person.star.englishName}
+          </h4>
+          {person.star.chineseName && !person.star.chineseName.startsWith('照片_') && (
+            <p className="text-white/70 text-sm truncate">
+              {person.star.englishName}
+            </p>
+          )}
+          
+          {/* 生日信息 */}
+          <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-gray-400" />
+              <span className="text-gray-300 text-xs">
+                {person.birthMonth}月{person.birthDay}日
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Star className="w-3 h-3 text-gray-400" />
+              <span className="text-gray-300 text-xs">
+                {person.age}岁
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 生日状态 */}
+        <div className={`px-2 py-1 rounded-full text-xs font-medium ${status.bgColor} ${status.color}`}>
+          {status.text}
+        </div>
+      </div>
+
+      {/* 特殊效果 - 今天生日 */}
+      {person.birthDay === new Date().getDate() && (
+        <div className="mt-3 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
+          <span className="text-yellow-400 text-sm font-medium">
+            今天是{person.star.chineseName && !person.star.chineseName.startsWith('照片_') 
+              ? person.star.chineseName 
+              : person.star.englishName}的生日！
+          </span>
+        </div>
+      )}
     </div>
   )
 }
