@@ -19,6 +19,10 @@
   /* 性能优化 */
   will-change: auto;
   contain: layout style;
+  /* 确保垂直滚动 */
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* 照片卡片固定高度 - 优化移动端显示 */
@@ -159,8 +163,16 @@
   }
   
   /* 防止水平滚动 */
-  body {
-    overflow-x: hidden;
+  html, body {
+    overflow-x: hidden !important;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* 确保所有容器不超宽 */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   /* 优化输入框在移动端的显示 */
@@ -168,6 +180,13 @@
     font-size: 16px; /* 防止iOS缩放 */
     -webkit-appearance: none;
     border-radius: 8px;
+  }
+  
+  /* 强制垂直滚动，禁用水平滚动 */
+  .photo-grid-container {
+    overflow-x: hidden !important;
+    scroll-behavior: smooth;
+    touch-action: pan-y; /* 只允许垂直滚动 */
   }
 }
 
@@ -297,6 +316,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  
+  /* 全局触摸控制 */
+  touch-action: pan-y; /* 只允许垂直滚动 */
+  overflow-x: hidden;
 }
 
 body {

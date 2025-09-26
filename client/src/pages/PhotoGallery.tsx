@@ -244,15 +244,15 @@ export default function PhotoGallery() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-2 py-2 pt-16 sm:px-6 sm:py-8 sm:pt-20">
-        <div className="flex gap-2 sm:gap-4">
+      <main className="max-w-7xl mx-auto px-2 py-2 pt-16 sm:px-6 sm:py-8 sm:pt-20 overflow-x-hidden">
+        <div className="flex gap-2 sm:gap-4 w-full overflow-x-hidden">
           {/* 左侧生日艺人侧边栏 - 移动端隐藏 */}
           <div className="hidden xl:block flex-shrink-0 w-80">
             <BirthdaySidebar />
           </div>
           
           {/* 右侧主要内容区域 */}
-          <div className="flex-1 bg-white/5 rounded-xl p-3 sm:p-8 backdrop-blur-sm border border-white/10">
+          <div className="flex-1 bg-white/5 rounded-xl p-3 sm:p-8 backdrop-blur-sm border border-white/10 overflow-x-hidden w-full">
             {/* 统计面板 */}
             <StatsPanel totalPhotos={totalPhotos} />
             
