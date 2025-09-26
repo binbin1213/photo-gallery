@@ -152,18 +152,18 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
             onError={() => console.error('图片加载失败:', photo.filename)}
           />
           
-          {/* Name Text - 直接显示在照片上，无背景 */}
-          <div className="absolute bottom-2 left-2 right-2 flex items-center justify-center gap-1 text-center">
+          {/* Name Text - 响应式文字，移动端优化 */}
+          <div className="absolute bottom-1 left-1 right-1 sm:bottom-2 sm:left-2 sm:right-2 flex items-center justify-center gap-0.5 sm:gap-1 text-center">
             {/* 检查是否是默认的中文名（照片_xxx格式），如果是则不显示 */}
             {photo.chineseName && !photo.chineseName.startsWith('照片_') && (
               <>
-                <span className="font-bold text-lg sm:text-xl transition-all duration-300 group-hover:scale-105 truncate text-white" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+                <span className="font-bold text-sm sm:text-lg lg:text-xl transition-all duration-300 group-hover:scale-105 truncate text-white" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
                   {photo.chineseName}
                 </span>
-                <span className="text-lg sm:text-xl flex-shrink-0 text-white/80" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>•</span>
+                <span className="text-sm sm:text-lg lg:text-xl flex-shrink-0 text-white/80" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>•</span>
               </>
             )}
-            <span className="font-bold text-lg sm:text-xl italic transition-all duration-300 group-hover:scale-105 truncate text-white/90" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+            <span className="font-bold text-sm sm:text-lg lg:text-xl italic transition-all duration-300 group-hover:scale-105 truncate text-white/90" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
               {photo.englishName}
             </span>
           </div>
@@ -175,27 +175,27 @@ export default function PhotoCard({ photo, isAdmin = false, onReplace }: PhotoCa
             </div>
           )}
 
-          {/* 收藏按钮 */}
-          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+          {/* 收藏按钮 - 移动端始终显示 */}
+          <div className="absolute top-1 left-1 sm:top-2 sm:left-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 transform translate-y-0 sm:translate-y-2 sm:group-hover:translate-y-0">
             <FavoriteButton photoId={photo.id.toString()} />
           </div>
 
-          {/* Admin Controls */}
+          {/* Admin Controls - 移动端始终显示 */}
           {isAdmin && (
-            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+            <div className="absolute top-1 right-1 sm:top-2 sm:right-2 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 transform translate-y-0 sm:translate-y-2 sm:group-hover:translate-y-0">
               <button
                 onClick={handleReplace}
-                className="p-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-180"
+                className="p-1 sm:p-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-180"
                 title="替换照片"
               >
-                <RefreshCw className="w-3 h-3" />
+                <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               </button>
               <button
                 onClick={handleDelete}
-                className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-90"
+                className="p-1 sm:p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110 hover:rotate-90"
                 title="删除照片"
               >
-                <X className="w-3 h-3" />
+                <X className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               </button>
             </div>
           )}

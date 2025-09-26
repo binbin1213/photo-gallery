@@ -126,32 +126,33 @@ export default function PhotoGallery() {
   }, [showSettings])
 
   return (
-    <div className="text-gray-900">
+    <div className="text-gray-900 min-h-screen">
       {/* Header */}
       <header className="bg-gray-800/95 backdrop-blur-md border-b border-gray-600/50 shadow-xl fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 sm:py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-wide">
+        <div className="max-w-7xl mx-auto px-3 py-2 sm:px-6 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <h1 className="text-lg sm:text-2xl font-bold text-white tracking-wide flex-shrink-0">
               泰海男星图鉴
             </h1>
-            <div className="flex items-center gap-3 sm:gap-6">
-              <SearchBar 
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="搜索姓名..."
-              />
-              
+            <div className="flex items-center gap-2 sm:gap-6 flex-1 justify-end">
+              <div className="flex-1 max-w-xs sm:max-w-sm">
+                <SearchBar 
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="搜索姓名..."
+                />
+              </div>
               
               <div className="relative" ref={settingsRef}>
                 <button 
                   onClick={() => setShowSettings(!showSettings)}
-                  className="p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+                  className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm"
                 >
-                  <Settings className="w-5 h-5 text-white" />
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </button>
                 
                 {showSettings && (
-                  <div className="absolute right-0 top-14 w-52 bg-gray-800/95 backdrop-blur-md rounded-lg shadow-xl border border-gray-600/50 py-3 animate-in slide-in-from-top-2 duration-200">
+                  <div className="absolute right-0 top-12 sm:top-14 w-48 sm:w-52 bg-gray-800/95 backdrop-blur-md rounded-lg shadow-xl border border-gray-600/50 py-3 animate-in slide-in-from-top-2 duration-200">
                       <div className="px-4 py-2 text-sm font-medium text-white/80 border-b border-gray-600/50">
                         显示选项
                       </div>
@@ -243,26 +244,26 @@ export default function PhotoGallery() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-2 py-2 pt-14 sm:px-6 sm:py-8 sm:pt-20">
-        <div className="flex gap-4">
-          {/* 左侧生日艺人侧边栏 */}
-          <div className="hidden lg:block flex-shrink-0 w-80">
+      <main className="max-w-7xl mx-auto px-2 py-2 pt-16 sm:px-6 sm:py-8 sm:pt-20">
+        <div className="flex gap-2 sm:gap-4">
+          {/* 左侧生日艺人侧边栏 - 移动端隐藏 */}
+          <div className="hidden xl:block flex-shrink-0 w-80">
             <BirthdaySidebar />
           </div>
           
           {/* 右侧主要内容区域 */}
-          <div className="flex-1 bg-white/5 rounded-xl p-2 sm:p-8 backdrop-blur-sm border border-white/10">
+          <div className="flex-1 bg-white/5 rounded-xl p-3 sm:p-8 backdrop-blur-sm border border-white/10">
             {/* 统计面板 */}
             <StatsPanel totalPhotos={totalPhotos} />
             
             {/* 筛选标签栏 */}
-            <div className="mt-6 mb-4">
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-white/80 text-sm font-medium mr-2">筛选:</span>
+            <div className="mt-4 sm:mt-6 mb-4">
+              <div className="flex flex-wrap gap-1 sm:gap-2 items-center">
+                <span className="text-white/80 text-xs sm:text-sm font-medium mr-1 sm:mr-2">筛选:</span>
                 
                 {/* 年龄筛选 */}
                 {(filters.ageRange.min !== null || filters.ageRange.max !== null) && (
-                  <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  <span className="bg-blue-500/20 text-blue-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1">
                     年龄 {filters.ageRange.min || '不限'}-{filters.ageRange.max || '不限'}岁
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, ageRange: { min: null, max: null } }))}
@@ -275,7 +276,7 @@ export default function PhotoGallery() {
                 
                 {/* 身高筛选 */}
                 {(filters.heightRange.min !== null || filters.heightRange.max !== null) && (
-                  <span className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  <span className="bg-green-500/20 text-green-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1">
                     身高 {filters.heightRange.min || '不限'}-{filters.heightRange.max || '不限'}cm
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, heightRange: { min: null, max: null } }))}
@@ -288,7 +289,7 @@ export default function PhotoGallery() {
                 
                 {/* 大学筛选 */}
                 {filters.universities.length > 0 && (
-                  <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  <span className="bg-purple-500/20 text-purple-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1">
                     大学 {filters.universities.join(', ')}
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, universities: [] }))}
@@ -301,7 +302,7 @@ export default function PhotoGallery() {
                 
                 {/* 出生月份筛选 */}
                 {filters.birthMonths.length > 0 && (
-                  <span className="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  <span className="bg-orange-500/20 text-orange-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1">
                     月份 {filters.birthMonths.map(m => `${m}月`).join(', ')}
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, birthMonths: [] }))}
@@ -314,7 +315,7 @@ export default function PhotoGallery() {
                 
                 {/* 学位筛选 */}
                 {filters.degrees.length > 0 && (
-                  <span className="bg-pink-500/20 text-pink-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  <span className="bg-pink-500/20 text-pink-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1">
                     学位 {filters.degrees.join(', ')}
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, degrees: [] }))}
@@ -327,7 +328,7 @@ export default function PhotoGallery() {
                 
                 {/* 标签筛选 */}
                 {filters.tags.length > 0 && (
-                  <span className="bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  <span className="bg-yellow-500/20 text-yellow-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1">
                     标签 {filters.tags.join(', ')}
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, tags: [] }))}
@@ -340,7 +341,7 @@ export default function PhotoGallery() {
                 
                 {/* 高级搜索 */}
                 {filters.searchText.trim() !== '' && (
-                  <span className="bg-red-500/20 text-red-300 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                  <span className="bg-red-500/20 text-red-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1">
                     搜索 "{filters.searchText}"
                     <button
                       onClick={() => setFilters(prev => ({ ...prev, searchText: '' }))}
@@ -354,10 +355,11 @@ export default function PhotoGallery() {
                 {/* 添加筛选按钮 */}
                 <button
                   onClick={() => setShowFilterPanel(true)}
-                  className="bg-white/10 hover:bg-white/20 text-white/90 px-3 py-1 rounded-full text-sm flex items-center gap-1 transition-colors"
+                  className="bg-white/10 hover:bg-white/20 text-white/90 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1 transition-colors"
                 >
                   <Filter className="w-3 h-3" />
-                  添加筛选
+                  <span className="hidden sm:inline">添加筛选</span>
+                  <span className="sm:hidden">筛选</span>
                 </button>
                 
                 {/* 清除所有筛选 */}
@@ -376,9 +378,10 @@ export default function PhotoGallery() {
                       tags: [],
                       searchText: ''
                     })}
-                    className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-3 py-1 rounded-full text-sm transition-colors"
+                    className="bg-red-500/20 hover:bg-red-500/30 text-red-300 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm transition-colors"
                   >
-                    清除所有
+                    <span className="hidden sm:inline">清除所有</span>
+                    <span className="sm:hidden">清除</span>
                   </button>
                 )}
               </div>

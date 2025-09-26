@@ -8,12 +8,12 @@
   position: relative;
 }
 
-/* 照片网格样式 - 匹配根目录index.html的尺寸 */
+/* 照片网格样式 - 增强移动端体验 */
 .photo-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 0 20px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 0 16px;
   max-width: 1400px;
   margin: 0 auto;
   /* 性能优化 */
@@ -23,7 +23,7 @@
 
 /* 照片卡片固定高度 - 优化移动端显示 */
 .photo-card-fixed-height {
-  height: 240px;
+  height: 220px;
   /* GPU加速 */
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -34,13 +34,15 @@
     0 4px 12px rgba(0, 0, 0, 0.15),
     0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
 }
 
 .photo-card-fixed-height:hover {
   box-shadow: 
     0 20px 40px rgba(0, 0, 0, 0.25),
     0 8px 16px rgba(0, 0, 0, 0.15);
-  transform: translateY(-8px) translateZ(0);
+  transform: translateY(-6px) translateZ(0);
 }
 
 /* 加载骨架屏效果 */
@@ -61,6 +63,14 @@
 }
 
 /* 响应式设计 - 优化移动端 */
+@media (max-width: 1024px) {
+  .photo-grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+    padding: 0 14px;
+  }
+}
+
 @media (max-width: 768px) {
   .photo-grid-container {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -69,7 +79,7 @@
   }
   
   .photo-card-fixed-height {
-    height: 180px;
+    height: 190px;
   }
   
   .photo-card-fixed-height:hover {
@@ -77,15 +87,39 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .photo-grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
     padding: 0 10px;
   }
   
   .photo-card-fixed-height {
-    height: 160px;
+    height: 170px;
+  }
+}
+
+@media (max-width: 480px) {
+  .photo-grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+    padding: 0 8px;
+  }
+  
+  .photo-card-fixed-height {
+    height: 150px;
+  }
+}
+
+@media (max-width: 380px) {
+  .photo-grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 0 6px;
+  }
+  
+  .photo-card-fixed-height {
+    height: 140px;
   }
 }
 
@@ -101,6 +135,60 @@
   /* 触摸时显示按钮 */
   .photo-card-fixed-height .group-hover\\:opacity-100 {
     opacity: 1;
+  }
+}
+
+/* 移动端特定优化 */
+@media (max-width: 768px) {
+  /* 减少动画以提升性能 */
+  * {
+    animation-duration: 0.2s !important;
+    transition-duration: 0.2s !important;
+  }
+  
+  /* 优化触摸目标大小 */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* 小按钮例外 */
+  .photo-card-fixed-height button {
+    min-height: 32px;
+    min-width: 32px;
+  }
+  
+  /* 防止水平滚动 */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* 优化输入框在移动端的显示 */
+  input[type="text"], input[type="number"] {
+    font-size: 16px; /* 防止iOS缩放 */
+    -webkit-appearance: none;
+    border-radius: 8px;
+  }
+}
+
+/* 更小屏幕的特殊优化 */
+@media (max-width: 480px) {
+  /* 标题字体缩小 */
+  h1 {
+    font-size: 1rem !important;
+    line-height: 1.2;
+  }
+  
+  /* 筛选标签更紧凑 */
+  .filter-tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* 减少边距 */
+  .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 

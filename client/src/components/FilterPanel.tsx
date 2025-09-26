@@ -146,62 +146,62 @@ export default function FilterPanel({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10001] p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10001] p-2 sm:p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Filter className="w-6 h-6 text-blue-500" />
+        <div className="flex items-center justify-between p-3 sm:p-6 border-b border-gray-200">
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 flex items-center gap-1 sm:gap-2">
+            <Filter className="w-4 h-4 sm:w-6 sm:h-6 text-blue-500" />
             筛选条件
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
           </button>
         </div>
 
         {/* Filter Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
           {/* 年龄范围 */}
           <div className="border border-gray-200 rounded-lg">
             <button
               onClick={() => toggleSection('age')}
-              className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
             >
-              <span className="font-medium text-gray-900">年龄范围</span>
-              {expandedSections.age ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              <span className="font-medium text-sm sm:text-base text-gray-900">年龄范围</span>
+              {expandedSections.age ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
             {expandedSections.age && (
-              <div className="px-4 pb-4 space-y-3">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="px-3 sm:px-4 pb-3 sm:pb-4 space-y-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-4">
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">最小年龄</label>
+                    <label className="block text-xs sm:text-sm text-gray-600 mb-1">最小年龄</label>
                     <input
                       type="number"
                       value={filters.ageRange.min || ''}
                       onChange={(e) => handleAgeChange('min', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                       placeholder="18"
                       min="0"
                       max="100"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">最大年龄</label>
+                    <label className="block text-xs sm:text-sm text-gray-600 mb-1">最大年龄</label>
                     <input
                       type="number"
                       value={filters.ageRange.max || ''}
                       onChange={(e) => handleAgeChange('max', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                       placeholder="35"
                       min="0"
                       max="100"
                     />
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2 flex-wrap">
                   {[20, 25, 30, 35].map(age => (
                     <button
                       key={age}
@@ -209,7 +209,7 @@ export default function FilterPanel({
                         ...prev,
                         ageRange: { min: age - 5, max: age + 5 }
                       }))}
-                      className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
+                      className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
                     >
                       {age - 5}-{age + 5}岁
                     </button>
@@ -408,23 +408,23 @@ export default function FilterPanel({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between gap-3 p-6 border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-3 p-3 sm:p-6 border-t border-gray-200">
           <button
             onClick={handleClear}
-            className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors order-2 sm:order-1"
           >
             清除所有筛选
           </button>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 order-1 sm:order-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
               取消
             </button>
             <button
               onClick={handleApply}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 text-sm sm:text-base bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               应用筛选
             </button>
