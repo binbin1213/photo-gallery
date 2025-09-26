@@ -252,14 +252,16 @@ export default function PhotoGallery() {
           </div>
           
           {/* 右侧主要内容区域 */}
-          <div className="flex-1 bg-white/5 rounded-xl p-3 sm:p-8 backdrop-blur-sm border border-white/10 overflow-x-hidden w-full">
-            {/* 统计面板 */}
-            <StatsPanel totalPhotos={totalPhotos} />
-            
-            {/* 筛选标签栏 */}
-            <div className="mt-4 sm:mt-6 mb-4">
-              <div className="flex flex-wrap gap-1 sm:gap-2 items-center">
-                <span className="text-white/80 text-xs sm:text-sm font-medium mr-1 sm:mr-2">筛选:</span>
+          <div className="flex-1 bg-white/5 rounded-xl p-3 sm:p-8 backdrop-blur-sm border border-white/10 overflow-x-hidden w-full flex flex-col items-center">
+            {/* 内容容器 - 限制最大宽度并居中 */}
+            <div className="w-full max-w-6xl">
+              {/* 统计面板 */}
+              <StatsPanel totalPhotos={totalPhotos} />
+              
+              {/* 筛选标签栏 */}
+              <div className="mt-4 sm:mt-6 mb-4">
+                <div className="flex flex-wrap gap-1 sm:gap-2 items-center">
+                  <span className="text-white/80 text-xs sm:text-sm font-medium mr-1 sm:mr-2">筛选:</span>
                 
                 {/* 年龄筛选 */}
                 {(filters.ageRange.min !== null || filters.ageRange.max !== null) && (
@@ -385,19 +387,20 @@ export default function PhotoGallery() {
                   </button>
                 )}
               </div>
+              </div>
+              
+              {/* 照片网格 */}
+              <InfinitePhotoGrid 
+                key={`${searchQuery || 'all'}-${sortBy}-${sortOrder}-${JSON.stringify(filters)}`}
+                isAdmin={isAdmin}
+                onReplace={handleReplacePhoto}
+                search={searchQuery}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                filters={filters}
+                onTotalChange={setTotalPhotos}
+              />
             </div>
-            
-            {/* 照片网格 */}
-            <InfinitePhotoGrid 
-              key={`${searchQuery || 'all'}-${sortBy}-${sortOrder}-${JSON.stringify(filters)}`}
-              isAdmin={isAdmin}
-              onReplace={handleReplacePhoto}
-              search={searchQuery}
-              sortBy={sortBy}
-              sortOrder={sortOrder}
-              filters={filters}
-              onTotalChange={setTotalPhotos}
-            />
           </div>
         </div>
       </main>
