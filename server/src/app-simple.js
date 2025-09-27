@@ -13,6 +13,9 @@ console.log('🚀 启动照片展示墙API服务...');
 app.use(cors());
 app.use(express.json());
 
+// 导入新闻路由
+const newsRouter = require('./routes/news');
+
 // 配置multer用于文件上传
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -345,12 +348,16 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// 新闻API路由
+app.use('/api/news', newsRouter);
+
 // 404 处理
 app.use('*', (req, res) => {
     res.status(404).json({ error: 'API 端点不存在' });
 });
 
 // 错误处理
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: '服务器内部错误' });
